@@ -23,45 +23,45 @@ const steps = [
 
 export default function HowItWorksSection() {
   return (
-    <div className="bg-[#010c29] py-20 px-12">
+    <div className="bg-[#010c29] py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-12">
       <div className="max-w-7xl mx-auto">
         {/* Section Tag */}
-        <div className="mb-6">
-          <span className="text-[#ff5700] text-lg font-bold tracking-widest uppercase">
+        <div className="mb-4 sm:mb-6">
+          <span className="text-[#ff5700] text-base sm:text-lg font-bold tracking-widest uppercase">
             How It Works
           </span>
         </div>
 
         {/* Heading */}
-        <h2 className="text-[#e8f0ff] text-4xl font-extrabold mb-6 leading-tight">
+        <h2 className="text-[#e8f0ff] text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-4 sm:mb-6 leading-tight">
           From device to dashboard in four steps
         </h2>
 
         {/* Orange Gradient Line */}
-        <div className="bg-linear-to-r from-[#d84800] to-[#ff5700] h-1 w-32 rounded-full mb-16" />
+        <div className="bg-linear-to-r from-[#d84800] to-[#ff5700] h-1 w-24 sm:w-32 rounded-full mb-10 sm:mb-16" />
 
         {/* Steps Grid */}
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {steps.map((step, index) => (
             <div
               key={index}
-              className="bg-[#020f35] border border-[rgba(255,136,0,0.23)] rounded-3xl p-8 flex flex-col items-center text-center"
+              className="bg-[#020f35] border border-[rgba(255,136,0,0.23)] rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col items-center text-center"
             >
               {/* Number Badge */}
-              <div className="border border-[#d84800] rounded-full w-16 h-16 flex items-center justify-center mb-6 shadow-[0px_0px_30px_0px_rgba(255,136,0,0.23)]">
-                <span className="text-[#e8f0ff] text-2xl font-extrabold">
+              <div className="border border-[#d84800] rounded-full w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center mb-4 sm:mb-6 shadow-[0px_0px_30px_0px_rgba(255,136,0,0.23)]">
+                <span className="text-[#e8f0ff] text-xl sm:text-2xl font-extrabold">
                   {step.number}
                 </span>
               </div>
 
               {/* Title */}
-              <h3 className="text-[#e8f0ff] text-lg font-bold mb-4">
+              <h3 className="text-[#e8f0ff] text-base sm:text-lg font-bold mb-3 sm:mb-4">
                 {step.title}
               </h3>
 
               {/* Description */}
-              <p className="text-[rgba(180,200,255,0.73)] text-base font-light leading-relaxed">
+              <p className="text-[rgba(180,200,255,0.73)] text-sm sm:text-base font-light leading-relaxed">
                 {step.description}
               </p>
             </div>
