@@ -2,6 +2,7 @@ import imgDashboard1 from "../../assets/dashboard_2.png";
 import imgDashboard2 from "../../assets/Dashboard_preview_1.png";
 import imgDashboard3 from "../../assets/Dashboard_preview_2.png";
 import imgDashboard4 from "../../assets/Dashboard_preview_3.png";
+import { signupUrl } from "../aws-config";
 
 const dashboards = [
   imgDashboard1,
@@ -35,7 +36,8 @@ export default function DashboardPreviewSection() {
         </p>
 
         {/* CTA Button */}
-        <button className="bg-linear-to-r from-[#d84800] to-[#ff5700] text-[#e8f0ff] px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-bold text-sm sm:text-base mb-8 sm:mb-12 hover:opacity-90 transition-opacity">
+        <button className="bg-linear-to-r from-[#d84800] to-[#ff5700] text-[#e8f0ff] px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-bold text-sm sm:text-base mb-8 sm:mb-12 hover:opacity-90 transition-opacity cursor-pointer"
+        onClick={()=>{window.location.href=signupUrl}}>
           Try the Dashboard
         </button>
 

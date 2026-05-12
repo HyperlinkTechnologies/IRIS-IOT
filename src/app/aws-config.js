@@ -5,7 +5,7 @@ const CLIENT_ID =
   "3l8efe5ajhfo1eh2it4diicjf6";
 
 const REDIRECT_URI =
-  "https://www.hyperlinktech.in/iris-iot-gateway";
+  "https://www.hyperlinktech.in/iris-iot-gateway/";
 
 const SCOPES =
   "openid+email+profile";
