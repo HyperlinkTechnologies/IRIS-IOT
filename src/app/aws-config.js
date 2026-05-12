@@ -7,8 +7,8 @@ const awsConfig = {
         oauth: {
           domain: "us-east-1nd1mqho9q.auth.us-east-1.amazoncognito.com",
           scopes: ["email", "openid", "profile"],
-          redirectSignIn: ["http://localhost:5173/"],
-          redirectSignOut: ["http://localhost:5173/"],
+          redirectSignIn: ["https://iris-iot-react.netlify.app/"],
+          redirectSignOut: ["https://iris-iot-react.netlify.app/"],
           responseType: "code",
         },
       },
