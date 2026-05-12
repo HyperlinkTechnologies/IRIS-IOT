@@ -33,10 +33,9 @@ export default function HeroSection() {
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-12 sm:mb-16 px-4">
-          <a 
+          <a href="https://us-east-1nd1mqho9q.auth.us-east-1.amazoncognito.com/signup?client_id=3l8efe5ajhfo1eh2it4diicjf6&code_challenge=11c9YAEZ6Q6XplLfD6PmfmJIU3Y6pDZMwvG7SvjQnYk&code_challenge_method=S256&redirect_uri=https%3A%2F%2Firis-iot-react.netlify.app%2F&response_type=code&scope=email+openid+profile&state=rcdAgfPBRNtE9XFAl6xDd8eheqKnuKzp"
           className="bg-linear-to-r from-[#d84800] to-[#ff5700] text-[#e8f0ff] px-6 sm:px-8 py-3 rounded-lg font-bold text-sm sm:text-base shadow-[0px_0px_250px_0px_#ff5700,0px_0px_32px_0px_rgba(0,198,255,0.22)] hover:opacity-95 cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out text-center">
-            <button className="text-[#e8f0ff] font-bold text-sm sm:text-base cursor-pointer"
-            onClick={()=>signInWithRedirect()}>
+            <button className="text-[#e8f0ff] font-bold text-sm sm:text-base cursor-pointer">
             Get Started
           </button>
           </a>
