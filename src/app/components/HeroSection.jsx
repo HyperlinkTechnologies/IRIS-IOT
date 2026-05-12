@@ -1,5 +1,6 @@
 import { ArrowBigDown, ArrowDown } from "lucide-react";
 import imgDashboardImage from "../../assets/Dashboard_1.png";
+import { signInWithRedirect } from "aws-amplify/auth";
 
 export default function HeroSection() {
   return (
@@ -32,9 +33,10 @@ export default function HeroSection() {
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-12 sm:mb-16 px-4">
-          <a href="" 
+          <a 
           className="bg-linear-to-r from-[#d84800] to-[#ff5700] text-[#e8f0ff] px-6 sm:px-8 py-3 rounded-lg font-bold text-sm sm:text-base shadow-[0px_0px_250px_0px_#ff5700,0px_0px_32px_0px_rgba(0,198,255,0.22)] hover:opacity-95 cursor-pointer hover:-translate-y-1 transition-all duration-200 ease-in-out text-center">
-            <button className="text-[#e8f0ff] font-bold text-sm sm:text-base cursor-pointer">
+            <button className="text-[#e8f0ff] font-bold text-sm sm:text-base cursor-pointer"
+            onClick={()=>signInWithRedirect()}>
             Get Started
           </button>
           </a>
