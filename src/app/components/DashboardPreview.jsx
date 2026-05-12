@@ -40,42 +40,51 @@ export default function DashboardPreviewSection() {
         </button>
 
         {/* Dashboard Images Carousel */}
-        <div className="relative overflow-hidden">
-          <div className="flex gap-3 sm:gap-4 lg:gap-6 animate-scroll">
-            {/* First set */}
+        <div className="relative overflow-hidden w-full">
+
+          <div className="flex w-max gap-4 sm:gap-6 animate-marquee">
+
+            {/* Original Set */}
             {dashboards.map((img, index) => (
               <div
                 key={index}
-                className="shrink-0 rounded-xl sm:rounded-2xl overflow-hidden border border-[rgba(180,200,255,0.73)] shadow-[0px_0px_30px_0px_rgba(255,136,0,0.23)]"
-                style={{ width: 'calc(25% - 18px)', minWidth: '500px' }}
+                className="shrink-0 rounded-2xl overflow-hidden
+                border border-[rgba(180,200,255,0.73)]
+                shadow-[0px_0px_30px_0px_rgba(255,136,0,0.23)]"
               >
                 <img
                   src={img}
                   alt={`Dashboard ${index + 1}`}
-                  className="w-full h-auto object-cover"
+                  className="w-[320px] sm:w-112.5 lg:w-137.5
+                  h-auto object-cover"
                 />
               </div>
             ))}
-            {/* Duplicate set for seamless loop */}
+
+            {/* Duplicate Set */}
             {dashboards.map((img, index) => (
               <div
-                key={`dup-${index}`}
-                className="shrink-0 rounded-xl sm:rounded-2xl overflow-hidden border border-[rgba(180,200,255,0.73)] shadow-[0px_0px_30px_0px_rgba(255,136,0,0.23)]"
-                style={{ width: 'calc(25% - 18px)', minWidth: '500px' }}
+                key={`duplicate-${index}`}
+                className="shrink-0 rounded-2xl overflow-hidden
+                border border-[rgba(180,200,255,0.73)]
+                shadow-[0px_0px_30px_0px_rgba(255,136,0,0.23)]"
               >
                 <img
                   src={img}
                   alt={`Dashboard ${index + 1}`}
-                  className="w-full h-auto object-cover"
+                  className="w-[320px] sm:w-112.5 lg:w-137.5
+                  h-auto object-cover"
                 />
               </div>
             ))}
+
           </div>
-        </div>
+
+        </div> 
       </div>
 
       <style>{`
-        @keyframes scroll {
+        @keyframes marquee {
           0% {
             transform: translateX(0);
           }
@@ -83,12 +92,13 @@ export default function DashboardPreviewSection() {
             transform: translateX(-50%);
           }
         }
-        .animate-scroll {
-          animation: scroll 5s linear infinite;
+        .animate-marquee {
+          animation: marquee 25s linear infinite;
         }
-        .animate-scroll:hover {
+        .animate-marquee:hover {
           animation-play-state: paused;
         }
+
       `}</style>
     </div>
   );
