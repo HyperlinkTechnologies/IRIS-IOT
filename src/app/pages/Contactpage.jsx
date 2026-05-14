@@ -40,7 +40,7 @@ const navigate = useNavigate();
         mobile: formData.mobile,
         email: formData.email,
         CompanyName: formData.CompanyName,
-        ProductRequired: formData.productRequired,
+        productRequired: formData.productRequired,
         message: formData.message || 'No message',
       },
       'GVVUjJ1llIYUGrqQH'        
@@ -280,7 +280,7 @@ const navigate = useNavigate();
                   className="w-full h-12 pl-16 pr-4 bg-[#f3f8f3] border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff5700] appearance-none cursor-pointer"
                 >
                   <option value="">Product Required</option>
-                  <option value="On-Grid Solar System">Iris IOT gateway</option>
+                  <option value="Iris IOT Gateway">Iris IOT Gateway</option>
                 </select>
               </div>
               

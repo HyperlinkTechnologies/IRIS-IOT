@@ -3,7 +3,7 @@ import HeroSection from '../components/HeroSection';
 import KeyCapabilitiesSection from '../components/Keycapabilities';
 import OverviewSection from '../components/OverviewSection';
 import DashboardPreviewSection from '../components/DashboardPreview';
-import HowItWorksSection from '../components/HowItWorks';
+import HowItWorksSection from '../components/HowitWorks';
 import UseCasesSection from '../components/UseCases';
 import SaasMultiTenancySection from '../components/SaasMultiTenancy';
 import IntegrationsSection from '../components/Integrations';
