@@ -1,55 +1,35 @@
-import CtaSection from './app/components/CTAsection';
-import DashboardPreviewSection from './app/components/DashboardPreview';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Footer from './app/components/Footer';
-import HeroSection from './app/components/HeroSection';
-import HowItWorksSection from './app/components/HowitWorks';
-import IntegrationsSection from './app/components/Integrations';
-import KeyCapabilitiesSection from './app/components/Keycapabilities';
 import NavBar from './app/components/NavBar';
-import OverviewSection from './app/components/OverviewSection';
-import SaasMultiTenancySection from './app/components/SaasMultiTenancy';
-import UseCasesSection from './app/components/UseCases';
-import WhyChooseUsSection from './app/components/WhyChooseIris';
+import HomePage from './app/pages/HomePage';
+import PricingPage from './app/pages/PricingPage';
+import ProductsPage from './app/pages/ProductsPage';
+import Contactpage from './app/pages/Contactpage';
+import { ScrollToTop } from './app/components/ScrollTop';
+import { Toaster } from 'react-hot-toast';
+
 
 export default function App() {
   return (
-    <div className="relative min-h-screen bg-[#010c29] ">
+    <Router>
+      <div className="min-h-screen bg-[#010c29]">
+        <Toaster position="top-right" richColors />
       {/* Nav Bar */}
       <NavBar/>
-
-      {/* Hero Section */}
-      <HeroSection />
-
-      {/* Platform Overview Section */}
-      <OverviewSection />
-
-      {/* Key Capabilities Section */}
-      <KeyCapabilitiesSection />
-
-      {/* Dashboard Preview Section */}
-      <DashboardPreviewSection/>
-
-      {/* How it works Section */}
-      <HowItWorksSection/>
-
-      {/* Use Cases Section */}
-      <UseCasesSection/>
-
-      {/* Saas and Multi Tenancy Section */}
-      <SaasMultiTenancySection/>
-
-      {/* Integrations Section */}
-      <IntegrationsSection/>
-
-      {/* Why Choose Iris Section */}
-      <WhyChooseUsSection/>
-
-      {/* CTA Section */}
-      <CtaSection/>
-
+      <main>
+        <ScrollToTop/>
+        <Routes>
+          <Route path="/" element={<HomePage/>}/>
+          <Route path="/Pricing" element={<PricingPage/>}/>
+          <Route path="/Products" element={<ProductsPage/>}/>
+          <Route path="/Contact" element={<Contactpage/>}/>
+        </Routes>
+      </main>
       {/* Footer Section */}
       <Footer/>
 
     </div>
+    </Router>
+    
   );
 }

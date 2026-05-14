@@ -14,10 +14,10 @@ function NavBar() {
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center gap-8">
-            <a href="#" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Home</a>
-            <a href="https://www.hyperlinktech.in/iris-iot-gateway" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Products</a>
-            <a href="#" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Pricing</a>
-            <a href="#" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Contact</a>
+            <a href="/" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Home</a>
+            <a href="/Products" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Products</a>
+            <a href="/Pricing" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Pricing</a>
+            <a href="/Contact" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Contact</a>
             <button className="border border-[rgba(255,136,0,0.31)] text-[#e8f0ff] px-6 py-2 rounded-lg font-bold text-base hover:bg-[rgba(255,136,0,0.1)] hover:border-[#ff5700] transition-colors cursor-pointer"
             onClick={()=>{window.location.href=loginUrl}}>
                Sign In
@@ -40,10 +40,10 @@ function NavBar() {
         {mobileMenuOpen && (
           <div className="lg:hidden absolute top-17 left-0 right-0 bg-[#020f35] border-b border-[rgba(255,136,0,0.23)] shadow-lg ">
             <div className="flex flex-col p-4 space-y-4 items-center">
-              <a href="#" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Home</a>
-              <a href="https://www.hyperlinktech.in/iris-iot-gateway" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Products</a>
-              <a href="#" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Pricing</a>
-              <a href="#" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Contact</a>
+              <a href="/" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Home</a>
+              <a href="/Products" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Products</a>
+              <a href="/Pricing" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Pricing</a>
+              <a href="/Contact" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Contact</a>
               <button className="border border-[rgba(255,136,0,0.31)] text-[#e8f0ff] px-6 py-2 rounded-lg font-bold text-base hover:bg-[rgba(255,136,0,0.1)] hover:border-[#ff5700] transition-colors cursor-pointer" onClick={()=>{window.location.href=loginUrl}}>
                Sign In
              </button>
