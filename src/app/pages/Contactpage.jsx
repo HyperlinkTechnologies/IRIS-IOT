@@ -148,7 +148,7 @@ const navigate = useNavigate();
         </div>
       </section>
     
-      <section className="py-10  bg-white">  
+      <section className="py-10 px-6 bg-white">  
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-15">
           <h2 className="text-3xl font-bold text-black mb-8 text-center">How it Works</h2>
           
@@ -228,7 +228,7 @@ const navigate = useNavigate();
 
       {/* Form Section */}
           <div className="bg-white border border-gray-200 rounded-[40px] shadow-2xl p-8 md:p-12 max-w-4xl mx-auto mb-20">
-            <h3 className="text-3xl font-semibold text-black mb-8">Pick a Date & Time</h3>
+            <h3 className="text-3xl font-semibold text-black mb-8">Tell Us about your Project</h3>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Name and Mobile */}
