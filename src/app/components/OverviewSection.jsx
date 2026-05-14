@@ -60,25 +60,12 @@ export default function OverviewSection() {
             </div>
 
             {/* Right Image */}
-            {/* <TiltedCard
-              imageSrc={imgDashboardPreview}
-              altText="Dashboard Overview image"
-              containerHeight="50vh"
-              containerWidth="90%"
-              imageHeight="100%"
-              imageWidth="100%%"
-              rotateAmplitude={12}
-              scaleOnHover={1.05}
-              showMobileWarning={false}
-              showTooltip={false}
-              displayOverlayContent={false}
-            /> */}
             <TiltedCard
               imageSrc={imgDashboardPreview}
               altText="Dashboard Overview image"
-              containerHeight="50vh"
-              containerWidth="90%"
-              imageHeight="100%"
+              // containerHeight="60vh"
+              containerWidth="100%"
+              imageHeight="90%"
               imageWidth="100%"
               rotateAmplitude={12}
               scaleOnHover={1.05}
