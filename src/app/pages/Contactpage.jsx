@@ -152,46 +152,76 @@ const navigate = useNavigate();
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-15">
           <h2 className="text-3xl font-bold text-black mb-8 text-center">How it Works</h2>
           
-          <div className="flex flex-col md:flex-row items-center justify-center gap-16 mb-10">
+            <div className="flex flex-row items-center justify-center gap-3 sm:gap-6 lg:gap-10 mb-10 flex-wrap">
+
             {/* Step 1 */}
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-linear-to-br from-[#010c29] to-[#01174f] flex items-center justify-center shrink-0">
-                <Pen className="w-7 h-7 text-[#ffffff]" />
-              </div>
-              <div>
-                <p className="text-xl font-medium text-black">Fill Your</p>
-                <p className="text-xl font-medium text-black">details</p>
-              </div>
+            <div className="flex items-center gap-2 sm:gap-3">
+                
+                <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-linear-to-br from-[#010c29] to-[#01174f] flex items-center justify-center shrink-0">
+                <Pen className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+
+                <div>
+                <p className="text-sm sm:text-lg font-medium text-black leading-tight">
+                    Fill Your
+                </p>
+
+                <p className="text-sm sm:text-lg font-medium text-black leading-tight">
+                    details
+                </p>
+                </div>
+
             </div>
 
             {/* Arrow */}
-            <div className="hidden md:block text-4xl text-gray-400">→</div>
+            <div className="text-xl sm:text-3xl text-gray-400">
+                →
+            </div>
 
             {/* Step 2 */}
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-linear-to-br from-[#010c29] to-[#01174f] flex items-center justify-center shrink-0">
-                <File className="w-7 h-7 text-[#ffffff]" />
-              </div>
-              <div>
-                <p className="text-xl font-medium text-black">Share your</p>
-                <p className="text-xl font-medium text-black">requirements</p>
-              </div>
+            <div className="flex items-center gap-2 sm:gap-3">
+
+                <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-linear-to-br from-[#010c29] to-[#01174f] flex items-center justify-center shrink-0">
+                <File className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+
+                <div>
+                <p className="text-sm sm:text-lg font-medium text-black leading-tight">
+                    Share your
+                </p>
+
+                <p className="text-sm sm:text-lg font-medium text-black leading-tight">
+                    requirements
+                </p>
+                </div>
+
             </div>
 
             {/* Arrow */}
-            <div className="hidden md:block text-4xl text-gray-400">→</div>
+            <div className="text-xl sm:text-3xl text-gray-400">
+                →
+            </div>
 
             {/* Step 3 */}
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-linear-to-br from-[#010c29] to-[#01174f] flex items-center justify-center shrink-0">
-                <Headset className="w-7 h-7 text-[#ffffff]" />
-              </div>
-              <div>
-                <p className="text-xl font-medium text-black">Our expert</p>
-                <p className="text-xl font-medium text-black">contacts you</p>
-              </div>
+            <div className="flex items-center gap-2 sm:gap-3">
+
+                <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-linear-to-br from-[#010c29] to-[#01174f] flex items-center justify-center shrink-0">
+                <Headset className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+
+                <div>
+                <p className="text-sm sm:text-lg font-medium text-black leading-tight">
+                    Our expert
+                </p>
+
+                <p className="text-sm sm:text-lg font-medium text-black leading-tight">
+                    contacts you
+                </p>
+                </div>
+
             </div>
-          </div>
+
+            </div>
           </div>
   
       
@@ -268,7 +298,7 @@ const navigate = useNavigate();
               </div>
 
               
-              {/* Service Required */}
+              {/* Product Required */}
               <div className="relative">
                 <div className="absolute left-0 top-0 w-12 h-12 bg-gray-300 bg-opacity-50 rounded-l-lg flex items-center justify-center">
                   <Wrench className="w-6 h-6 text-gray-600" />
@@ -277,9 +307,9 @@ const navigate = useNavigate();
                   name="productRequired"
                   value={formData.productRequired}
                   onChange={handleChange}
-                  className="w-full h-12 pl-16 pr-4 bg-[#f3f8f3] border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff5700] appearance-none cursor-pointer"
+                  className="w-full h-12 pl-16 pr-4 bg-[#f3f8f3] border border-gray-300 rounded-lg text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff5700] appearance-none cursor-pointer"
                 >
-                  <option value="">Product Required</option>
+                  <option value="">Select a Product</option>
                   <option value="Iris IOT Gateway">Iris IOT Gateway</option>
                 </select>
               </div>
