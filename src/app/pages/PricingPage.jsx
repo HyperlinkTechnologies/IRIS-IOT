@@ -83,22 +83,6 @@ export default function Pricing() {
         </div>
       </section>
 
-      {/* <section className="py-20 md:py-28 bg-linear-to-br from-background via-[#001a47] to-background">
-        <div className="container mx-auto px-6">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
-            <div className="text-primary text-sm tracking-wider uppercase mb-4">PRICING</div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl">
-              Our Pricing
-            </h1>
-            <div className="w-24 h-1 bg-primary mx-auto"></div>
-            <p className="text-xl text-muted-foreground mt-6">
-              Choose the perfect plan for your business. From free tier for testing to enterprise solutions
-              for large-scale deployments.
-            </p>
-          </div>
-        </div>
-      </section> */}
-
       {/* Pricing Cards */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-6">
