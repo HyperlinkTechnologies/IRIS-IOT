@@ -4,15 +4,13 @@ import { signupUrl } from "../aws-config";
 
 export default function HeroSection() {
   return (
-    <div className="bg-[#010c29] min-h-screen pt-20 pb-12 sm:pb-16 lg:pb-20 px-4 sm:px-6 lg:px-12">
+    <div className="bg-[#010c29] min-h-screen pt-27 pb-12 sm:pb-16 lg:pb-20 px-4 sm:px-6 lg:px-12">
       <div className="max-w-7xl mx-auto">
         {/* Badge */}
-        <div className="flex justify-center mb-6 sm:mb-8 mt-4">
-          <div className="bg-[rgba(255,136,0,0.23)] border border-[#ff5700] px-4 sm:px-6 lg:px-8 py-1 rounded-full">
-            <span className="text-[rgba(180,200,255,0.73)] text-xs sm:text-sm tracking-wider font-light">
-              Industrial IOT Platform
+        <div className="flex justify-center mb-6">
+            <span className="inline-flex items-center px-6 py-2 bg-[rgba(201,141,62,0.27)] text-[#ff5700] rounded-full text-sm font-semibold">
+              Industrial IoT Platform
             </span>
-          </div>
         </div>
 
         {/* Heading */}

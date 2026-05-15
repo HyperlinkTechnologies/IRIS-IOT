@@ -133,7 +133,7 @@ const navigate = useNavigate();
                 </div>
               </div>
               <h3 className="text-xl font-bold text-black mb-2 text-center">WhatsApp Us</h3>
-              <p className="text-base text-black mb-6 text-center font-semibold">7550055300</p>
+              <p className="text-base text-black mb-6 text-center font-semibold">7904778125</p>
               
               <a
                 href="https://wa.me/+917904778125"
