@@ -12,7 +12,7 @@ export default function Footer() {
               Iris <span className="text-[#ff5700]">IOT</span>
             </div>
             <p className="text-[rgba(180,200,255,0.73)] text-xs sm:text-sm font-light leading-relaxed">
-              IRIS is an advanced Industrial IoT Gateway by Hyperlink Technologies, designed to seamlessly connect machines, sensors, and industrial systems with cloud platforms.
+              IRIS is an advanced Industrial IoT Gateway developed by Hyperlink Technologies, designed to seamlessly connect machines, sensors, and industrial systems with cloud platforms.
             </p>
           </div>
 
