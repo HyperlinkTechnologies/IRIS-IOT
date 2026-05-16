@@ -19,8 +19,10 @@ export default function DashboardPage() {
   const handleLogout = () => {
 
     localStorage.clear();
+    console.log(logoutUrl);
+    
 
-    window.location.href =()=>window .location.href = logoutUrl; // Redirect to home page after logout
+    window.location.href = logoutUrl; // Redirect to home page after logout
 
   };
 
@@ -132,10 +134,10 @@ export default function DashboardPage() {
         </header>
 
         {/* Dashboard Widgets */}
-        {/* <section className="p-8"> */}
+        <section className="p-8">
 
           {/* Cards */}
-          {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
             <DashboardCard
               title="Total Devices"
@@ -152,10 +154,10 @@ export default function DashboardPage() {
               value="6"
             />
 
-          </div> */}
+          </div>
 
           {/* Empty Dashboard */}
-          {/* <div className="
+          <div className="
             border
             border-dashed
             border-white/20
@@ -198,7 +200,7 @@ export default function DashboardPage() {
 
           </div>
 
-        </section> */}
+        </section>
 
       </main>
 
