@@ -1,38 +1,95 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Footer from './app/components/Footer';
-import NavBar from './app/components/NavBar';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation
+} from 'react-router-dom';
+
+import Footer from './app/components/Landing page/Footer';
+import NavBar from './app/components/Landing page/NavBar';
+
 import HomePage from './app/pages/HomePage';
 import PricingPage from './app/pages/PricingPage';
 import ProductsPage from './app/pages/ProductsPage';
 import Contactpage from './app/pages/Contactpage';
-import { ScrollToTop } from './app/components/ScrollTop';
-import { Toaster } from 'react-hot-toast';
+
 import DashboardPage from './app/pages/Dashboard/DashboardPage';
+
+import { ScrollToTop } from './app/components/Landing page/ScrollTop';
+
+import { Toaster } from 'react-hot-toast';
+
+
+function AppContent() {
+
+  const location = useLocation();
+
+  /* Hide Navbar & Footer in Dashboard */
+  const isDashboard =
+    location.pathname.startsWith('/Dashboard');
+
+  return (
+
+    <div className="min-h-screen bg-[#010c29]">
+
+      <Toaster
+        position="top-right"
+        richColors
+      />
+
+      {/* Navbar */}
+      {!isDashboard && <NavBar />}
+
+      <main>
+
+        <ScrollToTop />
+
+        <Routes>
+
+          {/* Website Pages */}
+          <Route
+            path="/"
+            element={<HomePage />}
+          />
+
+          <Route
+            path="/pricing"
+            element={<PricingPage />}
+          />
+
+          <Route
+            path="/products"
+            element={<ProductsPage />}
+          />
+
+          <Route
+            path="/contact"
+            element={<Contactpage />}
+          />
+
+          {/* Dashboard */}
+          <Route
+            path="/dashboard"
+            element={<DashboardPage />}
+          />
+
+        </Routes>
+
+      </main>
+
+      {/* Footer */}
+      {!isDashboard && <Footer />}
+
+    </div>
+  );
+}
 
 
 export default function App() {
+
   return (
     <Router>
-      <div className="min-h-screen bg-[#010c29]">
-        <Toaster position="top-right" richColors />
-      {/* Nav Bar */}
-      <NavBar/>
-      <main>
-        <ScrollToTop/>
-        <Routes>
-          <Route path="/" element={<HomePage/>}/>
-          <Route path="/Pricing" element={<PricingPage/>}/>
-          <Route path="/Products" element={<ProductsPage/>}/>
-          <Route path="/Contact" element={<Contactpage/>}/>
-
-          <Route path="/Dashboard" element={<DashboardPage/>}/>
-        </Routes>
-      </main>
-      {/* Footer Section */}
-      <Footer/>
-
-    </div>
+      <AppContent />
     </Router>
-    
   );
 }

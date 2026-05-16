@@ -1,6 +1,6 @@
 import { ArrowBigDown, ArrowDown } from "lucide-react";
-import imgDashboardImage from "../../assets/Dashboard_1.png";
-import { signupUrl } from "../aws-config";
+import imgDashboardImage from "../../../assets/Dashboard_1.png";
+import { signupUrl } from "../../aws-config";
 
 export default function HeroSection() {
   return (

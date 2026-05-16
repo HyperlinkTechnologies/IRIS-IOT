@@ -1,4 +1,4 @@
-import { signupUrl } from "../aws-config";
+import { signupUrl } from "../../aws-config";
 
 export default function CtaSection() {
   return (

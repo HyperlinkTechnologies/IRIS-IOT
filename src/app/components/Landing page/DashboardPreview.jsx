@@ -1,8 +1,8 @@
-import imgDashboard1 from "../../assets/dashboard_2.png";
-import imgDashboard2 from "../../assets/Dashboard_preview_1.png";
-import imgDashboard3 from "../../assets/Dashboard_preview_2.png";
-import imgDashboard4 from "../../assets/Dashboard_preview_3.png";
-import { signupUrl } from "../aws-config";
+import imgDashboard1 from "../../../assets/dashboard_2.png";
+import imgDashboard2 from "../../../assets/Dashboard_preview_1.png";
+import imgDashboard3 from "../../../assets/Dashboard_preview_2.png";
+import imgDashboard4 from "../../../assets/Dashboard_preview_3.png";
+import { signupUrl } from "../../aws-config";
 
 const dashboards = [
   imgDashboard1,

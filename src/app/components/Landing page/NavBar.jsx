@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { loginUrl,signupUrl } from '../aws-config';
+import { loginUrl,signupUrl } from '../../aws-config';
 
 function NavBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

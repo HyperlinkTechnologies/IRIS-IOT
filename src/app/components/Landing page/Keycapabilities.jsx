@@ -1,5 +1,5 @@
 import { ChartLine, Bell, Monitor, Users, Cloud } from 'lucide-react';
-import BorderGlow from '../ui/BorderGlow';
+import BorderGlow from '../../ui/BorderGlow';
 
 const capabilities = [
   {

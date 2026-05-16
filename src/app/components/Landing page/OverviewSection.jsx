@@ -1,6 +1,6 @@
-import imgDashboardPreview from "../../assets/Dashboard_preview_2.png";
+import imgDashboardPreview from "../../../assets/Dashboard_preview_2.png";
 import { Check } from "lucide-react";
-import TiltedCard from "../ui/TiltedCard";
+import TiltedCard from "../../ui/TiltedCard";
 
 export default function OverviewSection() {
   return (

@@ -1,13 +1,13 @@
-import CtaSection from '../components/CTAsection';
-import HeroSection from '../components/HeroSection';
-import KeyCapabilitiesSection from '../components/Keycapabilities';
-import OverviewSection from '../components/OverviewSection';
-import DashboardPreviewSection from '../components/DashboardPreview';
-import HowItWorksSection from '../components/HowitWorks';
-import UseCasesSection from '../components/UseCases';
-import SaasMultiTenancySection from '../components/SaasMultiTenancy';
-import IntegrationsSection from '../components/Integrations';
-import WhyChooseIrisSection from '../components/WhyChooseIris';
+import CtaSection from '../components/Landing page/CTAsection';
+import HeroSection from '../components/Landing page/HeroSection';
+import KeyCapabilitiesSection from '../components/Landing page/Keycapabilities';
+import OverviewSection from '../components/Landing page/OverviewSection';
+import DashboardPreviewSection from '../components/Landing page/DashboardPreview';
+import HowItWorksSection from '../components/Landing page/HowitWorks';
+import UseCasesSection from '../components/Landing page/UseCases';
+import SaasMultiTenancySection from '../components/Landing page/SaasMultiTenancy';
+import IntegrationsSection from '../components/Landing page/Integrations';
+import WhyChooseIrisSection from '../components/Landing page/WhyChooseIris';
 
 
 
