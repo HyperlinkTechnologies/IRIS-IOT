@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { isAuthenticated } from "../../auth";
 import { jwtDecode } from "jwt-decode";
 
 import {Menu,PanelLeftCloseIcon} from "lucide-react";
@@ -45,12 +44,23 @@ export default function DashboardPage() {
 
     const code = urlParams.get("code");
 
+    // =========================
+    // CASE 1:
     // Already logged in
-    if (isAuthenticated()) {
+    // =========================
+
+    const existingUser =
+      localStorage.getItem("iris_user");
+
+    if (existingUser) {
       return;
     }
 
+    // =========================
+    // CASE 2:
     // No login code
+    // =========================
+
     if (!code) {
       navigate("/");
       return;
@@ -78,27 +88,33 @@ export default function DashboardPage() {
 
       const data = await response.json();
 
+      console.log("TOKEN RESPONSE:", data);
+
       // Decode JWT
       const decoded =
         jwtDecode(data.id_token);
 
-      // Store real user
+      console.log("DECODED USER:", decoded);
+
       const userData = {
+
         username:
-          decoded["cognito:username"] ||
           decoded.name ||
+          decoded["cognito:username"] ||
           "User",
 
         email:
-          decoded.email || "No Email",
+          decoded.email ||
+          "No Email",
       };
 
+      // Store user
       localStorage.setItem(
         "iris_user",
         JSON.stringify(userData)
       );
 
-      // Clean URL
+      // Remove ?code=
       window.history.replaceState(
         {},
         document.title,
@@ -107,7 +123,12 @@ export default function DashboardPage() {
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "AUTH ERROR:",
+        error
+      );
+
+      localStorage.removeItem("iris_user");
 
       navigate("/");
     }
