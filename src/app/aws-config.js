@@ -1,11 +1,16 @@
+export const TOKEN_URL =
+  "https://us-east-1nd1mqho9q.auth.us-east-1.amazoncognito.com/oauth2/token";
+
+export const CLIENT_SECRET = ""; 
+
 const COGNITO_DOMAIN =
   "https://us-east-1nd1mqho9q.auth.us-east-1.amazoncognito.com";
 
-const CLIENT_ID =
+export const CLIENT_ID =
   "3l8efe5ajhfo1eh2it4diicjf6";
 
 /* Redirect after login */
-const REDIRECT_SIGN_IN =
+export const REDIRECT_SIGN_IN =
   "https://iris-iot-react.netlify.app/Dashboard";
 
 /* Redirect after logout */

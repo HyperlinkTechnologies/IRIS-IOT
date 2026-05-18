@@ -5,6 +5,8 @@ import {
 } from "lucide-react";
 
 import { logoutUrl } from "../../aws-config";
+import { getUser } from "../../auth";
+import { logout } from "../../auth";
 
 export default function Topbar({
   activeTab,
@@ -16,10 +18,12 @@ export default function Topbar({
 
   const handleLogout = () => {
 
-    localStorage.clear();
+    logout();
 
     window.location.href = logoutUrl;
   };
+
+  const user = getUser();
 
   return (
 
@@ -104,7 +108,7 @@ export default function Topbar({
               text-sm
               sm:text-base
             ">
-              Admin
+              {user?.username || "Admin"}
             </p>
 
           </div>
@@ -177,7 +181,7 @@ export default function Topbar({
                   text-[#010c29]
                   text-lg
                 ">
-                  Admin User
+                  {user?.username || "Admin User"}
                 </p>
 
                 <p className="
@@ -185,7 +189,7 @@ export default function Topbar({
                   text-gray-500
                   break-all
                 ">
-                  admin@irisiot.com
+                  {user?.email || "admin@irisiot.com"}
                 </p>
 
               </div>

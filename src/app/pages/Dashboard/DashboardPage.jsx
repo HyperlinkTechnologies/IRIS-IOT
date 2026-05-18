@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { isAuthenticated } from "../../auth";
+import { jwtDecode } from "jwt-decode";
 
-import {
-  Menu,
-  PanelLeftCloseIcon
-} from "lucide-react";
+import {Menu,PanelLeftCloseIcon} from "lucide-react";
 
 import DashboardHome from "../../components/Dashboard/DashboardHome";
 import DevicesPage from "../../components/Dashboard/Devicespage";
@@ -16,6 +16,12 @@ import DocumentationPage from "../../components/Dashboard/DocumentationPage";
 import Sidebar from "../../components/Dashboard/Sidebar";
 import Topbar from "../../components/Dashboard/Topbar";
 
+import {
+  CLIENT_ID,
+  REDIRECT_SIGN_IN,
+  TOKEN_URL
+} from "../../aws-config";
+
 export default function DashboardPage() {
 
   const [activeTab, setActiveTab] =
@@ -27,6 +33,89 @@ export default function DashboardPage() {
   /* Sidebar Toggle */
   const [sidebarOpen, setSidebarOpen] =
     useState(true);
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+
+  const authenticateUser = async () => {
+
+    const urlParams =
+      new URLSearchParams(window.location.search);
+
+    const code = urlParams.get("code");
+
+    // Already logged in
+    if (isAuthenticated()) {
+      return;
+    }
+
+    // No login code
+    if (!code) {
+      navigate("/");
+      return;
+    }
+
+    try {
+
+      const body = new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: CLIENT_ID,
+        code: code,
+        redirect_uri: REDIRECT_SIGN_IN,
+      });
+
+      const response = await fetch(TOKEN_URL, {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/x-www-form-urlencoded",
+        },
+
+        body,
+      });
+
+      const data = await response.json();
+
+      // Decode JWT
+      const decoded =
+        jwtDecode(data.id_token);
+
+      // Store real user
+      const userData = {
+        username:
+          decoded["cognito:username"] ||
+          decoded.name ||
+          "User",
+
+        email:
+          decoded.email || "No Email",
+      };
+
+      localStorage.setItem(
+        "iris_user",
+        JSON.stringify(userData)
+      );
+
+      // Clean URL
+      window.history.replaceState(
+        {},
+        document.title,
+        "/Dashboard"
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+      navigate("/");
+    }
+  };
+
+  authenticateUser();
+
+}, []);
 
   return (
 

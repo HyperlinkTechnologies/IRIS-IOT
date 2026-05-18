@@ -13,7 +13,7 @@ import {
 import SidebarItem from "./SidebarItem";
 
 import IrisLogo from "../../../assets/iris-logo.png";
-
+import { logout } from "../../auth";
 import { logoutUrl } from "../../aws-config";
 
 export default function Sidebar({
@@ -25,7 +25,7 @@ export default function Sidebar({
 
   const handleLogout = () => {
 
-    localStorage.clear();
+    logout();
 
     window.location.href = logoutUrl;
   };
