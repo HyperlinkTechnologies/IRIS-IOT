@@ -1,4 +1,4 @@
-import { signupUrl } from "../../aws-config";
+
 
 export default function CtaSection() {
   return (
@@ -27,11 +27,18 @@ export default function CtaSection() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4">
           <button className="bg-linear-to-r from-[#d84800] to-[#ff5700] text-[#e8f0ff] px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-bold text-sm sm:text-base shadow-[0px_0px_250px_0px_#ff5700,0px_0px_32px_0px_rgba(0,198,255,0.22)] hover:opacity-90 transition-opacity cursor-pointer"
-          onClick={()=>{window.location.href=signupUrl}}>
+          onClick={() => {
+            window.location.href =
+              "https://us-east-1nd1mqho9q.auth.us-east-1.amazoncognito.com/signup" +
+              "?client_id=5d8uo8cktjc6ukhnps699nj68i" +
+              "&response_type=code" +
+              "&scope=openid+email+profile" +
+              "&redirect_uri=https://iris-iot-react.netlify.app/Dashboard";
+          }}>
             Create Account
           </button>
           <button className="border border-[#0a1c50] text-[#0a1c50] px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-[rgba(10,28,80,0.05)] transition-colors cursor-pointer" 
-          onClick={()=>{window.location.href="https://www.hyperlinktech.in/iris-iot-gateway"}}>
+          onClick={()=>{window.location.href="/Products"}}>
             View Products
           </button>
         </div>

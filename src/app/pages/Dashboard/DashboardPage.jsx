@@ -1,27 +1,41 @@
 import { useState, useEffect } from "react";
+
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
-
-import {Menu,PanelLeftCloseIcon} from "lucide-react";
-
-import DashboardHome from "../../components/Dashboard/DashboardHome";
-import DevicesPage from "../../components/Dashboard/Devicespage";
-import AlertsPage from "../../components/Dashboard/AlertsPage";
-import BillingPage from "../../components/Dashboard/BillingPage";
-import SettingsPage from "../../components/Dashboard/SettingsPage";
-import GetStartedPage from "../../components/Dashboard/GetStartedPage";
-import DocumentationPage from "../../components/Dashboard/DocumentationPage";
-
-import Sidebar from "../../components/Dashboard/Sidebar";
-import Topbar from "../../components/Dashboard/Topbar";
 
 import {
-  CLIENT_ID,
-  REDIRECT_SIGN_IN,
-  TOKEN_URL
-} from "../../aws-config";
+  getCurrentUser,
+  fetchAuthSession,
+} from "aws-amplify/auth";
+
+import {
+  PanelLeftCloseIcon,
+} from "lucide-react";
+
+/* ================= PAGES ================= */
+
+import DashboardHome from "../../components/Dashboard/DashboardHome";
+
+import DevicesPage from "../../components/Dashboard/Devicespage";
+
+import AlertsPage from "../../components/Dashboard/AlertsPage";
+
+import BillingPage from "../../components/Dashboard/BillingPage";
+
+import SettingsPage from "../../components/Dashboard/SettingsPage";
+
+import GetStartedPage from "../../components/Dashboard/GetStartedPage";
+
+import DocumentationPage from "../../components/Dashboard/DocumentationPage";
+
+/* ================= COMPONENTS ================= */
+
+import Sidebar from "../../components/Dashboard/Sidebar";
+
+import Topbar from "../../components/Dashboard/Topbar";
 
 export default function DashboardPage() {
+
+  /* ================= STATES ================= */
 
   const [activeTab, setActiveTab] =
     useState("getstarted");
@@ -29,257 +43,243 @@ export default function DashboardPage() {
   const [showProfileMenu, setShowProfileMenu] =
     useState(false);
 
-  /* Sidebar Toggle */
   const [sidebarOpen, setSidebarOpen] =
     useState(true);
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    useEffect(() => {
+  /* ================= AUTH CHECK ================= */
 
-  const authenticateUser = async () => {
+  useEffect(() => {
 
-    const urlParams =
-      new URLSearchParams(window.location.search);
+    const checkUser = async () => {
 
-    const code = urlParams.get("code");
+      try {
 
-    // =========================
-    // CASE 1:
-    // Already logged in
-    // =========================
+        /* Current Cognito User */
 
-    const existingUser =
-      localStorage.getItem("iris_user");
+        const user =
+          await getCurrentUser();
 
-    if (existingUser) {
-      return;
-    }
+        /* Current Session */
 
-    // =========================
-    // CASE 2:
-    // No login code
-    // =========================
+        const session =
+          await fetchAuthSession();
 
-    if (!code) {
-      navigate("/");
-      return;
-    }
+        /* User Data */
 
-    try {
+        const payload =
+        session.tokens?.idToken?.payload;
 
-      const body = new URLSearchParams({
-        grant_type: "authorization_code",
-        client_id: CLIENT_ID,
-        code: code,
-        redirect_uri: REDIRECT_SIGN_IN,
-      });
+        const userData = {
 
-      const response = await fetch(TOKEN_URL, {
-        method: "POST",
+          username:
+            payload?.name ||
+            payload?.preferred_username ||
+            payload?.email?.split("@")[0] ||
+            "User",
 
-        headers: {
-          "Content-Type":
-            "application/x-www-form-urlencoded",
-        },
+          email:
+            payload?.email || "",
+        };
 
-        body,
-      });
+        /* Store User */
 
-      const data = await response.json();
+        localStorage.setItem(
+          "iris_user",
+          JSON.stringify(userData)
+        );
 
-      console.log("TOKEN RESPONSE:", data);
+      } catch (error) {
 
-      // Decode JWT
-      const decoded =
-        jwtDecode(data.id_token);
+        console.error(
+          "AUTH ERROR:",
+          error
+        );
 
-      console.log("DECODED USER:", decoded);
+        /* Remove Invalid User */
 
-      const userData = {
+        localStorage.removeItem(
+          "iris_user"
+        );
 
-        username:
-          decoded.name ||
-          decoded["cognito:username"] ||
-          "User",
+        /* Redirect to Home */
 
-        email:
-          decoded.email ||
-          "No Email",
-      };
+        navigate("/");
+      }
+    };
 
-      // Store user
-      localStorage.setItem(
-        "iris_user",
-        JSON.stringify(userData)
-      );
+    checkUser();
 
-      // Remove ?code=
-      window.history.replaceState(
-        {},
-        document.title,
-        "/Dashboard"
-      );
-
-    } catch (error) {
-
-      console.error(
-        "AUTH ERROR:",
-        error
-      );
-
-      localStorage.removeItem("iris_user");
-
-      navigate("/");
-    }
-  };
-
-  authenticateUser();
-
-}, []);
+  }, []);
 
   return (
 
-    <div className="
-  flex
-  h-screen
-  bg-white
-  overflow-hidden
-">
+    <div
+      className="
+        flex
+        h-screen
+        bg-white
+        overflow-hidden
+      "
+    >
 
-  {/* ================= SIDEBAR ================= */}
+      {/* ================= SIDEBAR ================= */}
 
-  <Sidebar
-    activeTab={activeTab}
-    setActiveTab={setActiveTab}
-    sidebarOpen={sidebarOpen}
-    setSidebarOpen={setSidebarOpen}
-  />
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
 
-  {/* ================= MAIN ================= */}
+      {/* ================= MAIN ================= */}
 
-  <main
-  className={`
-    flex-1
-    flex
-    flex-col
-    overflow-hidden
-    transition-all
-    duration-300
-    ${
-      sidebarOpen
-        ? "lg:ml-72.5"
-        : "ml-0"
-    }
-  `}
->
-
-    {/* ================= HEADER ROW ================= */}
-
-    <div className="
-      h-20
-      flex
-      items-center
-      gap-4
-      px-4
-      sm:px-6
-      lg:px-8
-      border-b
-      border-black/5
-      bg-gray-200
-      sticky
-      top-0
-      z-30
-      mt-2 ml-2 mr-2
-      rounded-2xl
-    ">
-
-      {/* ================= HAMBURGER ================= */}
-
-      <button
-        onClick={() =>
-          setSidebarOpen(!sidebarOpen)
-        }
-        className="
-          w-11
-          h-11
-          min-w-11
-          rounded-lg
-          cursor-pointer
-          border
-          border-black/10
+      <main
+        className={`
+          flex-1
           flex
-          items-center
-          justify-center
-          bg-white
-          hover:bg-gray-100
+          flex-col
+          overflow-hidden
           transition-all
-          shadow-sm
-        "
+          duration-300
+          ${
+            sidebarOpen
+              ? "lg:ml-72"
+              : "ml-0"
+          }
+        `}
       >
 
-        {/* Icon */}
-        <PanelLeftCloseIcon size={24} />
+        {/* ================= HEADER ================= */}
 
-      </button>
+        <div
+          className="
+            h-20
+            flex
+            items-center
+            gap-4
+            px-4
+            sm:px-6
+            lg:px-8
+            border-b
+            border-black/5
+            bg-gray-200
+            sticky
+            top-0
+            z-30
+            mt-2
+            ml-2
+            mr-2
+            rounded-2xl
+          "
+        >
 
-      {/* ================= TOPBAR ================= */}
+          {/* ================= SIDEBAR TOGGLE ================= */}
 
-      <div className="flex-1">
+          <button
+            onClick={() =>
+              setSidebarOpen(
+                !sidebarOpen
+              )
+            }
+            className="
+              w-11
+              h-11
+              min-w-11
+              rounded-lg
+              cursor-pointer
+              border
+              border-black/10
+              flex
+              items-center
+              justify-center
+              bg-white
+              hover:bg-gray-100
+              transition-all
+              shadow-sm
+            "
+          >
 
-        <Topbar
-          activeTab={activeTab}
-          showProfileMenu={showProfileMenu}
-          setShowProfileMenu={setShowProfileMenu}
-          setActiveTab={setActiveTab}
-        />
+            <PanelLeftCloseIcon
+              size={24}
+            />
 
-      </div>
+          </button>
+
+          {/* ================= TOPBAR ================= */}
+
+          <div className="flex-1">
+
+            <Topbar
+              activeTab={activeTab}
+              showProfileMenu={showProfileMenu}
+              setShowProfileMenu={setShowProfileMenu}
+              setActiveTab={setActiveTab}
+            />
+
+          </div>
+
+        </div>
+
+        {/* ================= CONTENT ================= */}
+
+        <section
+          className="
+            flex-1
+            overflow-y-auto
+            p-4
+            sm:p-6
+            lg:p-8
+          "
+        >
+
+          {/* Dashboard */}
+
+          {activeTab === "dashboard" && (
+            <DashboardHome />
+          )}
+
+          {/* Devices */}
+
+          {activeTab === "devices" && (
+            <DevicesPage />
+          )}
+
+          {/* Alerts */}
+
+          {activeTab === "alerts" && (
+            <AlertsPage />
+          )}
+
+          {/* Billing */}
+
+          {activeTab === "billing" && (
+            <BillingPage />
+          )}
+
+          {/* Settings */}
+
+          {activeTab === "settings" && (
+            <SettingsPage />
+          )}
+
+          {/* Get Started */}
+
+          {activeTab === "getstarted" && (
+            <GetStartedPage />
+          )}
+
+          {/* Documentation */}
+
+          {activeTab === "documentation" && (
+            <DocumentationPage />
+          )}
+
+        </section>
+
+      </main>
 
     </div>
-
-    {/* ================= PAGE CONTENT ================= */}
-
-    <section className="
-      flex-1
-      overflow-y-auto
-      p-4
-      sm:p-6
-      lg:p-8
-    ">
-
-      {activeTab === "dashboard" && (
-        <DashboardHome />
-      )}
-
-      {activeTab === "devices" && (
-        <DevicesPage />
-      )}
-
-      {activeTab === "alerts" && (
-        <AlertsPage />
-      )}
-
-      {activeTab === "billing" && (
-        <BillingPage />
-      )}
-
-      {activeTab === "settings" && (
-        <SettingsPage />
-      )}
-
-      {activeTab === "getstarted" && (
-        <GetStartedPage />
-      )}
-
-      {activeTab === "documentation" && (
-        <DocumentationPage />
-      )}
-
-    </section>
-
-  </main>
-
-</div>
   );
 }

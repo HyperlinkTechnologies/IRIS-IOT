@@ -1,6 +1,6 @@
 import { ArrowBigDown, ArrowDown } from "lucide-react";
 import imgDashboardImage from "../../../assets/Dashboard_1.png";
-import { signupUrl } from "../../aws-config";
+import { signInWithRedirect } from "aws-amplify/auth";
 
 export default function HeroSection() {
   return (
@@ -33,7 +33,15 @@ export default function HeroSection() {
         <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-12 sm:mb-16 px-4">
           
           <button className="bg-linear-to-r from-[#d84800] to-[#ff5700] text-[#e8f0ff] px-6 py-2 rounded-lg font-bold text-base shadow-[0px_0px_250px_0px_#ff5700,0px_0px_32px_0px_rgba(0,198,255,0.22)] hover:opacity-95 hover:-translate-y-1 cursor-pointer transition-all duration-200 ease-in-out"
-            onClick={()=>{window.location.href=signupUrl}}>
+            onClick={() => {
+
+              window.location.href =
+                "https://us-east-1nd1mqho9q.auth.us-east-1.amazoncognito.com/signup" +
+                "?client_id=5d8uo8cktjc6ukhnps699nj68i" +
+                "&response_type=code" +
+                "&scope=openid+email+profile" +
+                "&redirect_uri=https://iris-iot-react.netlify.app/Dashboard";
+            }}>
             Get Started
           </button>
           

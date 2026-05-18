@@ -1,53 +1,47 @@
-import {
-  Settings,
-  User,
-  Menu
-} from "lucide-react";
+import { signOut } from "aws-amplify/auth";
 
-import { logoutUrl } from "../../aws-config";
-import { getUser } from "../../auth";
-import { logout } from "../../auth";
+import { Settings, User } from "lucide-react";
 
 export default function Topbar({
   activeTab,
   showProfileMenu,
   setShowProfileMenu,
-  setSidebarOpen,
   setActiveTab,
 }) {
+  /* ================= USER ================= */
 
-  const handleLogout = () => {
+  const user = JSON.parse(localStorage.getItem("iris_user"));
 
-    logout();
+  /* ================= LOGOUT ================= */
 
-    window.location.href = logoutUrl;
+  const handleLogout = async () => {
+    localStorage.removeItem("iris_user");
+
+    await signOut();
   };
 
-  const user = getUser();
-
   return (
-
-        <header
-          className="
-            w-full
-            flex
-            items-center
-            justify-between
-            "
-        >
-      {/* ================= LEFT ================= */}
-
-      <div className="
+    <header
+      className="
+        w-full
         flex
         items-center
-        gap-3
-        sm:gap-4
-      ">
+        justify-between
+      "
+    >
+      {/* ================= LEFT ================= */}
 
-
+      <div
+        className="
+          flex
+          items-center
+          gap-3
+          sm:gap-4
+        "
+      >
         {/* Title */}
-        <div>
 
+        <div>
           <h2
             className="
               text-xl
@@ -73,19 +67,14 @@ export default function Topbar({
           >
             Welcome back to IRIS Platform
           </p>
-
         </div>
-
       </div>
 
       {/* ================= PROFILE ================= */}
 
       <div className="relative">
-
         <button
-          onClick={() =>
-            setShowProfileMenu(!showProfileMenu)
-          }
+          onClick={() => setShowProfileMenu(!showProfileMenu)}
           className="
             flex
             items-center
@@ -94,26 +83,29 @@ export default function Topbar({
             cursor-pointer
           "
         >
-
           {/* Name */}
-          <div className="
-            text-right
-            hidden
-            sm:block
-          ">
 
-            <p className="
-              font-semibold
-              text-[#010c29]
-              text-sm
-              sm:text-base
-            ">
+          <div
+            className="
+              text-right
+              hidden
+              sm:block
+            "
+          >
+            <p
+              className="
+                font-semibold
+                text-[#010c29]
+                text-sm
+                sm:text-base
+              "
+            >
               {user?.username || "Admin"}
             </p>
-
           </div>
 
           {/* Avatar */}
+
           <div
             className="
               w-11
@@ -131,26 +123,19 @@ export default function Topbar({
               shadow-lg
             "
           >
-
-            <User
-              className="text-white"
-              size={20}
-            />
-
+            <User className="text-white" size={20} />
           </div>
-
         </button>
 
         {/* ================= DROPDOWN ================= */}
 
         {showProfileMenu && (
-
           <div
             className="
               absolute
               right-0
               top-16
-              w-70
+              w-90
               rounded-2xl
               bg-white
               border
@@ -158,47 +143,49 @@ export default function Topbar({
               shadow-[0px_0px_20px_0px_rgba(255,87,0,0.15)]
               p-5
               z-50
-              animate-in
-              fade-in
-              zoom-in-95
-              duration-200
             "
           >
-
             {/* Top */}
-            <div className="
-              flex
-              items-start
-              justify-between
-              gap-4
-              mb-5
-            ">
 
+            <div
+              className="
+                flex
+                items-start
+                justify-between
+                gap-2
+                mb-5
+              "
+            >
               <div>
-
-                <p className="
-                  font-semibold
-                  text-[#010c29]
-                  text-lg
-                ">
+                <p
+                  className="
+                    font-semibold
+                    text-[#010c29]
+                    text-lg
+                  "
+                >
                   {user?.username || "Admin User"}
                 </p>
 
-                <p className="
-                  text-sm
-                  text-gray-500
-                  break-all
-                ">
+                <p
+                  className="
+                    text-sm
+                    text-gray-500
+                    break-all
+                  "
+                >
                   {user?.email || "admin@irisiot.com"}
                 </p>
-
               </div>
 
               {/* Settings */}
-              <button onClick={()=>{
-                setActiveTab("settings");
-                setShowProfileMenu(false);
-              }}
+
+              <button
+                onClick={() => {
+                  setActiveTab("settings");
+
+                  setShowProfileMenu(false);
+                }}
                 className="
                   p-2.5
                   rounded-full
@@ -208,24 +195,22 @@ export default function Topbar({
                   cursor-pointer
                 "
               >
-
-                <Settings
-                  className="text-gray-500"
-                  size={20}
-                />
-
+                <Settings className="text-gray-500" size={20} />
               </button>
-
             </div>
 
             {/* Divider */}
-            <div className="
-              h-px
-              bg-black/10
-              mb-5
-            " />
+
+            <div
+              className="
+                h-px
+                bg-black/10
+                mb-5
+              "
+            />
 
             {/* Logout */}
+
             <button
               onClick={handleLogout}
               className="
@@ -244,13 +229,9 @@ export default function Topbar({
             >
               Logout
             </button>
-
           </div>
-
         )}
-
       </div>
-
     </header>
   );
 }

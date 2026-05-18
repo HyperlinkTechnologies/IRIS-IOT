@@ -13,8 +13,7 @@ import {
 import SidebarItem from "./SidebarItem";
 
 import IrisLogo from "../../../assets/iris-logo.png";
-import { logout } from "../../auth";
-import { logoutUrl } from "../../aws-config";
+import { signOut } from "aws-amplify/auth";
 
 export default function Sidebar({
   activeTab,
@@ -229,7 +228,9 @@ export default function Sidebar({
         ">
 
           <button
-            onClick={handleLogout}
+            onClick={async () => {
+              await signOut();
+            }}
             className="
               w-full
               flex

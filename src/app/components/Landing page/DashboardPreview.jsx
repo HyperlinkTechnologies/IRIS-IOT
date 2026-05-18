@@ -2,7 +2,6 @@ import imgDashboard1 from "../../../assets/dashboard_2.png";
 import imgDashboard2 from "../../../assets/Dashboard_preview_1.png";
 import imgDashboard3 from "../../../assets/Dashboard_preview_2.png";
 import imgDashboard4 from "../../../assets/Dashboard_preview_3.png";
-import { signupUrl } from "../../aws-config";
 
 const dashboards = [
   imgDashboard1,
@@ -37,7 +36,15 @@ export default function DashboardPreviewSection() {
 
         {/* CTA Button */}
         <button className="bg-linear-to-r from-[#d84800] to-[#ff5700] text-[#e8f0ff] px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-bold text-sm sm:text-base mb-8 sm:mb-12 hover:opacity-90 transition-opacity cursor-pointer"
-        onClick={()=>{window.location.href=signupUrl}}>
+        onClick={() => {
+
+            window.location.href =
+              "https://us-east-1nd1mqho9q.auth.us-east-1.amazoncognito.com/signup" +
+              "?client_id=5d8uo8cktjc6ukhnps699nj68i" +
+              "&response_type=code" +
+              "&scope=openid+email+profile" +
+              "&redirect_uri=https://iris-iot-react.netlify.app/Dashboard";
+          }}>
           Try the Dashboard
         </button>
 
