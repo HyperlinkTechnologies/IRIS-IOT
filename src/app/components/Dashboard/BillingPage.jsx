@@ -9,29 +9,48 @@ export default function BillingPage() {
 
   return (
 
-    <div>
+    <div className="w-full">
 
-      {/* Header */}
+      {/* ================= HEADER ================= */}
+
       <div className="mb-8">
 
-        <h2 className="text-3xl font-bold">
+        <h2
+          className="
+            text-2xl
+            sm:text-3xl
+            font-bold
+            text-[#010c29]
+          "
+        >
           Billing Overview
         </h2>
 
-        <p className="text-gray-400 mt-1">
+        <p
+          className="
+            text-gray-400
+            mt-2
+            text-sm
+            sm:text-base
+          "
+        >
           Manage subscription and payments
         </p>
 
       </div>
 
-      {/* Cards */}
-      <div className="
-        grid
-        grid-cols-1
-        md:grid-cols-2
-        xl:grid-cols-4
-        gap-6
-      ">
+      {/* ================= CARDS ================= */}
+
+      <div
+        className="
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          xl:grid-cols-4
+          gap-4
+          sm:gap-6
+        "
+      >
 
         <BillingCard
           icon={<Wallet />}
@@ -59,47 +78,107 @@ export default function BillingPage() {
 
       </div>
 
-      {/* Subscription Box */}
-      <div className="
-        mt-8
-        bg-[#071633]
-        border
-        border-white/10
-        rounded-3xl
-        p-8
-      ">
+      {/* ================= SUBSCRIPTION BOX ================= */}
 
-        <div className="
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-6
-        ">
+      <div
+        className="
+          mt-8
 
+          bg-black/5
+
+          border
+          border-black/10
+
+          shadow-md
+
+          rounded-3xl
+
+          p-5
+          sm:p-6
+          lg:p-8
+
+          hover:shadow-lg
+
+          transition-all
+          duration-300
+        "
+      >
+
+        <div
+          className="
+            flex
+            flex-col
+            lg:flex-row
+
+            lg:items-center
+            lg:justify-between
+
+            gap-6
+          "
+        >
+
+          {/* Left */}
           <div>
 
-            <h3 className="text-2xl font-bold mb-2">
+            <h3
+              className="
+                text-2xl
+                sm:text-3xl
+                font-bold
+                mb-3
+                text-[#010c29]
+              "
+            >
               Industrial Plan
             </h3>
 
-            <p className="text-gray-400">
+            <p
+              className="
+                text-gray-400
+                text-sm
+                sm:text-base
+                leading-relaxed
+                max-w-125
+              "
+            >
               Access all premium IoT platform features
+              including device analytics, alerts,
+              monitoring, API access and cloud storage.
             </p>
 
           </div>
 
+          {/* Button */}
           <button
             className="
-              px-8
-              py-4
+              w-full
+              sm:w-auto
+
+              px-6
+              sm:px-8
+
+              py-3
+              sm:py-4
+
               rounded-2xl
+
               bg-linear-to-r
               from-[#d84800]
               to-[#ff5700]
+
+              text-white
+
+              cursor-pointer
+
               hover:opacity-90
+              hover:scale-[1.02]
+
+              transition-all
+              duration-300
+
               font-medium
+
+              shadow-lg
             "
           >
             Upgrade Plan
@@ -113,6 +192,8 @@ export default function BillingPage() {
   );
 }
 
+/* ================= BILLING CARD ================= */
+
 function BillingCard({
   icon,
   title,
@@ -121,26 +202,80 @@ function BillingCard({
 
   return (
 
-    <div className="
-      bg-[#071633]
-      border
-      border-white/10
-      rounded-3xl
-      p-6
-    ">
+    <div
+      className="
+        bg-black/5
 
-      <div className="
-        text-[#ff5700]
-        mb-4
-      ">
+        border
+        border-black/10
+
+        shadow-md
+
+        rounded-3xl
+
+        p-5
+        sm:p-6
+
+        hover:shadow-lg
+        hover:border-[#ff5700]/20
+
+        transition-all
+        duration-300
+      "
+    >
+
+      {/* Icon */}
+      <div
+        className="
+          w-12
+          h-12
+
+          rounded-xl
+
+          bg-orange-500/10
+
+          flex
+          items-center
+          justify-center
+
+          text-orange-500
+
+          mb-5
+
+          border
+          border-orange-500/10
+        "
+      >
         {icon}
       </div>
 
-      <p className="text-gray-400 mb-2">
+      {/* Title */}
+      <p
+        className="
+          text-gray-400
+
+          text-sm
+          sm:text-base
+
+          mb-2
+        "
+      >
         {title}
       </p>
 
-      <h3 className="text-2xl font-bold">
+      {/* Value */}
+      <h3
+        className="
+          text-2xl
+          sm:text-3xl
+
+          font-bold
+
+          text-[#010c29]
+
+          wrap-break-word
+        "
+      >
         {value}
       </h3>
 

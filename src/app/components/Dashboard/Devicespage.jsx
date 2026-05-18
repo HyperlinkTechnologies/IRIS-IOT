@@ -1,9 +1,17 @@
-import { Plus, Search, Trash2, Wifi, WifiOff } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Trash2,
+  Wifi,
+  WifiOff,
+} from "lucide-react";
 
 import { useState } from "react";
 
 export default function DevicesPage() {
-  const [search, setSearch] = useState("");
+
+  const [search, setSearch] =
+    useState("");
 
   const devices = [
     {
@@ -32,129 +40,206 @@ export default function DevicesPage() {
     },
   ];
 
-  const filteredDevices = devices.filter((device) =>
-    device.name.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filteredDevices =
+    devices.filter((device) =>
+      device.name
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    );
 
   return (
-    <div>
+
+    <div className="w-full">
+
       {/* ================= TOP CARDS ================= */}
 
       <div
         className="
-        grid
-        grid-cols-1
-        md:grid-cols-4
-        gap-6
-        mb-8
-      "
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          xl:grid-cols-4
+          gap-4
+          sm:gap-6
+          mb-8
+        "
       >
-        <StatusCard title="Total Devices" value="124" />
 
-        <StatusCard title="Online" value="118" green />
+        <StatusCard
+          title="Total Devices"
+          value="124"
+        />
 
-        <StatusCard title="Offline" value="6" red />
+        <StatusCard
+          title="Online"
+          value="118"
+          green
+        />
 
-        <StatusCard title="Alerts" value="3" orange />
+        <StatusCard
+          title="Offline"
+          value="6"
+          red
+        />
+
+        <StatusCard
+          title="Alerts"
+          value="3"
+          orange
+        />
+
       </div>
 
       {/* ================= TOP ACTIONS ================= */}
 
       <div
         className="
-        flex
-        flex-col
-        md:flex-row
-        md:items-center
-        md:justify-between
-        gap-4
-        mb-6
-      "
+          flex
+          flex-col
+          lg:flex-row
+          lg:items-center
+          lg:justify-between
+          gap-4
+          mb-8
+        "
       >
-        {/* Search */}
+
+        {/* ================= SEARCH ================= */}
+
         <div
           className="
-          flex
-          items-center
-          gap-3
-          bg-black/5
-          border
-          border-black/10
-          px-4
-          py-3
-          rounded-2xl
-          w-full
-          md:w-87.5
-        "
+            flex
+            items-center
+            gap-3
+
+            bg-black/5
+
+            border
+            border-black/10
+
+            px-4
+            py-3
+
+            rounded-2xl
+
+            w-full
+            lg:max-w-105
+
+            shadow-sm
+          "
         >
-          <Search className="text-gray-400" size={20} />
+
+          <Search
+            className="text-gray-400 shrink-0"
+            size={20}
+          />
 
           <input
             type="text"
             placeholder="Search Devices..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) =>
+              setSearch(e.target.value)
+            }
             className="
               bg-transparent
               outline-none
               w-full
+
               text-[#010c29]
+
               placeholder:text-gray-500
+
+              text-sm
+              sm:text-base
             "
           />
+
         </div>
 
-        {/* Add Button */}
+        {/* ================= ADD BUTTON ================= */}
+
         <button
           className="
+            w-full
+            sm:w-auto
+
             flex
             items-center
             justify-center
             gap-2
+
             px-6
             py-3
+
             rounded-2xl
+
             bg-linear-to-r
             from-[#d84800]
             to-[#ff5700]
+
             hover:opacity-90
+            hover:scale-[1.02]
+
             transition-all
             duration-300
+
             font-medium
+            text-white
+
+            shadow-lg
           "
         >
+
           <Plus size={20} />
+
           Add Device
+
         </button>
+
       </div>
 
-      {/* ================= TABLE ================= */}
+      {/* ================= DEVICE TABLE ================= */}
 
-      {/* <div
+      <div
         className="
-        bg-black/5
-        border
-        border-black/10
-        rounded-3xl
-        overflow-hidden
-        shadow-lg
-      "
-      > */}
-        {/* Table Header */}
-        {/* <div
-          className="
-          grid
-          grid-cols-6
-          gap-4
-          px-6
-          py-4
-          border-b
+          bg-black/5
+
+          border
           border-black/10
-          text-sm
-          text-gray-400
-          font-medium
+
+          rounded-3xl
+
+          overflow-hidden
+
+          shadow-lg
         "
+      >
+
+        {/* ================= TABLE HEADER ================= */}
+
+        <div
+          className="
+            hidden
+            lg:grid
+
+            grid-cols-6
+
+            gap-4
+
+            px-6
+            py-4
+
+            border-b
+            border-black/10
+
+            text-sm
+            font-semibold
+
+            text-gray-500
+          "
         >
+
           <p>Device</p>
 
           <p>Status</p>
@@ -166,133 +251,230 @@ export default function DevicesPage() {
           <p>Firmware</p>
 
           <p>Actions</p>
-        </div> */}
 
-        {/* Table Body */}
+        </div>
+
+        {/* ================= TABLE BODY ================= */}
+
         {/* <div>
+
           {filteredDevices.map((device) => (
+
             <div
               key={device.id}
               className="
                 grid
-                grid-cols-6
+                grid-cols-1
+                lg:grid-cols-6
+
                 gap-4
-                px-6
+
+                px-5
+                sm:px-6
+
                 py-5
-                items-center
-                hover:bg-white/2
+
+                border-b
+                border-black/5
+
+                hover:bg-black/[0.02]
+
                 transition-all
-                s
               "
             > */}
+
               {/* Device */}
               {/* <div>
-                <p className="font-semibold">{device.name}</p>
 
-                <p
-                  className="
+                <p className="
+                  font-semibold
+                  text-[#010c29]
+                ">
+                  {device.name}
+                </p>
+
+                <p className="
                   text-sm
-                  text-gray-400
-                "
-                >
+                  text-gray-500
+                ">
                   {device.id}
                 </p>
+
               </div> */}
 
               {/* Status */}
-              {/* <div>
+              {/* <div className="
+                flex
+                items-center
+              ">
+
                 {device.status === "online" ? (
+
                   <div
                     className="
-                    flex
-                    items-center
-                    gap-2
-                    text-green-400
-                  "
+                      flex
+                      items-center
+                      gap-2
+
+                      text-green-500
+                      font-medium
+                    "
                   >
+
                     <Wifi size={18} />
+
                     Online
+
                   </div>
+
                 ) : (
+
                   <div
                     className="
-                    flex
-                    items-center
-                    gap-2
-                    text-red-400
-                  "
+                      flex
+                      items-center
+                      gap-2
+
+                      text-red-500
+                      font-medium
+                    "
                   >
+
                     <WifiOff size={18} />
+
                     Offline
+
                   </div>
+
                 )}
+
               </div> */}
 
               {/* Location */}
-              {/* <p className="text-gray-300">{device.location}</p> */}
+              {/* <div className="text-gray-600">
+                {device.location}
+              </div> */}
 
               {/* Last Seen */}
-              {/* <p className="text-gray-300">{device.lastSeen}</p> */}
+              {/* <div className="text-gray-600">
+                {device.lastSeen}
+              </div> */}
 
               {/* Firmware */}
-              {/* <p className="text-gray-300">{device.firmware}</p> */}
+              {/* <div className="text-gray-600">
+                {device.firmware}
+              </div> */}
 
               {/* Actions */}
-              {/* <div className="flex items-center gap-3"> */}
-                {/* <button
+              {/* <div className="
+                flex
+                items-center
+                justify-start
+              ">
+
+                <button
                   className="
-                    p-2
+                    p-2.5
+
                     rounded-xl
+
                     bg-red-500/10
+
                     hover:bg-red-500/20
-                    text-red-400
+
+                    text-red-500
+
                     transition-all
                   "
                 >
+
                   <Trash2 size={18} />
+
                 </button>
+
               </div>
+
             </div>
+
           ))}
+
         </div> */}
-      {/* </div> */}
+
+      </div>
+
     </div>
   );
 }
 
 /* ================= STATUS CARD ================= */
 
-function StatusCard({ title, value, green, red, orange }) {
+function StatusCard({
+  title,
+  value,
+  green,
+  red,
+  orange
+}) {
+
   return (
+
     <div
       className="
-      bg-black/5
-      border
-      border-black/10
-      rounded-3xl
-      p-6
-      shadow-lg
-    "
+        bg-black/5
+
+        border
+        border-black/10
+
+        rounded-3xl
+
+        p-5
+        sm:p-6
+
+        shadow-md
+
+        hover:shadow-lg
+        hover:border-[#ff5700]/20
+
+        transition-all
+        duration-300
+      "
     >
-      <p className="text-gray-500 mb-3">{title}</p>
+
+      <p
+        className="
+          text-gray-500
+
+          text-sm
+          sm:text-base
+
+          mb-3
+        "
+      >
+        {title}
+      </p>
 
       <h3
         className={`
-          text-4xl
+          text-3xl
+          sm:text-4xl
+          lg:text-5xl
+
           font-bold
+
           ${
             green
-              ? "text-green-400"
+              ? "text-green-500"
               : red
-                ? "text-red-400"
-                : orange
-                  ? "text-orange-400"
-                  : "text-[#010c29"
+              ? "text-red-500"
+              : orange
+              ? "text-orange-500"
+              : "text-[#010c29]"
           }
         `}
       >
         {value}
       </h3>
+
     </div>
   );
 }

@@ -8,91 +8,190 @@ export default function DocumentationPage() {
 
   return (
 
-    <div>
+    <div className="w-full">
 
-      {/* Header */}
+      {/* ================= HEADER ================= */}
+
       <div className="mb-8">
 
-        <h2 className="text-3xl font-bold">
+        <h2
+          className="
+            text-2xl
+            sm:text-3xl
+            font-bold
+            text-[#010c29]
+          "
+        >
           Documentation
         </h2>
 
-        <p className="text-gray-400 mt-1">
+        <p
+          className="
+            text-gray-400
+            mt-2
+            text-sm
+            sm:text-base
+          "
+        >
           Access setup guides and technical resources
         </p>
 
       </div>
 
-      {/* Documentation Card */}
-      <div className="
-        bg-[#071633]
-        border
-        border-white/10
-        rounded-3xl
-        p-10
-      ">
+      {/* ================= MAIN DOCUMENTATION CARD ================= */}
 
-        <div className="
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-8
-        ">
+      <div
+        className="
+          bg-black/5
 
-          <div className="
+          border
+          border-black/10
+
+          shadow-md
+
+          rounded-3xl
+
+          p-5
+          sm:p-6
+          lg:p-10
+
+          hover:shadow-lg
+
+          transition-all
+          duration-300
+        "
+      >
+
+        <div
+          className="
             flex
-            items-start
-            gap-5
-          ">
+            flex-col
+            lg:flex-row
 
-            <div className="
-              w-16
-              h-16
-              rounded-2xl
-              bg-orange-500/10
+            lg:items-center
+            lg:justify-between
+
+            gap-8
+          "
+        >
+
+          {/* ================= LEFT CONTENT ================= */}
+
+          <div
+            className="
               flex
-              items-center
-              justify-center
-              text-[#ff5700]
-            ">
+              flex-col
+              sm:flex-row
+
+              items-start
+
+              gap-5
+            "
+          >
+
+            {/* Icon */}
+            <div
+              className="
+                w-16
+                h-16
+
+                rounded-2xl
+
+                bg-orange-500/10
+
+                flex
+                items-center
+                justify-center
+
+                text-[#ff5700]
+
+                shrink-0
+
+                border
+                border-orange-500/10
+              "
+            >
 
               <BookOpen size={28} />
 
             </div>
 
+            {/* Text */}
             <div>
 
-              <h3 className="text-2xl font-bold mb-2">
+              <h3
+                className="
+                  text-2xl
+                  sm:text-3xl
+
+                  font-bold
+
+                  mb-3
+
+                  text-[#010c29]
+                "
+              >
                 IRIS Documentation
               </h3>
 
-              <p className="text-gray-400 max-w-xl">
+              <p
+                className="
+                  text-gray-400
+
+                  text-sm
+                  sm:text-base
+
+                  leading-relaxed
+
+                  max-w-2xl
+                "
+              >
                 Download the complete technical documentation,
-                installation guide, API reference and setup manual
-                for the IRIS Industrial IoT Platform.
+                installation guide, API reference and setup
+                manual for the IRIS Industrial IoT Platform.
               </p>
 
             </div>
 
           </div>
 
+          {/* ================= DOWNLOAD BUTTON ================= */}
+
           <button
             className="
+              w-full
+              sm:w-auto
+
               flex
               items-center
               justify-center
               gap-3
-              px-8
-              py-4
+
+              px-6
+              sm:px-8
+
+              py-3
+              sm:py-4
+
               rounded-2xl
+
               bg-linear-to-r
               from-[#d84800]
               to-[#ff5700]
+
               hover:opacity-90
+              hover:scale-[1.02]
+
               transition-all
+              duration-300
+
               font-medium
+
+              text-white
+
+              cursor-pointer
+
+              shadow-lg
             "
           >
 
@@ -106,14 +205,21 @@ export default function DocumentationPage() {
 
       </div>
 
-      {/* Additional Docs */}
-      <div className="
-        grid
-        grid-cols-1
-        md:grid-cols-3
-        gap-6
-        mt-8
-      ">
+      {/* ================= ADDITIONAL DOCS ================= */}
+
+      <div
+        className="
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          xl:grid-cols-3
+
+          gap-4
+          sm:gap-6
+
+          mt-8
+        "
+      >
 
         <DocCard
           title="API Reference"
@@ -136,6 +242,8 @@ export default function DocumentationPage() {
   );
 }
 
+/* ================= DOC CARD ================= */
+
 function DocCard({
   title,
   icon
@@ -143,25 +251,67 @@ function DocCard({
 
   return (
 
-    <div className="
-      bg-[#071633]
-      border
-      border-white/10
-      rounded-3xl
-      p-6
-      hover:border-[#ff5700]/40
-      transition-all
-      cursor-pointer
-    ">
+    <div
+      className="
+        bg-black/5
 
-      <div className="
-        text-[#ff5700]
-        mb-4
-      ">
+        border
+        border-black/10
+
+        shadow-md
+
+        rounded-3xl
+
+        p-5
+        sm:p-6
+
+        hover:border-[#ff5700]/30
+        hover:shadow-lg
+        hover:-translate-y-1
+
+        transition-all
+        duration-300
+
+        cursor-pointer
+      "
+    >
+
+      {/* Icon */}
+      <div
+        className="
+          w-12
+          h-12
+
+          rounded-xl
+
+          bg-orange-500/10
+
+          flex
+          items-center
+          justify-center
+
+          text-[#ff5700]
+
+          mb-5
+
+          border
+          border-orange-500/10
+        "
+      >
         {icon}
       </div>
 
-      <h3 className="text-xl font-bold">
+      {/* Title */}
+      <h3
+        className="
+          text-lg
+          sm:text-xl
+
+          font-bold
+
+          text-[#010c29]
+        "
+      >
         {title}
       </h3>
 

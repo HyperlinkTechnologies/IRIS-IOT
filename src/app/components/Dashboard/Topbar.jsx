@@ -1,78 +1,227 @@
-import { Settings, User } from "lucide-react";
+import {
+  Settings,
+  User,
+  Menu
+} from "lucide-react";
+
 import { logoutUrl } from "../../aws-config";
 
 export default function Topbar({
   activeTab,
   showProfileMenu,
   setShowProfileMenu,
+  setSidebarOpen,
+  setActiveTab,
 }) {
+
   const handleLogout = () => {
+
     localStorage.clear();
 
     window.location.href = logoutUrl;
   };
+
   return (
-    <header className="h-20 border-b border-white/10 flex items-center justify-between px-8 bg-gray-200">
-      {/* Title */}
-      <div>
-        <h2 className="text-3xl font-bold capitalize text-[#010c29]">{activeTab}</h2>
 
-        <p className="text-gray-500 text-sm">Welcome back to IRIS Platform</p>
-      </div>
-      {/* Profile */}
-      <div className="relative">
-        <button
-          onClick={() => setShowProfileMenu(!showProfileMenu)}
-          className="flex items-center gap-4 cursor-pointer"
-        >
-          <div className="text-right">
-            <p className="font-semibold text-[#010c29]">Admin</p>
-          </div>
-
-          <div
-            className="
-            w-12
-            h-12
-            rounded-full
-            bg-linear-to-br
-            from-[#ff5700]
-            to-[#d84800]
+        <header
+          className="
+            w-full
             flex
             items-center
-            justify-center
-            font-bold
-          "
+            justify-between
+            "
+        >
+      {/* ================= LEFT ================= */}
+
+      <div className="
+        flex
+        items-center
+        gap-3
+        sm:gap-4
+      ">
+
+
+        {/* Title */}
+        <div>
+
+          <h2
+            className="
+              text-xl
+              sm:text-2xl
+              lg:text-3xl
+              font-bold
+              capitalize
+              text-[#010c29]
+              leading-tight
+            "
           >
-            <User className="text-white" />
+            {activeTab}
+          </h2>
+
+          <p
+            className="
+              text-gray-500
+              text-xs
+              sm:text-sm
+              hidden
+              sm:block
+            "
+          >
+            Welcome back to IRIS Platform
+          </p>
+
+        </div>
+
+      </div>
+
+      {/* ================= PROFILE ================= */}
+
+      <div className="relative">
+
+        <button
+          onClick={() =>
+            setShowProfileMenu(!showProfileMenu)
+          }
+          className="
+            flex
+            items-center
+            gap-2
+            sm:gap-4
+            cursor-pointer
+          "
+        >
+
+          {/* Name */}
+          <div className="
+            text-right
+            hidden
+            sm:block
+          ">
+
+            <p className="
+              font-semibold
+              text-[#010c29]
+              text-sm
+              sm:text-base
+            ">
+              Admin
+            </p>
+
           </div>
-        </button>
-        {/* Dropdown */}
-        {showProfileMenu && (
+
+          {/* Avatar */}
           <div
             className="
-            absolute
-            right-0
-            top-16
-            w-64
-            rounded-2xl
-            bg-white
-            border
-            border-black/20
-            shadow-[0px_0px_10px_0px_#ff5700]
-            p-4
-            z-50
-          "
+              w-11
+              h-11
+              sm:w-12
+              sm:h-12
+              rounded-full
+              bg-linear-to-br
+              from-[#ff5700]
+              to-[#d84800]
+              flex
+              items-center
+              justify-center
+              font-bold
+              shadow-lg
+            "
           >
-            <div className="mb-4">
-              <p className="font-semibold text-[#010c29]">Admin User</p>
 
-              <p className="text-sm text-gray-500">admin@irisiot.com</p>
+            <User
+              className="text-white"
+              size={20}
+            />
 
-              <div className="absolute right-5 top-3 cursor-pointer hover:bg-gray-700/10 p-3 rounded-full">
-                <Settings className="text-gray-500" />
+          </div>
+
+        </button>
+
+        {/* ================= DROPDOWN ================= */}
+
+        {showProfileMenu && (
+
+          <div
+            className="
+              absolute
+              right-0
+              top-16
+              w-70
+              rounded-2xl
+              bg-white
+              border
+              border-black/10
+              shadow-[0px_0px_20px_0px_rgba(255,87,0,0.15)]
+              p-5
+              z-50
+              animate-in
+              fade-in
+              zoom-in-95
+              duration-200
+            "
+          >
+
+            {/* Top */}
+            <div className="
+              flex
+              items-start
+              justify-between
+              gap-4
+              mb-5
+            ">
+
+              <div>
+
+                <p className="
+                  font-semibold
+                  text-[#010c29]
+                  text-lg
+                ">
+                  Admin User
+                </p>
+
+                <p className="
+                  text-sm
+                  text-gray-500
+                  break-all
+                ">
+                  admin@irisiot.com
+                </p>
+
               </div>
+
+              {/* Settings */}
+              <button onClick={()=>{
+                setActiveTab("settings");
+                setShowProfileMenu(false);
+              }}
+                className="
+                  p-2.5
+                  rounded-full
+                  hover:bg-gray-200
+                  transition-all
+                  shrink-0
+                  cursor-pointer
+                "
+              >
+
+                <Settings
+                  className="text-gray-500"
+                  size={20}
+                />
+
+              </button>
+
             </div>
 
+            {/* Divider */}
+            <div className="
+              h-px
+              bg-black/10
+              mb-5
+            " />
+
+            {/* Logout */}
             <button
               onClick={handleLogout}
               className="
@@ -86,13 +235,18 @@ export default function Topbar({
                 transition-all
                 cursor-pointer
                 text-white
+                font-medium
               "
             >
               Logout
             </button>
+
           </div>
+
         )}
+
       </div>
+
     </header>
   );
 }
