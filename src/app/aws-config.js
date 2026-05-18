@@ -1,13 +1,12 @@
 export const TOKEN_URL =
   "https://us-east-1nd1mqho9q.auth.us-east-1.amazoncognito.com/oauth2/token";
 
-export const CLIENT_SECRET = ""; 
 
 const COGNITO_DOMAIN =
   "https://us-east-1nd1mqho9q.auth.us-east-1.amazoncognito.com";
 
 export const CLIENT_ID =
-  "3l8efe5ajhfo1eh2it4diicjf6";
+  "5d8uo8cktjc6ukhnps699nj68i";
 
 /* Redirect after login */
 export const REDIRECT_SIGN_IN =
