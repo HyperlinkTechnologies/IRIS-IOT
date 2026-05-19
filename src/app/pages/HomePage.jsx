@@ -1,3 +1,7 @@
+import { useEffect } from "react";
+import { getCurrentUser } from "aws-amplify/auth";
+import { useNavigate } from "react-router-dom";
+
 import CtaSection from '../components/Landing page/CTAsection';
 import HeroSection from '../components/Landing page/HeroSection';
 import KeyCapabilitiesSection from '../components/Landing page/Keycapabilities';
@@ -12,6 +16,29 @@ import WhyChooseIrisSection from '../components/Landing page/WhyChooseIris';
 
 
 export default function HomePage() {
+  const navigate = useNavigate();
+  useEffect(() => {
+
+  const checkUser = async () => {
+
+    try {
+
+      // already logged in
+      await getCurrentUser();
+
+      navigate("/Dashboard");
+
+    } catch {
+
+      // not logged in
+      console.log("Guest user");
+    }
+  };
+
+  checkUser();
+
+}, []);
+
   return (
     <div className="relative min-h-screen bg-[#010c29] ">
 
