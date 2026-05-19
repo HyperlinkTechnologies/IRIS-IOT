@@ -44,7 +44,7 @@ export default function DashboardGrid({
           sm: 6,
           xs: 2,
         }}
-        rowHeight={30}
+        rowHeight={40}
         width={1200}
         onLayoutChange={handleLayoutChange}
         draggableHandle=".drag-handle"
@@ -127,6 +127,31 @@ export default function DashboardGrid({
                 "
                 >
               <WidgetRenderer widget={widget} />
+            </div>
+            {/* ================= RESIZE HANDLE ================= */}
+
+            <div
+              className="
+                absolute
+                bottom-2
+                right-2
+                w-5
+                h-5
+                opacity-60
+                pointer-events-none
+              "
+            >
+
+              <div
+                className="
+                  w-full
+                  h-full
+                  border-r-2
+                  border-b-2
+                  border-gray-400
+                "
+              />
+
             </div>
           </div>
         ))}
