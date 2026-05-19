@@ -1,129 +1,344 @@
-import {
-  LayoutDashboard
-} from "lucide-react";
+import { useEffect, useState } from "react";
+
+import { LayoutDashboard } from "lucide-react";
+
+import CreateDashboardModal from "./CreateDashboardModal";
+import DashboardTabs from "./DashboardTabs";
+import DashboardCanvas from "./DashboardCanvas";
+import AddWidgetModal from "./AddWidgetModal";
 
 export default function DashboardHome() {
 
-  return (
+  /* ================= STATES ================= */
 
-    <div
-      className="
-        w-full
-      "
-    >
+  const [modalOpen, setModalOpen] =
+    useState(false);
 
-      {/* ================= EMPTY DASHBOARD ================= */}
+  const [addWidgetModalOpen, setAddWidgetModalOpen] =
+    useState(false);
 
-      <div
-  className="
-    border
-    border-dashed
-    border-gray-300
-    rounded-2xl
-    sm:rounded-3xl
+  const [dashboards, setDashboards] =
+    useState([]);
 
-    min-h-[70vh]
-    lg:min-h-[calc(100vh-160px)]
+  const [activeDashboard, setActiveDashboard] =
+    useState(null);
 
-    flex
-    flex-col
-    items-center
-    justify-center
+  /* ================= LOAD ================= */
 
-    bg-black/5
+  useEffect(() => {
 
-    px-6
-    sm:px-10
+    const savedDashboards =
+      JSON.parse(
+        localStorage.getItem(
+          "iris_dashboards"
+        )
+      ) || [];
 
-    text-center
-  "
->
+    setDashboards(savedDashboards);
 
-        {/* Icon */}
+    if (savedDashboards.length > 0) {
+
+      setActiveDashboard(
+        savedDashboards[0].id
+      );
+    }
+
+  }, []);
+
+  /* ================= SAVE ================= */
+
+  useEffect(() => {
+
+    localStorage.setItem(
+      "iris_dashboards",
+      JSON.stringify(dashboards)
+    );
+
+  }, [dashboards]);
+
+  /* ================= CREATE ================= */
+
+  const handleCreateDashboard = (
+    dashboard
+  ) => {
+
+    const updatedDashboards = [
+  ...dashboards,
+  {
+    ...dashboard,
+    widgets: [],
+  },
+];
+
+    setDashboards(updatedDashboards);
+
+    setActiveDashboard(
+      dashboard.id
+    );
+  };
+
+  const handleAddWidget = (widget) => {
+
+  const updatedDashboards =
+    dashboards.map((dashboard) => {
+
+      if (
+        dashboard.id === activeDashboard
+      ) {
+
+        return {
+
+          ...dashboard,
+
+          widgets: [
+            ...dashboard.widgets,
+            widget,
+          ],
+        };
+      }
+
+      return dashboard;
+    });
+
+  setDashboards(updatedDashboards);
+};
+
+
+
+const handleDeleteDashboard = (
+  dashboardId
+) => {
+
+  const updatedDashboards =
+    dashboards.filter(
+      (dashboard) =>
+        dashboard.id !== dashboardId
+    );
+
+  setDashboards(updatedDashboards);
+
+  /* Set next dashboard */
+
+  if (
+    updatedDashboards.length > 0
+  ) {
+
+    setActiveDashboard(
+      updatedDashboards[0].id
+    );
+
+  } else {
+
+    setActiveDashboard(null);
+  }
+};
+
+
+const handleDeleteWidget = (
+  widgetId
+) => {
+
+  const updatedDashboards =
+    dashboards.map((dashboard) => {
+
+      if (
+        dashboard.id === activeDashboard
+      ) {
+
+        return {
+
+          ...dashboard,
+
+          widgets:
+            dashboard.widgets.filter(
+              (widget) =>
+                widget.id !== widgetId
+            ),
+        };
+      }
+
+      return dashboard;
+    });
+
+  setDashboards(updatedDashboards);
+};
+
+  /* ================= ACTIVE DASHBOARD ================= */
+
+  const currentDashboard =
+    dashboards.find(
+      (d) => d.id === activeDashboard
+    );
+
+  /* ================= EMPTY ================= */
+
+  if (dashboards.length === 0) {
+
+    return (
+
+      <>
+
         <div
           className="
-            w-20
-            h-20
-            sm:w-24
-            sm:h-24
-            rounded-2xl
-            bg-orange-500/10
             border
-            border-orange-500/20
+            border-dashed
+            border-gray-300
+            rounded-3xl
+            min-h-[75vh]
             flex
+            flex-col
             items-center
             justify-center
-            mb-5
-            sm:mb-6
+            bg-black/5
+            px-6
+            text-center
           "
         >
 
           <LayoutDashboard
-            size={40}
-            className="text-[#ff5700]"
+            size={70}
+            className="text-[#ff5700] mb-6"
           />
+
+          <h3 className="text-5xl font-bold mb-4">
+            Dashboard is Empty
+          </h3>
+
+          <p
+            className="
+              text-gray-500
+              mb-8
+              max-w-2xl
+              text-lg
+            "
+          >
+            Click the edit dashboard button
+            to add widgets, analytics and
+            live monitoring components.
+          </p>
+
+          <button
+            onClick={() =>
+              setModalOpen(true)
+            }
+            className="
+              px-8
+              py-4
+              rounded-2xl
+              bg-linear-to-r
+              from-[#d84800]
+              to-[#ff5700]
+              hover:opacity-90
+              text-white
+              cursor-pointer
+              text-lg
+              font-medium
+            "
+          >
+            Edit Dashboard
+          </button>
 
         </div>
 
-        {/* Title */}
-        <h3
-          className="
-            text-2xl
-            sm:text-3xl
-            lg:text-4xl
-            font-bold
-            mb-3
-            text-[#010c29]
-            leading-tight
-          "
-        >
-          Dashboard is Empty
-        </h3>
+        {/* Modal */}
 
-        {/* Subtitle */}
-        <p
-          className="
-            text-gray-500
-            text-sm
-            sm:text-base
-            lg:text-lg
-            mb-6
-            sm:mb-8
-            max-w-125
-            leading-relaxed
-          "
-        >
-          Click the edit dashboard button to add widgets,
-          analytics and live monitoring components.
-        </p>
+        <CreateDashboardModal
+          open={modalOpen}
+          onClose={() =>
+            setModalOpen(false)
+          }
+          onCreate={
+            handleCreateDashboard
+          }
+        />
 
-        {/* Button */}
+      </>
+
+    );
+  }
+
+  /* ================= DASHBOARDS ================= */
+
+  return (
+
+    <div>
+
+      {/* Tabs */}
+
+      <DashboardTabs
+        dashboards={dashboards}
+        activeDashboard={
+          activeDashboard
+        }
+        setActiveDashboard={
+          setActiveDashboard
+        }
+      />
+
+      {/* Top Actions */}
+
+      <div
+        className="
+          flex
+          justify-end
+          mb-6
+        "
+      >
+
         <button
+          onClick={() =>
+            setModalOpen(true)
+          }
           className="
             px-6
-            sm:px-8
             py-3
-            sm:py-4
             rounded-xl
-            bg-linear-to-r
-            from-[#d84800]
-            to-[#ff5700]
-            hover:opacity-90
-            transition-all
-            duration-300
+            bg-[#ff5700]
             text-white
+            hover:opacity-90
             cursor-pointer
-            hover:scale-105
-            font-medium
-            text-sm
-            sm:text-base
-            shadow-lg
           "
         >
-          Edit Dashboard
+          + New Dashboard
         </button>
 
       </div>
+
+      {/* Canvas */}
+
+      <DashboardCanvas
+  dashboard={currentDashboard}
+  onDeleteDashboard={
+    handleDeleteDashboard
+  }
+  onOpenWidgetModal={() =>
+    setAddWidgetModalOpen(true)
+  }
+  onDeleteWidget={
+    handleDeleteWidget
+  }
+/>
+
+<AddWidgetModal
+  open={addWidgetModalOpen}
+  onClose={() =>
+    setAddWidgetModalOpen(false)
+  }
+  onAddWidget={
+    handleAddWidget
+  }
+/>
+      {/* Modal */}
+
+      <CreateDashboardModal
+        open={modalOpen}
+        onClose={() =>
+          setModalOpen(false)
+        }
+        onCreate={
+          handleCreateDashboard
+        }
+      />
 
     </div>
   );

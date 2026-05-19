@@ -1,10 +1,38 @@
 import React from 'react'
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { signInWithRedirect } from 'aws-amplify/auth';
+import { signInWithRedirect,getCurrentUser } from 'aws-amplify/auth';
 
 function NavBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleLogin = async () => {
+    try {
+      // check existing session
+      await getCurrentUser();
+
+      // already logged in
+      window.location.href = "/Dashboard";
+    } catch {
+      // not logged in
+      await signInWithRedirect();
+    }
+  };
+
+  const handleSignup = async () => {
+    try {
+      await getCurrentUser();
+
+      window.location.href = "/Dashboard";
+    } catch {
+      window.location.href =
+        "https://us-east-1nd1mqho9q.auth.us-east-1.amazoncognito.com/signup" +
+        "?client_id=5d8uo8cktjc6ukhnps699nj68i" +
+        "&response_type=code" +
+        "&scope=openid+email+profile" +
+        "&redirect_uri=https://iris-iot-react.netlify.app/Dashboard";
+    }
+  };
   return (
     <nav className="backdrop-blur-sm drop-shadow-2xl bg-[#010c29]/60 border-b border-[rgba(255,136,0,0.23)] h-17 fixed top-0 left-0 right-0 z-50">
         <div className="h-full flex items-center justify-between px-4 sm:px-6 lg:px-12">
@@ -19,19 +47,10 @@ function NavBar() {
             <a href="/Pricing" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Pricing</a>
             <a href="/Contact" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Contact</a>
             <button className="border border-[rgba(255,136,0,0.31)] text-[#e8f0ff] px-6 py-2 rounded-lg font-bold text-base hover:bg-[rgba(255,136,0,0.1)] hover:border-[#ff5700] transition-colors cursor-pointer"
-            onClick={async () => {
-                          await signInWithRedirect();
-                        }}>
+            onClick={handleLogin}>
                Sign In
              </button>
-             <button className="bg-linear-to-r from-[#d84800] to-[#ff5700] text-[#e8f0ff] px-6 py-2 rounded-lg font-bold text-base shadow-[0px_0px_250px_0px_#ff5700,0px_0px_32px_0px_rgba(0,198,255,0.22)] hover:opacity-95 hover:-translate-y-1 cursor-pointer transition-all duration-200 ease-in-out" onClick={() => {
-                window.location.href =
-                  "https://us-east-1nd1mqho9q.auth.us-east-1.amazoncognito.com/signup" +
-                  "?client_id=5d8uo8cktjc6ukhnps699nj68i" +
-                  "&response_type=code" +
-                  "&scope=openid+email+profile" +
-                  "&redirect_uri=https://iris-iot-react.netlify.app/Dashboard";
-              }}>
+             <button className="bg-linear-to-r from-[#d84800] to-[#ff5700] text-[#e8f0ff] px-6 py-2 rounded-lg font-bold text-base shadow-[0px_0px_250px_0px_#ff5700,0px_0px_32px_0px_rgba(0,198,255,0.22)] hover:opacity-95 hover:-translate-y-1 cursor-pointer transition-all duration-200 ease-in-out" onClick={handleSignup}>
                Get Started
              </button>
           </div>
@@ -53,21 +72,11 @@ function NavBar() {
               <a href="/Products" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Products</a>
               <a href="/Pricing" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Pricing</a>
               <a href="/Contact" className="text-[#e8f0ff] font-bold text-base hover:text-[#ff5700] transition-colors">Contact</a>
-              <button className="border border-[rgba(255,136,0,0.31)] text-[#e8f0ff] px-6 py-2 rounded-lg font-bold text-base hover:bg-[rgba(255,136,0,0.1)] hover:border-[#ff5700] transition-colors cursor-pointer" onClick={async () => {
-              await signInWithRedirect();
-            }}>
+              <button className="border border-[rgba(255,136,0,0.31)] text-[#e8f0ff] px-6 py-2 rounded-lg font-bold text-base hover:bg-[rgba(255,136,0,0.1)] hover:border-[#ff5700] transition-colors cursor-pointer" onClick={handleLogin}>
                Sign In
              </button>
-             <button className="bg-linear-to-r from-[#d84800] to-[#ff5700] text-[#e8f0ff] px-6 py-2 rounded-lg font-bold text-base shadow-[0px_0px_250px_0px_#ff5700,0px_0px_32px_0px_rgba(0,198,255,0.22)] hover:opacity-95 hover:-translate-y-1 cursor-pointer transition-all duration-200 ease-in-out"
-             onClick={() => {
-
-                window.location.href =
-                  "https://us-east-1nd1mqho9q.auth.us-east-1.amazoncognito.com/signup" +
-                  "?client_id=5d8uo8cktjc6ukhnps699nj68i" +
-                  "&response_type=code" +
-                  "&scope=openid+email+profile" +
-                  "&redirect_uri=https://iris-iot-react.netlify.app/Dashboard";
-              }}>
+             <button className="bg-linear-to-r from-[#d84800] to-[#ff5700] text-[#e8f0ff] px-6 py-2 rounded-lg font-bold text-base shadow-[0px_0px_250px_0px_#ff5700,0px_0px_32px_0px_rgba(0,198,255,0.22)] hover:opacity-95 hover:-translate-y-1 cursor-pointer transition-all duration-200 ease-in-out" onClick={handleSignup}>
+             
                Get Started
              </button>
             </div>

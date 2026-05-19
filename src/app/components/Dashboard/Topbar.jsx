@@ -100,7 +100,7 @@ export default function Topbar({
                 sm:text-base
               "
             >
-              {user?.username || "Admin"}
+              {user?.username}
             </p>
           </div>
 
@@ -159,22 +159,12 @@ export default function Topbar({
               <div>
                 <p
                   className="
-                    font-semibold
-                    text-[#010c29]
-                    text-lg
-                  "
-                >
-                  {user?.username || "Admin User"}
-                </p>
-
-                <p
-                  className="
                     text-sm
                     text-gray-500
                     break-all
                   "
                 >
-                  {user?.email || "admin@irisiot.com"}
+                  {user?.email}
                 </p>
               </div>
 
