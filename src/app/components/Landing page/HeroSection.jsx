@@ -1,6 +1,7 @@
 import { ArrowBigDown, ArrowDown } from "lucide-react";
 import imgDashboardImage from "../../../assets/Dashboard_1.png";
 import { signInWithRedirect } from "aws-amplify/auth";
+import { ContainerScroll } from "../../ui/ContainerScroll";
 
 export default function HeroSection() {
   return (
@@ -30,7 +31,7 @@ export default function HeroSection() {
         </div>
 
         {/* Buttons */}
-        <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-12 sm:mb-16 px-4">
+        <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4">
           
           <button className="bg-linear-to-r from-[#d84800] to-[#ff5700] text-[#e8f0ff] px-6 py-2 rounded-lg font-bold text-base shadow-[0px_0px_250px_0px_#ff5700,0px_0px_32px_0px_rgba(0,198,255,0.22)] hover:opacity-95 hover:-translate-y-1 cursor-pointer transition-all duration-200 ease-in-out"
             onClick={() => {
@@ -55,13 +56,20 @@ export default function HeroSection() {
         </div>
 
         {/* Dashboard Image */}
-        <div className="relative rounded-xl sm:rounded-2xl overflow-hidden border border-[rgba(180,200,255,0.73)] shadow-[0px_15px_50px_0px_rgba(180,200,255,0.73)] py-4 px-4">
+        {/* <div className="relative rounded-xl sm:rounded-2xl overflow-hidden border border-[rgba(180,200,255,0.73)] shadow-[0px_15px_50px_0px_rgba(180,200,255,0.73)] py-4 px-4">
           <img
             src={imgDashboardImage}
             alt="Dashboard Preview"
             className="w-full h-auto rounded-2xl border-[rgba(170,182,216,0.73)]"
           />
-        </div>
+        </div> */}
+        <ContainerScroll>
+          <img
+            src={imgDashboardImage}
+            alt="Dashboard Preview"
+            className="w-full h-auto rounded-2xl object-contain"
+          />
+        </ContainerScroll>
 
         {/* Down Arrow */}
         <div className="flex justify-center mt-8 sm:mt-12">
