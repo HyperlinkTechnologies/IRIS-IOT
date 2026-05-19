@@ -159,6 +159,16 @@ export default function Topbar({
               <div>
                 <p
                   className="
+                    font-semibold
+                    text-[#010c29]
+                    text-lg
+                  "
+                >
+                  {user?.username}
+                </p>
+
+                <p
+                  className="
                     text-sm
                     text-gray-500
                     break-all

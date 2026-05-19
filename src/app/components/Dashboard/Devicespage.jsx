@@ -1,17 +1,9 @@
-import {
-  Plus,
-  Search,
-  Trash2,
-  Wifi,
-  WifiOff,
-} from "lucide-react";
+import { Plus, Search, Trash2, Wifi, WifiOff } from "lucide-react";
 
 import { useState } from "react";
 
 export default function DevicesPage() {
-
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
 
   const devices = [
     {
@@ -40,17 +32,12 @@ export default function DevicesPage() {
     },
   ];
 
-  const filteredDevices =
-    devices.filter((device) =>
-      device.name
-        .toLowerCase()
-        .includes(search.toLowerCase())
-    );
+  const filteredDevices = devices.filter((device) =>
+    device.name.toLowerCase().includes(search.toLowerCase()),
+  );
 
   return (
-
     <div className="w-full">
-
       {/* ================= TOP CARDS ================= */}
 
       <div
@@ -64,30 +51,13 @@ export default function DevicesPage() {
           mb-8
         "
       >
+        <StatusCard title="Total Devices" value="124" />
 
-        <StatusCard
-          title="Total Devices"
-          value="124"
-        />
+        <StatusCard title="Online" value="118" green />
 
-        <StatusCard
-          title="Online"
-          value="118"
-          green
-        />
+        <StatusCard title="Offline" value="6" red />
 
-        <StatusCard
-          title="Offline"
-          value="6"
-          red
-        />
-
-        <StatusCard
-          title="Alerts"
-          value="3"
-          orange
-        />
-
+        <StatusCard title="Alerts" value="3" orange />
       </div>
 
       {/* ================= TOP ACTIONS ================= */}
@@ -103,7 +73,6 @@ export default function DevicesPage() {
           mb-8
         "
       >
-
         {/* ================= SEARCH ================= */}
 
         <div
@@ -128,19 +97,13 @@ export default function DevicesPage() {
             shadow-sm
           "
         >
-
-          <Search
-            className="text-gray-400 shrink-0"
-            size={20}
-          />
+          <Search className="text-gray-400 shrink-0" size={20} />
 
           <input
             type="text"
             placeholder="Search Devices..."
             value={search}
-            onChange={(e) =>
-              setSearch(e.target.value)
-            }
+            onChange={(e) => setSearch(e.target.value)}
             className="
               bg-transparent
               outline-none
@@ -154,7 +117,6 @@ export default function DevicesPage() {
               sm:text-base
             "
           />
-
         </div>
 
         {/* ================= ADD BUTTON ================= */}
@@ -190,13 +152,9 @@ export default function DevicesPage() {
             shadow-lg
           "
         >
-
           <Plus size={20} />
-
           Add Device
-
         </button>
-
       </div>
 
       {/* ================= DEVICE TABLE ================= */}
@@ -215,7 +173,6 @@ export default function DevicesPage() {
           shadow-lg
         "
       >
-
         {/* ================= TABLE HEADER ================= */}
 
         <div
@@ -239,7 +196,6 @@ export default function DevicesPage() {
             text-gray-500
           "
         >
-
           <p>Device</p>
 
           <p>Status</p>
@@ -251,7 +207,6 @@ export default function DevicesPage() {
           <p>Firmware</p>
 
           <p>Actions</p>
-
         </div>
 
         {/* ================= TABLE BODY ================= */}
@@ -283,8 +238,8 @@ export default function DevicesPage() {
               "
             > */}
 
-              {/* Device */}
-              {/* <div>
+        {/* Device */}
+        {/* <div>
 
                 <p className="
                   font-semibold
@@ -302,8 +257,8 @@ export default function DevicesPage() {
 
               </div> */}
 
-              {/* Status */}
-              {/* <div className="
+        {/* Status */}
+        {/* <div className="
                 flex
                 items-center
               ">
@@ -350,23 +305,23 @@ export default function DevicesPage() {
 
               </div> */}
 
-              {/* Location */}
-              {/* <div className="text-gray-600">
+        {/* Location */}
+        {/* <div className="text-gray-600">
                 {device.location}
               </div> */}
 
-              {/* Last Seen */}
-              {/* <div className="text-gray-600">
+        {/* Last Seen */}
+        {/* <div className="text-gray-600">
                 {device.lastSeen}
               </div> */}
 
-              {/* Firmware */}
-              {/* <div className="text-gray-600">
+        {/* Firmware */}
+        {/* <div className="text-gray-600">
                 {device.firmware}
               </div> */}
 
-              {/* Actions */}
-              {/* <div className="
+        {/* Actions */}
+        {/* <div className="
                 flex
                 items-center
                 justify-start
@@ -399,25 +354,15 @@ export default function DevicesPage() {
           ))}
 
         </div> */}
-
       </div>
-
     </div>
   );
 }
 
 /* ================= STATUS CARD ================= */
 
-function StatusCard({
-  title,
-  value,
-  green,
-  red,
-  orange
-}) {
-
+function StatusCard({ title, value, green, red, orange }) {
   return (
-
     <div
       className="
         bg-black/5
@@ -439,7 +384,6 @@ function StatusCard({
         duration-300
       "
     >
-
       <p
         className="
           text-gray-500
@@ -465,16 +409,15 @@ function StatusCard({
             green
               ? "text-green-500"
               : red
-              ? "text-red-500"
-              : orange
-              ? "text-orange-500"
-              : "text-[#010c29]"
+                ? "text-red-500"
+                : orange
+                  ? "text-orange-500"
+                  : "text-[#010c29]"
           }
         `}
       >
         {value}
       </h3>
-
     </div>
   );
 }

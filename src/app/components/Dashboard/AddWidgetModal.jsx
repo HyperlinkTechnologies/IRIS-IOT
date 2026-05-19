@@ -1,33 +1,6 @@
 import { X } from "lucide-react";
+import { widgetRegistry } from "./widgetRegistry";
 
-const widgetOptions = [
-
-  {
-    type: "temperature",
-    title: "Temperature Widget",
-  },
-
-  {
-    type: "pressure",
-    title: "Pressure Widget",
-  },
-
-  {
-    type: "gauge",
-    title: "Gauge Widget",
-  },
-
-  {
-    type: "status",
-    title: "Device Status",
-  },
-
-  {
-    type: "chart",
-    title: "Line Chart",
-  },
-
-];
 
 export default function AddWidgetModal({
   open,
@@ -123,7 +96,7 @@ export default function AddWidgetModal({
           "
         >
 
-          {widgetOptions.map((widget) => (
+          {widgetRegistry.map((widget) => (
 
             <button
               key={widget.type}

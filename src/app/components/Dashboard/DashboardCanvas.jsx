@@ -1,13 +1,14 @@
-import {
-  Trash2,
-  Plus,
-} from "lucide-react";
+import { Trash2, Plus } from "lucide-react";
+
+import DashboardGrid from "./DashboardGrid";
 
 export default function DashboardCanvas({
   dashboard,
   onDeleteDashboard,
   onOpenWidgetModal,
   onDeleteWidget,
+  layouts,
+  handleSaveLayouts,
 }) {
 
   if (!dashboard) return null;
@@ -16,7 +17,7 @@ export default function DashboardCanvas({
 
     <div>
 
-      {/* Header */}
+      {/* ================= HEADER ================= */}
 
       <div
         className="
@@ -30,7 +31,7 @@ export default function DashboardCanvas({
         "
       >
 
-        {/* Left */}
+        {/* ================= LEFT ================= */}
 
         <div>
 
@@ -57,7 +58,7 @@ export default function DashboardCanvas({
 
         </div>
 
-        {/* Actions */}
+        {/* ================= ACTIONS ================= */}
 
         <div
           className="
@@ -68,7 +69,7 @@ export default function DashboardCanvas({
           "
         >
 
-          {/* Add Widget */}
+          {/* ================= ADD WIDGET ================= */}
 
           <button
             onClick={onOpenWidgetModal}
@@ -76,14 +77,18 @@ export default function DashboardCanvas({
               px-6
               py-3
               rounded-xl
-              bg-[#ff5700]
-              text-white
+              bg-white
+              text-[#ff5700]
+              border
+              border-[#ff5700]
+              hover:shadow-[0px_5px_10px_#ff5700]
               flex
               items-center
               justify-center
               gap-2
               cursor-pointer
               hover:opacity-90
+              transition-all
             "
           >
 
@@ -93,7 +98,7 @@ export default function DashboardCanvas({
 
           </button>
 
-          {/* Delete Dashboard */}
+          {/* ================= DELETE DASHBOARD ================= */}
 
           <button
             onClick={() =>
@@ -113,6 +118,8 @@ export default function DashboardCanvas({
               gap-2
               cursor-pointer
               hover:bg-red-600
+              hover:-translate-y-1
+              transition-all
             "
           >
 
@@ -126,7 +133,7 @@ export default function DashboardCanvas({
 
       </div>
 
-      {/* Empty State */}
+      {/* ================= EMPTY STATE ================= */}
 
       {dashboard.widgets.length === 0 && (
 
@@ -134,7 +141,7 @@ export default function DashboardCanvas({
           className="
             border
             border-dashed
-            border-gray-300
+            border-gray-400
             rounded-3xl
             min-h-[45vh]
             flex
@@ -158,88 +165,37 @@ export default function DashboardCanvas({
             </h3>
 
             <p className="text-gray-500">
+
               Click "Add Widget"
               to start building
               your dashboard
+
             </p>
 
           </div>
 
         </div>
 
+      ) }
+
+      {/* ================= GRID ================= */}
+
+      {dashboard.widgets.length > 0 && (
+        <div className="bg-black/2 rounded-3xl  p-4 border border-dashed border-gray-200">
+
+        <DashboardGrid
+          widgets={dashboard.widgets}
+          onDeleteWidget={
+            onDeleteWidget
+          }
+          layouts={layouts}
+          setLayouts={
+            handleSaveLayouts
+          }
+        />
+        </div>
+
       )}
-
-      {/* Widgets */}
-
-      <div
-        className="
-          grid
-          grid-cols-1
-          md:grid-cols-2
-          xl:grid-cols-4
-          gap-6
-        "
-      >
-
-        {dashboard.widgets.map((widget) => (
-
-          <div
-            key={widget.id}
-            className="
-              bg-black/5
-              border
-              border-black/10
-              rounded-3xl
-              p-6
-              relative
-              shadow-lg
-            "
-          >
-
-            {/* Delete Widget */}
-
-            <button
-              onClick={() =>
-                onDeleteWidget(
-                  widget.id
-                )
-              }
-              className="
-                absolute
-                top-4
-                right-4
-                text-red-500
-                cursor-pointer
-              "
-            >
-
-              <Trash2 size={18} />
-
-            </button>
-
-            {/* Widget */}
-
-            <h3
-              className="
-                text-xl
-                font-bold
-                mb-3
-              "
-            >
-              {widget.title}
-            </h3>
-
-            <p className="text-gray-500">
-              Widget Type:
-              {" "}
-              {widget.type}
-            </p>
-
-          </div>
-
-        ))}
-
-      </div>
 
     </div>
   );

@@ -8,134 +8,122 @@ import DashboardCanvas from "./DashboardCanvas";
 import AddWidgetModal from "./AddWidgetModal";
 
 export default function DashboardHome() {
-
   /* ================= STATES ================= */
 
-  const [modalOpen, setModalOpen] =
-    useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const [addWidgetModalOpen, setAddWidgetModalOpen] =
-    useState(false);
+  const [addWidgetModalOpen, setAddWidgetModalOpen] = useState(false);
 
-  const [dashboards, setDashboards] =
-    useState([]);
+  const [dashboards, setDashboards] = useState([]);
 
-  const [activeDashboard, setActiveDashboard] =
-    useState(null);
+  const [activeDashboard, setActiveDashboard] = useState(null);
+
 
   /* ================= LOAD ================= */
 
   useEffect(() => {
-
     const savedDashboards =
-      JSON.parse(
-        localStorage.getItem(
-          "iris_dashboards"
-        )
-      ) || [];
+      JSON.parse(localStorage.getItem("iris_dashboards")) || [];
 
     setDashboards(savedDashboards);
 
     if (savedDashboards.length > 0) {
-
-      setActiveDashboard(
-        savedDashboards[0].id
-      );
+      setActiveDashboard(savedDashboards[0].id);
     }
-
   }, []);
 
   /* ================= SAVE ================= */
 
   useEffect(() => {
-
-    localStorage.setItem(
-      "iris_dashboards",
-      JSON.stringify(dashboards)
-    );
-
+    localStorage.setItem("iris_dashboards", JSON.stringify(dashboards));
   }, [dashboards]);
 
   /* ================= CREATE ================= */
 
-  const handleCreateDashboard = (
-    dashboard
-  ) => {
-
+  const handleCreateDashboard = (dashboard) => {
     const updatedDashboards = [
-  ...dashboards,
-  {
-    ...dashboard,
-    widgets: [],
-  },
-];
+      ...dashboards,
+      {
+        ...dashboard,
+        widgets: [],
+      },
+    ];
 
     setDashboards(updatedDashboards);
 
-    setActiveDashboard(
-      dashboard.id
-    );
+    setActiveDashboard(dashboard.id);
   };
 
   const handleAddWidget = (widget) => {
+    /* Create widget with layout */
 
-  const updatedDashboards =
-    dashboards.map((dashboard) => {
+    const newWidget = {
+      id: Date.now(),
 
-      if (
-        dashboard.id === activeDashboard
-      ) {
+      type: widget.type,
 
+      title: widget.title,
+
+      layout: {
+        x: 0,
+        y: Infinity,
+
+        w: 4,
+        h: 8,
+      },
+    };
+
+    /* Update dashboard */
+
+    const updatedDashboards = dashboards.map((dashboard) => {
+      if (dashboard.id === activeDashboard) {
         return {
-
           ...dashboard,
 
-          widgets: [
-            ...dashboard.widgets,
-            widget,
-          ],
+          widgets: [...dashboard.widgets, newWidget],
         };
       }
 
       return dashboard;
     });
 
-  setDashboards(updatedDashboards);
-};
+    setDashboards(updatedDashboards);
+  };
 
-
-
-const handleDeleteDashboard = (
-  dashboardId
-) => {
-
-  const updatedDashboards =
-    dashboards.filter(
-      (dashboard) =>
-        dashboard.id !== dashboardId
+  const handleDeleteDashboard = (dashboardId) => {
+    const updatedDashboards = dashboards.filter(
+      (dashboard) => dashboard.id !== dashboardId,
     );
 
-  setDashboards(updatedDashboards);
+    setDashboards(updatedDashboards);
 
-  /* Set next dashboard */
+    /* Set next dashboard */
 
-  if (
-    updatedDashboards.length > 0
-  ) {
+    if (updatedDashboards.length > 0) {
+      setActiveDashboard(updatedDashboards[0].id);
+    } else {
+      setActiveDashboard(null);
+    }
+  };
 
-    setActiveDashboard(
-      updatedDashboards[0].id
-    );
+  const handleDeleteWidget = (widgetId) => {
+    const updatedDashboards = dashboards.map((dashboard) => {
+      if (dashboard.id === activeDashboard) {
+        return {
+          ...dashboard,
 
-  } else {
+          widgets: dashboard.widgets.filter((widget) => widget.id !== widgetId),
+        };
+      }
 
-    setActiveDashboard(null);
-  }
-};
+      return dashboard;
+    });
 
+    setDashboards(updatedDashboards);
+  };
 
-const handleDeleteWidget = (
-  widgetId
+  const handleSaveLayouts = (
+  newLayouts
 ) => {
 
   const updatedDashboards =
@@ -150,9 +138,39 @@ const handleDeleteWidget = (
           ...dashboard,
 
           widgets:
-            dashboard.widgets.filter(
-              (widget) =>
-                widget.id !== widgetId
+            dashboard.widgets.map(
+              (widget) => {
+
+                const foundLayout =
+                  newLayouts.find(
+                    (layout) =>
+                      layout.i ===
+                      widget.id.toString()
+                  );
+
+                if (!foundLayout)
+                  return widget;
+
+                return {
+
+                  ...widget,
+
+                  layout: {
+
+                    x:
+                      foundLayout.x,
+
+                    y:
+                      foundLayout.y,
+
+                    w:
+                      foundLayout.w,
+
+                    h:
+                      foundLayout.h,
+                  },
+                };
+              }
             ),
         };
       }
@@ -165,19 +183,33 @@ const handleDeleteWidget = (
 
   /* ================= ACTIVE DASHBOARD ================= */
 
-  const currentDashboard =
-    dashboards.find(
-      (d) => d.id === activeDashboard
-    );
+  const currentDashboard = dashboards.find((d) => d.id === activeDashboard);
+
+  const layouts =
+  currentDashboard?.widgets.map(
+    (widget) => ({
+
+      i: widget.id.toString(),
+
+      x:
+        widget.layout?.x || 0,
+
+      y:
+        widget.layout?.y || 0,
+
+      w:
+        widget.layout?.w || 4,
+
+      h:
+        widget.layout?.h || 8,
+    })
+  ) || [];
 
   /* ================= EMPTY ================= */
 
   if (dashboards.length === 0) {
-
     return (
-
       <>
-
         <div
           className="
             border
@@ -194,15 +226,9 @@ const handleDeleteWidget = (
             text-center
           "
         >
+          <LayoutDashboard size={70} className="text-[#ff5700] mb-6" />
 
-          <LayoutDashboard
-            size={70}
-            className="text-[#ff5700] mb-6"
-          />
-
-          <h3 className="text-5xl font-bold mb-4">
-            Dashboard is Empty
-          </h3>
+          <h3 className="text-5xl font-bold mb-4">Dashboard is Empty</h3>
 
           <p
             className="
@@ -212,15 +238,12 @@ const handleDeleteWidget = (
               text-lg
             "
           >
-            Click the edit dashboard button
-            to add widgets, analytics and
-            live monitoring components.
+            Click the edit dashboard button to add widgets, analytics and live
+            monitoring components.
           </p>
 
           <button
-            onClick={() =>
-              setModalOpen(true)
-            }
+            onClick={() => setModalOpen(true)}
             className="
               px-8
               py-4
@@ -237,42 +260,29 @@ const handleDeleteWidget = (
           >
             Edit Dashboard
           </button>
-
         </div>
 
         {/* Modal */}
 
         <CreateDashboardModal
           open={modalOpen}
-          onClose={() =>
-            setModalOpen(false)
-          }
-          onCreate={
-            handleCreateDashboard
-          }
+          onClose={() => setModalOpen(false)}
+          onCreate={handleCreateDashboard}
         />
-
       </>
-
     );
   }
 
   /* ================= DASHBOARDS ================= */
 
   return (
-
     <div>
-
       {/* Tabs */}
 
       <DashboardTabs
         dashboards={dashboards}
-        activeDashboard={
-          activeDashboard
-        }
-        setActiveDashboard={
-          setActiveDashboard
-        }
+        activeDashboard={activeDashboard}
+        setActiveDashboard={setActiveDashboard}
       />
 
       {/* Top Actions */}
@@ -284,11 +294,8 @@ const handleDeleteWidget = (
           mb-6
         "
       >
-
         <button
-          onClick={() =>
-            setModalOpen(true)
-          }
+          onClick={() => setModalOpen(true)}
           className="
             px-6
             py-3
@@ -301,45 +308,31 @@ const handleDeleteWidget = (
         >
           + New Dashboard
         </button>
-
       </div>
 
       {/* Canvas */}
 
       <DashboardCanvas
-  dashboard={currentDashboard}
-  onDeleteDashboard={
-    handleDeleteDashboard
-  }
-  onOpenWidgetModal={() =>
-    setAddWidgetModalOpen(true)
-  }
-  onDeleteWidget={
-    handleDeleteWidget
-  }
-/>
+        dashboard={currentDashboard}
+        onDeleteDashboard={handleDeleteDashboard}
+        onOpenWidgetModal={() => setAddWidgetModalOpen(true)}
+        onDeleteWidget={handleDeleteWidget}
+        layouts={layouts}
+        handleSaveLayouts={handleSaveLayouts}
+      />
 
-<AddWidgetModal
-  open={addWidgetModalOpen}
-  onClose={() =>
-    setAddWidgetModalOpen(false)
-  }
-  onAddWidget={
-    handleAddWidget
-  }
-/>
+      <AddWidgetModal
+        open={addWidgetModalOpen}
+        onClose={() => setAddWidgetModalOpen(false)}
+        onAddWidget={handleAddWidget}
+      />
       {/* Modal */}
 
       <CreateDashboardModal
         open={modalOpen}
-        onClose={() =>
-          setModalOpen(false)
-        }
-        onCreate={
-          handleCreateDashboard
-        }
+        onClose={() => setModalOpen(false)}
+        onCreate={handleCreateDashboard}
       />
-
     </div>
   );
 }

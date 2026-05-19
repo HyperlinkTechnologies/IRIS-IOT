@@ -5,8 +5,6 @@ export default function CreateDashboardModal({ open, onClose, onCreate }) {
   const [formData, setFormData] = useState({
     name: "",
     device: "",
-    type: "",
-    description: "",
   });
 
   if (!open) return null;
@@ -23,12 +21,12 @@ export default function CreateDashboardModal({ open, onClose, onCreate }) {
     setFormData({
       name: "",
       device: "",
-      type: "",
-      description: "",
     });
 
     onClose();
+
   };
+  
 
   return (
     <div
@@ -142,6 +140,7 @@ export default function CreateDashboardModal({ open, onClose, onCreate }) {
                 type="text"
                 placeholder="Factory Monitoring"
                 value={formData.name}
+                required
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -209,11 +208,11 @@ export default function CreateDashboardModal({ open, onClose, onCreate }) {
               >
                 <option value="">Select Device</option>
 
-                <option>Boiler Sensor</option>
+                <option>Device 1</option>
 
-                <option>Temperature Node</option>
+                <option>Device 2</option>
 
-                <option>Pressure Monitor</option>
+                <option>Device 3</option>
               </select>
             </div>
 
