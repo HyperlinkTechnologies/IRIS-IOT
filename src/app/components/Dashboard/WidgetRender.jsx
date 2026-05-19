@@ -1,38 +1,38 @@
 import ToggleWidget
-from "./widgets/ToggleWidget";
+from "./Widgets/ToggleWidget";
 
 import PushButtonWidget
-from "./widgets/PushButtonWidget";
+from "./Widgets/PushButtonWidget";
 
 import LEDWidget
-from "./widgets/LEDWidget";
+from "./Widgets/LEDWidget";
 
 import TemperatureWidget
-from "./widgets/TemperatureWidget";
+from "./Widgets/TemperatureWidget";
 
 import GaugeWidget
-from "./widgets/GaugeWidget";
+from "./Widgets/GaugeWidget";
 
 import VerticalGaugeWidget
-from "./widgets/VerticalGaugeWidget";
+from "./Widgets/VerticalGaugeWidget";
 
 import HorizontalGaugeWidget
-from "./widgets/HorizontalGaugeWidget";
+from "./Widgets/HorizontalGaugeWidget";
 
 import SliderWidget
-from "./widgets/SliderWidget";
+from "./Widgets/SliderWidget";
 
 import TextDisplayWidget
-from "./widgets/TextDisplayWidget";
+from "./Widgets/TextDisplayWidget";
 
 import NumericInputWidget
-from "./widgets/NumericInputWidget";
+from "./Widgets/NumericInputWidget";
 
 import TextInputWidget
-from "./widgets/TextInputWidget";
+from "./Widgets/TextInputWidget";
 
 import ChartWidget
-from "./widgets/ChartWidget";
+from "./Widgets/ChartWidget";
 
 export default function WidgetRenderer({
   widget,
