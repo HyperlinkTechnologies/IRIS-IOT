@@ -9,7 +9,7 @@ import Footer from './app/components/Landing page/Footer';
 import NavBar from './app/components/Landing page/NavBar';
 
 import HomePage from './app/pages/LandingPage/HomePage';
-import PricingPage from './app/pages/LandingPage/Pricingpage';
+import PricingPage from './app/pages/LandingPage/PricingPage';
 import ProductsPage from './app/pages/LandingPage/ProductsPage';
 import Contactpage from './app/pages/LandingPage/Contactpage';
 
