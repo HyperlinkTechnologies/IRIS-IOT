@@ -2,16 +2,16 @@ import { useEffect } from "react";
 import { getCurrentUser } from "aws-amplify/auth";
 import { useNavigate } from "react-router-dom";
 
-import CtaSection from '../components/Landing page/CTAsection';
-import HeroSection from '../components/Landing page/HeroSection';
-import KeyCapabilitiesSection from '../components/Landing page/Keycapabilities';
-import OverviewSection from '../components/Landing page/OverviewSection';
-import DashboardPreviewSection from '../components/Landing page/DashboardPreview';
-import HowItWorksSection from '../components/Landing page/HowitWorks';
-import UseCasesSection from '../components/Landing page/UseCases';
-import SaasMultiTenancySection from '../components/Landing page/SaasMultiTenancy';
-import IntegrationsSection from '../components/Landing page/Integrations';
-import WhyChooseIrisSection from '../components/Landing page/WhyChooseIris';
+import CtaSection from '../../components/Landing page/CTAsection';
+import HeroSection from '../../components/Landing page/HeroSection';
+import KeyCapabilitiesSection from '../../components/Landing page/Keycapabilities';
+import OverviewSection from '../../components/Landing page/OverviewSection';
+import DashboardPreviewSection from '../../components/Landing page/DashboardPreview';
+import HowItWorksSection from '../../components/Landing page/HowitWorks';
+import UseCasesSection from '../../components/Landing page/UseCases';
+import SaasMultiTenancySection from '../../components/Landing page/SaasMultiTenancy';
+import IntegrationsSection from '../../components/Landing page/Integrations';
+import WhyChooseIrisSection from '../../components/Landing page/WhyChooseIris';
 
 
 

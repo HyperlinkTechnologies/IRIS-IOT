@@ -13,19 +13,19 @@ import {
 
 /* ================= PAGES ================= */
 
-import DashboardHome from "../../components/Dashboard/DashboardHome";
+import DashboardHome from "./DashboardHome";
 
-import DevicesPage from "../../components/Dashboard/Devicespage";
+import DevicesPage from "./Devicespage";
 
-import AlertsPage from "../../components/Dashboard/AlertsPage";
+import AlertsPage from "./AlertsPage";
 
-import BillingPage from "../../components/Dashboard/BillingPage";
+import BillingPage from "./BillingPage";
 
-import SettingsPage from "../../components/Dashboard/SettingsPage";
+import SettingsPage from "./SettingsPage";
 
-import GetStartedPage from "../../components/Dashboard/GetStartedPage";
+import GetStartedPage from "./GetStartedPage";
 
-import DocumentationPage from "../../components/Dashboard/DocumentationPage";
+import DocumentationPage from "./DocumentationPage";
 
 /* ================= COMPONENTS ================= */
 

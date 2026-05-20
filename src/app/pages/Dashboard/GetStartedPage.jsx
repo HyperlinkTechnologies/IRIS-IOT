@@ -5,7 +5,7 @@ import {
   BarChart3
 } from "lucide-react";
 
-import DashboardCard from "./DashboardCard";
+import DashboardCard from "../../components/Dashboard/DashboardCard";
 
 export default function GetStartedPage() {
 

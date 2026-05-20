@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 
 import { LayoutDashboard } from "lucide-react";
 
-import CreateDashboardModal from "./CreateDashboardModal";
-import DashboardTabs from "./DashboardTabs";
-import DashboardCanvas from "./DashboardCanvas";
-import AddWidgetModal from "./AddWidgetModal";
+import CreateDashboardModal from "../../components/Dashboard/CreateDashboardModal";
+import DashboardTabs from "../../components/Dashboard/DashboardTabs";
+import DashboardCanvas from "../../components/Dashboard/DashboardCanvas";
+import AddWidgetModal from "../../components/Dashboard/AddWidgetModal";
 
 export default function DashboardHome() {
   /* ================= STATES ================= */
@@ -216,7 +216,7 @@ export default function DashboardHome() {
             border-dashed
             border-gray-300
             rounded-3xl
-            min-h-[75vh]
+            h-[calc(100vh-150px)]
             flex
             flex-col
             items-center
@@ -226,16 +226,16 @@ export default function DashboardHome() {
             text-center
           "
         >
-          <LayoutDashboard size={70} className="text-[#ff5700] mb-6" />
+          <LayoutDashboard size={60} className="text-[#ff5700] mb-6" />
 
-          <h3 className="text-5xl font-bold mb-4">Dashboard is Empty</h3>
+          <h3 className="text-4xl font-bold mb-4">Dashboard is Empty</h3>
 
           <p
             className="
               text-gray-500
               mb-8
               max-w-2xl
-              text-lg
+              text-md
             "
           >
             Click the edit dashboard button to add widgets, analytics and live

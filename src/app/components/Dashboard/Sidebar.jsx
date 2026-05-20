@@ -109,16 +109,16 @@ export default function Sidebar({
               lg:hidden
               w-10
               h-10
-              rounded-xl
               flex
               items-center
               justify-center
               hover:bg-black/5
               transition-all
+              cursor-pointer rounded-full
             "
           >
 
-            <X size={22} />
+            <X size={22}/>
 
           </button>
 
