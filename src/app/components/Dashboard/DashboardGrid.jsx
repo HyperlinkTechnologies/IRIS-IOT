@@ -39,8 +39,8 @@ export default function DashboardGrid({
           xs: 480,
         }}
         cols={{
-          lg: 25,
-          md: 20,
+          lg: 18,
+          md: 15,
           sm: 8,
           xs: 5,
         }}
