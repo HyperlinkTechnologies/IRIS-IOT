@@ -141,14 +141,17 @@ export default function DashboardCanvas({
           className="
             border
             border-dashed
-            border-gray-400
+            border-gray-300
             rounded-3xl
-            min-h-[45vh]
+            h-screen
+             -150px
             flex
+            flex-col
             items-center
             justify-center
+            bg-black/5
+            px-6
             text-center
-            p-8
           "
         >
 

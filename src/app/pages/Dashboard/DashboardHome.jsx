@@ -285,30 +285,7 @@ export default function DashboardHome() {
         setActiveDashboard={setActiveDashboard}
       />
 
-      {/* Top Actions */}
-
-      <div
-        className="
-          flex
-          justify-end
-          mb-6
-        "
-      >
-        <button
-          onClick={() => setModalOpen(true)}
-          className="
-            px-6
-            py-3
-            rounded-xl
-            bg-[#ff5700]
-            text-white
-            hover:opacity-90
-            cursor-pointer
-          "
-        >
-          + New Dashboard
-        </button>
-      </div>
+      
 
       {/* Canvas */}
 

@@ -168,9 +168,11 @@ export default function DashboardPage() {
             sticky
             top-0
             z-30
-            mt-2
-            ml-2
-            mr-2
+            mx-4
+            sm:mx-6
+            lg:mx-8
+            mt-4
+            mb-6
             rounded-2xl
           "
         >

@@ -1,5 +1,5 @@
 import { signOut } from "aws-amplify/auth";
-import useProfile from "../../hooks/useProfile";
+
 import { Settings, User } from "lucide-react";
 
 export default function Topbar({
@@ -8,7 +8,6 @@ export default function Topbar({
   setShowProfileMenu,
   setActiveTab,
 }) {
-  const profile = useProfile();
   /* ================= USER ================= */
 
   const user = JSON.parse(localStorage.getItem("iris_user"));
@@ -101,7 +100,7 @@ export default function Topbar({
                 sm:text-base
               "
             >
-              {profile.username}
+              {user?.username}
             </p>
           </div>
 
@@ -124,26 +123,7 @@ export default function Topbar({
               shadow-lg
             "
           >
-            {profile.image ? (
-
-            <img
-              src={profile.image}
-              alt="Profile"
-              className="
-                w-full
-                h-full
-                object-cover
-                rounded-full
-              "
-            />
-
-          ) : (
-
-            <span className="text-white">
-              {profile.username?.charAt(0)}
-            </span>
-
-          )}
+            <User className="text-white" size={20} />
           </div>
         </button>
 
@@ -155,7 +135,7 @@ export default function Topbar({
               absolute
               right-0
               top-16
-              w-80
+              w-90
               rounded-2xl
               bg-white
               border
@@ -184,7 +164,7 @@ export default function Topbar({
                     text-lg
                   "
                 >
-                  {profile.username}
+                  {user?.username}
                 </p>
 
                 <p
@@ -198,7 +178,25 @@ export default function Topbar({
                 </p>
               </div>
 
-              
+              {/* Settings */}
+
+              <button
+                onClick={() => {
+                  setActiveTab("settings");
+
+                  setShowProfileMenu(false);
+                }}
+                className="
+                  p-2.5
+                  rounded-full
+                  hover:bg-gray-200
+                  transition-all
+                  shrink-0
+                  cursor-pointer
+                "
+              >
+                <Settings className="text-gray-500" size={20} />
+              </button>
             </div>
 
             {/* Divider */}
@@ -211,55 +209,26 @@ export default function Topbar({
               "
             />
 
+            {/* Logout */}
 
-            <div className="flex gap-3 
-                  items-center
-                  justify-center">
-              {/* Logout */}
-
-                <button
-                  onClick={handleLogout}
-                  className="
-                    w-full
-                    py-3
-                    rounded-xl
-                    bg-linear-to-r
-                    from-[#d84800]
-                    to-[#ff5700]
-                    hover:opacity-90
-                    transition-all
-                    cursor-pointer
-                    text-white
-                    font-medium
-                  "
-                >
-                  Logout
-                </button>
-
-            {/* Settings */}
-
-              <button
-                onClick={() => {
-                  setActiveTab("settings");
-
-                  setShowProfileMenu(false);
-                }}
-                className="
-                  p-3.5
-                  rounded-full
-                  hover:bg-gray-200
-                  transition-all
-                  shrink-0
-                  cursor-pointer
-                  items-center
-                  justify-center
-                  
-                "
-              >
-                <Settings className="text-gray-500" size={23} />
-              </button>
-            </div>
-            
+            <button
+              onClick={handleLogout}
+              className="
+                w-full
+                py-3
+                rounded-xl
+                bg-linear-to-r
+                from-[#d84800]
+                to-[#ff5700]
+                hover:opacity-90
+                transition-all
+                cursor-pointer
+                text-white
+                font-medium
+              "
+            >
+              Logout
+            </button>
           </div>
         )}
       </div>
