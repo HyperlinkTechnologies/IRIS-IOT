@@ -7,13 +7,7 @@ export default function WidgetCard({
 
     <div
       className="
-        bg-black/5
-        border
-        border-black/10
-        rounded-3xl
-        p-6
-        shadow-lg
-        h-[calc(100%-10px)]
+        py-6      
       "
     >
 

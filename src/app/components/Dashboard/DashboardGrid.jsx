@@ -39,13 +39,13 @@ export default function DashboardGrid({
           xs: 480,
         }}
         cols={{
-          lg: 12,
-          md: 10,
-          sm: 6,
-          xs: 2,
+          lg: 25,
+          md: 20,
+          sm: 8,
+          xs: 5,
         }}
-        rowHeight={40}
-        width={1200}
+        rowHeight={30}
+        width={1300}
         onLayoutChange={handleLayoutChange}
         draggableHandle=".drag-handle"
         isResizable={true}
@@ -64,7 +64,7 @@ export default function DashboardGrid({
 
               w: widget.layout?.w || 4,
 
-              h: widget.layout?.h || 8,
+              h: widget.layout?.h || 6,
 
               minW: widget.layout?.minW || 3,
 
@@ -72,13 +72,11 @@ export default function DashboardGrid({
             }}
             className="
                 bg-white
-                rounded-4xl
+                rounded-2xl
                 overflow-hidden
                 border
                 border-black/10
                 shadow-lg
-                h-full
-                w-full
                 flex
                 flex-col
             "
@@ -90,6 +88,7 @@ export default function DashboardGrid({
                 drag-handle
                 h-14
                 px-5
+                py-3
                 flex
                 items-center
                 justify-between
@@ -121,9 +120,10 @@ export default function DashboardGrid({
 
             <div
                 className="
-                    flex-1
-                    p-4
-                    h-[calc(100%-56px)]
+                    flex
+                    items-center
+                    justify-center
+                    h-100
                 "
                 >
               <WidgetRenderer widget={widget} />

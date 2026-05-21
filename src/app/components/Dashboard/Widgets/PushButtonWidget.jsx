@@ -50,13 +50,13 @@ export default function PushButtonWidget() {
 
         </button> */}
         <button
-          class="group relative px-8 py-4 font-bold text-white uppercase tracking-wider rounded-2xl bg-red-500 border-b-8 border-red-700 active:border-b-0 active:translate-y-2 transition-all duration-100 shadow-[0_15px_25px_-10px_rgba(239,68,68,0.8)] focus:outline-none focus:ring-4 focus:ring-red-400/50 cursor-pointer"
+          className="group relative px-8 py-4 font-bold text-white uppercase tracking-wider rounded-2xl bg-red-500 border-b-8 border-red-700 active:border-b-0 active:translate-y-2 transition-all duration-100 shadow-[0_15px_25px_-10px_rgba(239,68,68,0.8)] focus:outline-none focus:ring-4 focus:ring-red-400/50 cursor-pointer"
         >
           <span
-            class="absolute inset-0 w-full h-full rounded-2xl bg-linear-to-t from-black/20 to-transparent pointer-events-none"
+            className="absolute inset-0 w-full h-full rounded-2xl bg-linear-to-t from-black/20 to-transparent pointer-events-none"
           ></span>
 
-          <span class="relative flex items-center justify-center gap-2 drop-shadow-md cursor-pointer">
+          <span className="relative flex items-center justify-center gap-2 drop-shadow-md cursor-pointer">
             Push
           </span>
         </button>

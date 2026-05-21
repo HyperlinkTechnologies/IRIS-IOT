@@ -19,9 +19,9 @@ export default function GaugeWidget() {
 
         <div
           className="
-            relative
-            w-44
-            h-44
+            absolute
+            w-50
+            h-50
             rounded-full
             border-16
             border-gray-200

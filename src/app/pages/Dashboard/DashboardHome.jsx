@@ -54,41 +54,110 @@ export default function DashboardHome() {
     setActiveDashboard(dashboard.id);
   };
 
-  const handleAddWidget = (widget) => {
-    /* Create widget with layout */
+  const handleAddWidget = (
+  widget
+) => {
 
-    const newWidget = {
-      id: Date.now(),
+  const currentDashboard =
+    dashboards.find(
+      (dashboard) =>
+        dashboard.id ===
+        activeDashboard
+    );
 
-      type: widget.type,
+  if (!currentDashboard)
+    return;
 
-      title: widget.title,
+  /* ================= GRID CONFIG ================= */
 
-      layout: {
-        x: 0,
-        y: Infinity,
+  const TOTAL_COLS = 12;
 
-        w: 4,
-        h: 8,
-      },
-    };
+  const DEFAULT_W = 4;
 
-    /* Update dashboard */
+  const DEFAULT_H = 8;
 
-    const updatedDashboards = dashboards.map((dashboard) => {
-      if (dashboard.id === activeDashboard) {
-        return {
-          ...dashboard,
+  /* ================= EXISTING COUNT ================= */
 
-          widgets: [...dashboard.widgets, newWidget],
-        };
-      }
+  const widgetCount =
+    currentDashboard.widgets.length;
 
-      return dashboard;
-    });
+  /* ================= CALCULATE POSITION ================= */
 
-    setDashboards(updatedDashboards);
+  const widgetsPerRow =
+    TOTAL_COLS / DEFAULT_W;
+
+  const row =
+    Math.floor(
+      widgetCount /
+      widgetsPerRow
+    );
+
+  const col =
+    widgetCount %
+    widgetsPerRow;
+
+  const x =
+    col * DEFAULT_W;
+
+  const y =
+    row * DEFAULT_H;
+
+  /* ================= CREATE WIDGET ================= */
+
+  const newWidget = {
+
+    id: Date.now(),
+
+    type: widget.type,
+
+    title: widget.title,
+
+    layout: {
+
+      x,
+
+      y,
+
+      w: DEFAULT_W,
+
+      h: DEFAULT_H,
+
+      minW: 3,
+
+      minH: 5,
+    },
   };
+
+  /* ================= UPDATE DASHBOARDS ================= */
+
+  const updatedDashboards =
+    dashboards.map(
+      (dashboard) => {
+
+        if (
+          dashboard.id ===
+          activeDashboard
+        ) {
+
+          return {
+
+            ...dashboard,
+
+            widgets: [
+              ...dashboard.widgets,
+              newWidget,
+            ],
+          };
+        }
+
+        return dashboard;
+      }
+    );
+
+  setDashboards(
+    updatedDashboards
+  );
+};
 
   const handleDeleteDashboard = (dashboardId) => {
     const updatedDashboards = dashboards.filter(

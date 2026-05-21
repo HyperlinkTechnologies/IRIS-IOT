@@ -17,7 +17,9 @@ export default function TextDisplayWidget() {
 
         <h1
           className="
-            text-4xl
+            text-xl
+            sm:text-2xl
+            md:text-4xl
             font-bold
             text-[#ff5700]
           "
