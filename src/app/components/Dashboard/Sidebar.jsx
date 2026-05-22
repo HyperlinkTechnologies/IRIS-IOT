@@ -13,6 +13,7 @@ import {
 import SidebarItem from "./SidebarItem";
 
 import IrisLogo from "../../../assets/iris-logo.png";
+import IrisIcon from "../../../assets/IRIS icon.png";
 import { signOut } from "aws-amplify/auth";
 
 export default function Sidebar({
@@ -91,6 +92,15 @@ export default function Sidebar({
           border-white/10
         ">
 
+          <div className="flex gap-2 items-center justify-center">
+          <img 
+            src={IrisIcon} 
+            alt="IRIS Icon" 
+            className="w-8 md:w-12 sm:w-10 object-contain"
+            
+            
+            />
+
           {/* Logo */}
           <img
             src={IrisLogo}
@@ -101,6 +111,9 @@ export default function Sidebar({
               object-contain
             "
           />
+          </div>
+
+          
 
           {/* Close Button Mobile */}
           <button

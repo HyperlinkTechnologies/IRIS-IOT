@@ -2,7 +2,9 @@ import {
   Rocket,
   Cpu,
   Bell,
-  BarChart3
+  BarChart3,
+  ChevronDown,
+  ChevronRight
 } from "lucide-react";
 
 import DashboardCard from "../../components/Dashboard/DashboardCard";
@@ -11,22 +13,22 @@ export default function GetStartedPage() {
 
   const steps = [
     {
-      icon: <Rocket size={28} />,
+      icon: <Rocket size={24} />,
       title: "Setup Your Workspace",
       desc: "Configure your organization and dashboard",
     },
     {
-      icon: <Cpu size={28} />,
+      icon: <Cpu size={24} />,
       title: "Connect Devices",
       desc: "Add and monitor IoT devices",
     },
     {
-      icon: <Bell size={28} />,
+      icon: <Bell size={24} />,
       title: "Configure Alerts",
       desc: "Set real-time notifications",
     },
     {
-      icon: <BarChart3 size={28} />,
+      icon: <BarChart3 size={24} />,
       title: "Monitor Analytics",
       desc: "Visualize telemetry and insights",
     },
@@ -41,9 +43,9 @@ export default function GetStartedPage() {
 
         <h2
           className="
-            text-2xl
-            sm:text-3xl
-            lg:text-4xl
+            text-xl
+            sm:text-2xl
+            lg:text-3xl
             font-bold
             leading-tight
           "
@@ -53,10 +55,10 @@ export default function GetStartedPage() {
 
         <p
           className="
-            text-gray-400
+            text-gray-500
             mt-2
-            text-sm
-            sm:text-base
+            text-xs
+            sm:text-sm
           "
         >
           Setup and manage your industrial IoT platform efficiently
@@ -121,37 +123,47 @@ export default function GetStartedPage() {
               hover:bg-white/2
               transition-all
               duration-300
+              cursor-pointer
             "
           >
 
-            {/* Icon */}
-            <div
-              className="
-                w-14
-                h-14
-                sm:w-16
-                sm:h-16
-                rounded-2xl
-                bg-orange-500/10
-                flex
-                items-center
-                justify-center
-                text-[#ff5700]
-                mb-5
-              "
-            >
 
-              {step.icon}
+            <div className="flex items-center justify-between text-gray-400">
+              {/* Icon */}
+              <div
+                className="
+                  w-12
+                  h-12
+                  sm:w-14
+                  sm:h-14
+                  rounded-lg
+                  bg-orange-500/10
+                  flex
+                  items-center
+                  justify-center
+                  text-[#ff5700]
+                  mb-3
+                "
+              >
 
+                {step.icon}
+
+              </div>
+
+
+              {/* Arrow Icon */}
+              <ChevronRight size={25}/>
             </div>
+
+            
 
             {/* Title */}
             <h3
               className="
-                text-xl
-                sm:text-2xl
+                text-lg
+                sm:text-xl
                 font-bold
-                mb-3
+                mb-1
                 leading-snug
               "
             >
@@ -162,8 +174,8 @@ export default function GetStartedPage() {
             <p
               className="
                 text-gray-400
-                text-sm
-                sm:text-base
+                text-xs
+                sm:text-sm
                 leading-relaxed
               "
             >
