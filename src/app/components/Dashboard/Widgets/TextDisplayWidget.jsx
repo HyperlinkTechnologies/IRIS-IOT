@@ -22,6 +22,7 @@ export default function TextDisplayWidget() {
             md:text-4xl
             font-bold
             text-[#ff5700]
+            text-center
           "
         >
           MACHINE ACTIVE

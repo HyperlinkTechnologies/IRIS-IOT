@@ -27,7 +27,6 @@ export default function HorizontalGaugeWidget() {
         <div
           className="
             w-full
-            max-w-175
             h-8
             bg-gray-200
             rounded-full

@@ -74,7 +74,7 @@ export default function DashboardHome() {
 
   const DEFAULT_W = 4;
 
-  const DEFAULT_H = 8;
+  const DEFAULT_H = 6;
 
   /* ================= EXISTING COUNT ================= */
 

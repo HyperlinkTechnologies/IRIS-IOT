@@ -7,7 +7,8 @@ export default function WidgetCard({
 
     <div
       className="
-        py-6      
+        py-6  
+        w-full    
       "
     >
 

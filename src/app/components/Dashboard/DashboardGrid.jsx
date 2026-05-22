@@ -1,19 +1,27 @@
 import { Responsive } from "react-grid-layout";
 
 import "react-grid-layout/css/styles.css";
+
 import "react-resizable/css/styles.css";
 
-import { Trash2 } from "lucide-react";
+import { Trash2 }
+from "lucide-react";
 
-import WidgetRenderer from "./WidgetRender";
+import WidgetRenderer
+from "./WidgetRender";
 
 /* ================= GRID ================= */
 
 export default function DashboardGrid({
+
   widgets,
+
   onDeleteWidget,
+
   layouts,
+
   setLayouts,
+
 }) {
 
   /* ================= SAVE LAYOUT ================= */
@@ -26,61 +34,95 @@ export default function DashboardGrid({
   };
 
   return (
+
     <div className="w-full">
+
       <Responsive
+
         className="layout"
+
         layouts={{
           lg: layouts,
         }}
+
         breakpoints={{
           lg: 1200,
           md: 996,
           sm: 768,
           xs: 480,
         }}
+
         cols={{
           lg: 18,
           md: 15,
           sm: 8,
           xs: 5,
         }}
+
         rowHeight={30}
+
         width={1300}
-        onLayoutChange={handleLayoutChange}
+
+        onLayoutChange={
+          handleLayoutChange
+        }
+
         draggableHandle=".drag-handle"
+
+        draggableCancel=".no-drag"
+
         isResizable={true}
+
         isDraggable={true}
+
         compactType="vertical"
+
         preventCollision={false}
+
         margin={[20, 20]}
+
       >
+
         {widgets.map((widget) => (
+
           <div
+
             key={widget.id.toString()}
+
             data-grid={{
-              x: widget.layout?.x || 0,
 
-              y: widget.layout?.y || 0,
+              x:
+                widget.layout?.x || 0,
 
-              w: widget.layout?.w || 4,
+              y:
+                widget.layout?.y || 0,
 
-              h: widget.layout?.h || 6,
+              w:
+                widget.layout?.w || 4,
 
-              minW: widget.layout?.minW || 3,
+              h:
+                widget.layout?.h || 6,
 
-              minH: widget.layout?.minH || 5,
+              minW:
+                widget.layout?.minW || 3,
+
+              minH:
+                widget.layout?.minH || 5,
             }}
+
             className="
-                bg-white
-                rounded-2xl
-                overflow-hidden
-                border
-                border-black/10
-                shadow-lg
-                flex
-                flex-col
+              bg-white
+              rounded-2xl
+              overflow-hidden
+              border
+              border-black/10
+              shadow-lg
+              flex
+              flex-col
+              relative
             "
           >
+
             {/* ================= HEADER ================= */}
 
             <div
@@ -98,36 +140,64 @@ export default function DashboardGrid({
                 bg-gray-50
               "
             >
-              <h3 className="font-bold">{widget.title}</h3>
+
+              <h3 className="font-bold">
+
+                {widget.title}
+
+              </h3>
 
               {/* ================= DELETE ================= */}
 
               <button
-                onClick={() => onDeleteWidget(widget.id)}
+
+                onClick={(e) => {
+
+                  e.preventDefault();
+
+                  e.stopPropagation();
+
+                  onDeleteWidget(
+                    widget.id
+                  );
+                }}
+
                 className="
+                  no-drag
                   text-red-500
                   cursor-pointer
                   hover:bg-red-100
                   p-2
                   rounded-full
+                  relative
+                  z-50
                 "
               >
+
                 <Trash2 size={18} />
+
               </button>
+
             </div>
 
             {/* ================= CONTENT ================= */}
 
             <div
-                className="
-                    flex
-                    items-center
-                    justify-center
-                    h-100
-                "
-                >
-              <WidgetRenderer widget={widget} />
+              className="
+                w-full
+                h-full
+                flex
+                justify-center
+                overflow-hidden
+              "
+            >
+
+              <WidgetRenderer
+                widget={widget}
+              />
+
             </div>
+
             {/* ================= RESIZE HANDLE ================= */}
 
             <div
@@ -153,9 +223,13 @@ export default function DashboardGrid({
               />
 
             </div>
+
           </div>
+
         ))}
+
       </Responsive>
+
     </div>
   );
 }
