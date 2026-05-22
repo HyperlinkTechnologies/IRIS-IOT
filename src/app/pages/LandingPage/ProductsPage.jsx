@@ -1,5 +1,5 @@
 import React from 'react'
-import imgProduct1 from "../../../assets/iris.png";
+import imgProduct1 from "../../../assets/IOT Gateway.png";
 import { MonitorCog, ShieldCheck, Wifi, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
