@@ -1,48 +1,100 @@
-import WidgetCard from "./WidgetCard";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-export default function GaugeWidget() {
+import WidgetCard
+from "./WidgetCard";
 
-  const value = 72;
+export default function GaugeWidget({
+  widget,
+}) {
+
+  const [value, setValue] =
+    useState(0);
+
+  /* ================= FETCH VALUE ================= */
+
+  useEffect(() => {
+
+    const interval =
+      setInterval(async () => {
+
+        try {
+
+          const response =
+            await fetch(
+
+              `http://localhost:5000/api/widget/${widget.widgetId}`
+            );
+
+          const data =
+            await response.json();
+
+          setValue(
+            data.value
+          );
+
+        } catch (error) {
+
+          console.log(error);
+        }
+
+      }, 1000);
+
+    return () =>
+      clearInterval(
+        interval
+      );
+
+  }, [widget.widgetId]);
 
   return (
 
-    <WidgetCard title="Circular Gauge">
+    <WidgetCard
+      title="Circular Gauge"
+    >
 
       <div
         className="
+          w-full
+          h-full
           flex
           items-center
           justify-center
-          h-full
         "
       >
 
         <div
           className="
-            absolute
-            w-50
-            h-50
+            relative
+            w-[70%]
+            aspect-square
             rounded-full
-            border-16
+            border-12
             border-gray-200
             flex
             items-center
             justify-center
           "
           style={{
-            borderTopColor: "#ff5700",
+
+            borderTopColor:
+              "#ff5700",
           }}
         >
 
-          <h1
+          <span
             className="
-              text-5xl
+              text-3xl
               font-black
               text-[#ff5700]
             "
           >
+
             {value}%
-          </h1>
+
+          </span>
 
         </div>
 

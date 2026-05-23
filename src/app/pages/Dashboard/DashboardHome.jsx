@@ -106,27 +106,32 @@ export default function DashboardHome() {
 
   const newWidget = {
 
-    id: Date.now(),
+  id: Date.now(),
 
-    type: widget.type,
+  widgetId:
+    `${widget.type}_${Date.now()}`,
 
-    title: widget.title,
+  type: widget.type,
 
-    layout: {
+  title: widget.title,
 
-      x,
+  value: 0,
 
-      y,
+  layout: {
 
-      w: DEFAULT_W,
+    x,
 
-      h: DEFAULT_H,
+    y,
 
-      minW: 3,
+    w: 4,
 
-      minH: 5,
-    },
-  };
+    h: 6,
+
+    minW: 2,
+
+    minH: 4,
+  },
+};
 
   /* ================= UPDATE DASHBOARDS ================= */
 
