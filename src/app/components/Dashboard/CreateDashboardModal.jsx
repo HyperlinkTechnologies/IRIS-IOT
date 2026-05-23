@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 
-export default function CreateDashboardModal({ open, onClose, onCreate }) {
+export default function CreateDashboardModal({ open, onClose, onCreate, devices, }) {
   const [formData, setFormData] = useState({
     name: "",
     device: "",
@@ -206,13 +206,31 @@ export default function CreateDashboardModal({ open, onClose, onCreate }) {
                   transition-all
                 "
               >
-                <option value="">Select Device</option>
+                <option value="">
+                  Select Device
+                </option>
 
-                <option>Device 1</option>
+                {devices.length > 0 ? (
 
-                <option>Device 2</option>
+                  devices.map((device) => (
 
-                <option>Device 3</option>
+                    <option
+                      key={device.id}
+                      value={device.name}
+                    >
+
+                      {device.name}
+
+                    </option>
+                  ))
+
+                ) : (
+
+                  <option disabled>
+                    No Devices Available
+                  </option>
+
+                )}
               </select>
             </div>
 

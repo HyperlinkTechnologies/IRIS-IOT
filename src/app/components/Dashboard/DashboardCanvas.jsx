@@ -1,137 +1,127 @@
-import { Trash2, Plus } from "lucide-react";
-
-import DashboardGrid from "./DashboardGrid";
+import DashboardGrid
+from "./DashboardGrid";
 
 export default function DashboardCanvas({
+
   dashboard,
-  onDeleteDashboard,
-  onOpenWidgetModal,
+
+  dashboards,
+
+  saveDashboards,
+
   onDeleteWidget,
-  layouts,
-  handleSaveLayouts,
+
 }) {
 
   if (!dashboard) return null;
 
+  /* ================= SAVE LAYOUTS ================= */
+
+  const handleSaveLayouts = (
+    updatedLayouts
+  ) => {
+
+    const updatedDashboards =
+      dashboards.map(
+        (item) => {
+
+          if (
+            item.id === dashboard.id
+          ) {
+
+            return {
+
+              ...item,
+
+              widgets:
+                item.widgets.map(
+                  (widget) => {
+
+                    const newLayout =
+                      updatedLayouts.find(
+                        (layout) =>
+
+                          layout.i ===
+                          widget.id.toString()
+                      );
+
+                    return {
+
+                      ...widget,
+
+                      layout:
+                        newLayout
+                          ? {
+
+                              x:
+                                newLayout.x,
+
+                              y:
+                                newLayout.y,
+
+                              w:
+                                newLayout.w,
+
+                              h:
+                                newLayout.h,
+
+                              minW:
+                                newLayout.minW,
+
+                              minH:
+                                newLayout.minH,
+                            }
+
+                          : widget.layout,
+                    };
+                  }
+                ),
+            };
+          }
+
+          return item;
+        }
+      );
+
+    /* ================= SAVE ================= */
+
+    saveDashboards(
+      updatedDashboards
+    );
+  };
+
+  /* ================= GENERATE LAYOUTS ================= */
+
+  const layouts =
+    dashboard.widgets.map(
+      (widget) => ({
+
+        i:
+          widget.id.toString(),
+
+        x:
+          widget.layout?.x ?? 0,
+
+        y:
+          widget.layout?.y ?? 0,
+
+        w:
+          widget.layout?.w ?? 4,
+
+        h:
+          widget.layout?.h ?? 6,
+
+        minW:
+          widget.layout?.minW ?? 2,
+
+        minH:
+          widget.layout?.minH ?? 4,
+      })
+    );
+
   return (
 
     <div>
-
-      {/* ================= HEADER ================= */}
-
-      <div
-        className="
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-5
-          mb-8
-        "
-      >
-
-        {/* ================= LEFT ================= */}
-
-        <div>
-
-          <h2
-            className="
-              text-2xl
-              sm:text-3xl
-              font-bold
-            "
-          >
-            {dashboard.name}
-          </h2>
-
-          <p
-            className="
-              text-gray-500
-              mt-2
-              text-sm
-              sm:text-base
-            "
-          >
-            {dashboard.description}
-          </p>
-
-        </div>
-
-        {/* ================= ACTIONS ================= */}
-
-        <div
-          className="
-            flex
-            flex-col
-            sm:flex-row
-            gap-3
-          "
-        >
-
-          {/* ================= ADD WIDGET ================= */}
-
-          <button
-            onClick={onOpenWidgetModal}
-            className="
-              px-6
-              py-3
-              rounded-xl
-              bg-white
-              text-[#ff5700]
-              border
-              border-[#ff5700]
-              hover:shadow-[0px_5px_10px_#ff5700]
-              flex
-              items-center
-              justify-center
-              gap-2
-              cursor-pointer
-              hover:opacity-90
-              transition-all
-            "
-          >
-
-            <Plus size={18} />
-
-            Add Widget
-
-          </button>
-
-          {/* ================= DELETE DASHBOARD ================= */}
-
-          <button
-            onClick={() =>
-              onDeleteDashboard(
-                dashboard.id
-              )
-            }
-            className="
-              px-6
-              py-3
-              rounded-xl
-              bg-red-500
-              text-white
-              flex
-              items-center
-              justify-center
-              gap-2
-              cursor-pointer
-              hover:bg-red-600
-              hover:-translate-y-1
-              transition-all
-            "
-          >
-
-            <Trash2 size={18} />
-
-            Delete Dashboard
-
-          </button>
-
-        </div>
-
-      </div>
 
       {/* ================= EMPTY STATE ================= */}
 
@@ -143,8 +133,7 @@ export default function DashboardCanvas({
             border-dashed
             border-gray-300
             rounded-3xl
-            h-screen
-             -150px
+            h-[70vh]
             flex
             flex-col
             items-center
@@ -164,7 +153,9 @@ export default function DashboardCanvas({
                 mb-3
               "
             >
+
               No Widgets Added
+
             </h3>
 
             <p className="text-gray-500">
@@ -179,23 +170,41 @@ export default function DashboardCanvas({
 
         </div>
 
-      ) }
+      )}
 
       {/* ================= GRID ================= */}
 
       {dashboard.widgets.length > 0 && (
-        <div className="bg-black/2 rounded-3xl  p-4 border border-dashed border-gray-200">
 
-        <DashboardGrid
-          widgets={dashboard.widgets}
-          onDeleteWidget={
-            onDeleteWidget
-          }
-          layouts={layouts}
-          setLayouts={
-            handleSaveLayouts
-          }
-        />
+        <div
+          className="
+            bg-black/2
+            rounded-3xl
+            p-4
+            border
+            border-dashed
+            border-gray-200
+          "
+        >
+
+          <DashboardGrid
+
+            widgets={
+              dashboard.widgets
+            }
+
+            onDeleteWidget={
+              onDeleteWidget
+            }
+
+            layouts={layouts}
+
+            setLayouts={
+              handleSaveLayouts
+            }
+
+          />
+
         </div>
 
       )}

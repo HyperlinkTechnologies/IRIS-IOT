@@ -505,7 +505,7 @@ export default function DevicesPage() {
                       )
                     }
 
-                    className="
+                    className="group relative
                       px-4
                       py-2
                       rounded-xl
@@ -520,6 +520,30 @@ export default function DevicesPage() {
                     <Activity
                       size={18}
                     />
+                    <span className="
+                    absolute
+                    -top-10
+                    left-[50%]
+                    translate-x-[-50%]
+                    z-20
+                    origin-bottom
+                    scale-0
+                    px-3
+                    rounded-lg
+                    border
+                    border-gray-300
+                    bg-white
+                    py-2
+                    text-sm
+                    font-bold
+                    shadow-md
+                    transition-all
+                    duration-300
+                    group-hover:scale-100
+                    group-hover:text-blue-500
+                    ">
+                    Details
+                    </span>
 
                   </button>
 
@@ -533,7 +557,7 @@ export default function DevicesPage() {
                       )
                     }
 
-                    className="
+                    className="group relative
                       px-4
                       py-2
                       rounded-xl
@@ -549,6 +573,30 @@ export default function DevicesPage() {
                     <Pencil
                       size={18}
                     />
+                    <span className="
+                    absolute
+                    -top-10
+                    left-[50%]
+                    translate-x-[-50%]
+                    z-20
+                    origin-bottom
+                    scale-0
+                    px-3
+                    rounded-lg
+                    border
+                    border-gray-300
+                    bg-white
+                    py-2
+                    text-sm
+                    font-bold
+                    shadow-md
+                    transition-all
+                    duration-300
+                    group-hover:scale-100
+                    group-hover:text-[#ff5700]
+                    ">
+                    Edit
+                    </span>
 
                   </button>
 
@@ -562,7 +610,7 @@ export default function DevicesPage() {
                       )
                     }
 
-                    className="
+                    className="group relative
                       px-4
                       py-2
                       rounded-xl
@@ -577,6 +625,30 @@ export default function DevicesPage() {
                     <Trash2
                       size={18}
                     />
+                    <span className="
+                    absolute
+                    -top-10
+                    left-[50%]
+                    translate-x-[-50%]
+                    z-20
+                    origin-bottom
+                    scale-0
+                    px-3
+                    rounded-lg
+                    border
+                    border-gray-300
+                    bg-white
+                    py-2
+                    text-sm
+                    font-bold
+                    shadow-md
+                    transition-all
+                    duration-300
+                    group-hover:scale-100
+                    group-hover:text-red-500
+                    ">
+                    Delete
+                    </span>
 
                   </button>
 

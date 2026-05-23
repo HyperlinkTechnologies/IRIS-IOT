@@ -28,22 +28,21 @@ export default function ProductsPage() {
         </div>
       </section>
       {/* Product Showcase */}
-      <section className="py-20 bg-background">
+      <section className="py-4 md:py-6 lg:py-8 bg-background">
         <div className="container mx-auto px-6 mt-20">
           <div className="max-w-3xl mx-auto">
             <div className="group relative rounded-2xl bg-card border border-black/40 overflow-visible  transition-all duration-300 shadow-2xl">
 
               {/* Image Container - Overflowing */}
-              <div className="relative -top-20 left-1/2 ">
-                <div className=" left-1/2 -translate-x-1/2 flex items-center justify-center z-10 h-80 w-160">
-                  <img 
-                  src={imgProduct1} 
-                  alt="Product 1" 
-                  width={800}
-                  height={400}
-                  />
-                </div>
+              <div className="relative flex justify-center px-4">
+              <div className="flex items-center justify-center z-10 w-full max-w-87.5 sm:max-w-125 md:max-w-175 lg:max-w-200">
+                <img
+                  src={imgProduct1}
+                  alt="Product 1"
+                  className="w-full h-auto object-contain"
+                />
               </div>
+            </div>
 
               {/* Content */}
               <div className="px-7 pb-6 space-y-4 mt-0">
