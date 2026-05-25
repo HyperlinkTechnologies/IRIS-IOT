@@ -233,6 +233,7 @@ export default function DashboardPage() {
             p-4
             sm:px-6
             lg:px-8 
+            custom-scrollbar
           "
         >
 

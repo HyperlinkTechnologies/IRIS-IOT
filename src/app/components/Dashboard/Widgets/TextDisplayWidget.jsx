@@ -1,31 +1,84 @@
-import WidgetCard from "./WidgetCard";
+import WidgetCard
+from "./WidgetCard";
 
-export default function TextDisplayWidget() {
+export default function TextDisplayWidget({
+
+  widget,
+
+}) {
+
+  /* ================= FONT SIZE ================= */
+
+  const fontSizeMap = {
+
+    small:
+      "text-2xl",
+
+    medium:
+      "text-4xl",
+
+    large:
+      "text-6xl",
+  };
+
+  /* ================= ALIGNMENT ================= */
+
+  const alignmentMap = {
+
+    left:
+      "items-start text-left",
+
+    center:
+      "items-center text-center",
+
+    right:
+      "items-end text-right",
+  };
 
   return (
 
-    <WidgetCard title="Text Display">
+    <WidgetCard
+      title={widget.title}
+    >
 
       <div
-        className="
-          flex
-          items-center
-          justify-center
+        className={`
+          w-full
           h-full
-        "
+          flex
+          flex-col
+          justify-center
+          px-4
+
+          ${
+            alignmentMap[
+              widget.textAlign
+            ] || "items-center"
+          }
+        `}
       >
 
         <h1
-          className="
-            text-xl
-            sm:text-2xl
-            md:text-4xl
-            font-bold
-            text-[#ff5700]
-            text-center
-          "
+          className={`
+            font-black
+            wrap-break-word
+
+            ${
+              fontSizeMap[
+                widget.fontSize
+              ] || "text-5xl"
+            }
+          `}
+          style={{
+            color:
+              widget.color ||
+              "#ff5700",
+          }}
         >
-          MACHINE ACTIVE
+
+          {widget.value ||
+            "MACHINE ACTIVE"}
+
         </h1>
 
       </div>

@@ -21,6 +21,11 @@ export const widgetRegistry = [
   },
 
   {
+  type: "semicirclegauge",
+  title: "Semi Circle Gauge",
+  },
+
+  {
     type: "verticalgauge",
     title: "Vertical Gauge",
   },

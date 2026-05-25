@@ -162,7 +162,7 @@ export default function DashboardWorkspace({
 
   return (
 
-    <div className="w-full">
+    <div className="w-full custom-scrollbar">
 
       {/* ================= HEADER ================= */}
       <button
@@ -317,18 +317,82 @@ export default function DashboardWorkspace({
       <DashboardCanvas
 
         dashboard={
-            currentDashboard
+          currentDashboard
         }
 
-        dashboards={dashboards}
+        dashboards={
+          dashboards
+        }
 
         saveDashboards={
-            saveDashboards
+          saveDashboards
         }
 
         onDeleteWidget={
-            handleDeleteWidget
+          handleDeleteWidget
         }
+
+        layouts={
+          currentDashboard?.widgets?.map(
+            (widget) => ({
+
+              i:
+                widget.id.toString(),
+
+              ...(widget.layout || {}),
+            })
+          )
+        }
+
+        handleSaveLayouts={(
+          updatedLayouts
+        ) => {
+
+          const updatedDashboards =
+            dashboards.map(
+              (item) => {
+
+                if (
+                  item.id ===
+                  dashboard.id
+                ) {
+
+                  return {
+
+                    ...item,
+
+                    widgets:
+                      item.widgets.map(
+                        (widget) => {
+
+                          const layout =
+                            updatedLayouts.find(
+                              (layoutItem) =>
+
+                                layoutItem.i ===
+                                widget.id.toString()
+                            );
+
+                          return {
+
+                            ...widget,
+
+                            layout:
+                              layout || widget.layout,
+                          };
+                        }
+                      ),
+                  };
+                }
+
+                return item;
+              }
+            );
+
+          saveDashboards(
+            updatedDashboards
+          );
+        }}
 
       />
 

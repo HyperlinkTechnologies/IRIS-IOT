@@ -11,119 +11,20 @@ export default function DashboardCanvas({
 
   onDeleteWidget,
 
+  layouts,
+
+  handleSaveLayouts,
+
 }) {
 
-  if (!dashboard) return null;
-
-  /* ================= SAVE LAYOUTS ================= */
-
-  const handleSaveLayouts = (
-    updatedLayouts
-  ) => {
-
-    const updatedDashboards =
-      dashboards.map(
-        (item) => {
-
-          if (
-            item.id === dashboard.id
-          ) {
-
-            return {
-
-              ...item,
-
-              widgets:
-                item.widgets.map(
-                  (widget) => {
-
-                    const newLayout =
-                      updatedLayouts.find(
-                        (layout) =>
-
-                          layout.i ===
-                          widget.id.toString()
-                      );
-
-                    return {
-
-                      ...widget,
-
-                      layout:
-                        newLayout
-                          ? {
-
-                              x:
-                                newLayout.x,
-
-                              y:
-                                newLayout.y,
-
-                              w:
-                                newLayout.w,
-
-                              h:
-                                newLayout.h,
-
-                              minW:
-                                newLayout.minW,
-
-                              minH:
-                                newLayout.minH,
-                            }
-
-                          : widget.layout,
-                    };
-                  }
-                ),
-            };
-          }
-
-          return item;
-        }
-      );
-
-    /* ================= SAVE ================= */
-
-    saveDashboards(
-      updatedDashboards
-    );
-  };
-
-  /* ================= GENERATE LAYOUTS ================= */
-
-  const layouts =
-    dashboard.widgets.map(
-      (widget) => ({
-
-        i:
-          widget.id.toString(),
-
-        x:
-          widget.layout?.x ?? 0,
-
-        y:
-          widget.layout?.y ?? 0,
-
-        w:
-          widget.layout?.w ?? 4,
-
-        h:
-          widget.layout?.h ?? 6,
-
-        minW:
-          widget.layout?.minW ?? 2,
-
-        minH:
-          widget.layout?.minH ?? 4,
-      })
-    );
+  if (!dashboard)
+    return null;
 
   return (
 
     <div>
 
-      {/* ================= EMPTY STATE ================= */}
+      {/* EMPTY STATE */}
 
       {dashboard.widgets.length === 0 && (
 
@@ -133,7 +34,7 @@ export default function DashboardCanvas({
             border-dashed
             border-gray-300
             rounded-3xl
-            h-[70vh]
+            h-screen
             flex
             flex-col
             items-center
@@ -172,7 +73,7 @@ export default function DashboardCanvas({
 
       )}
 
-      {/* ================= GRID ================= */}
+      {/* GRID */}
 
       {dashboard.widgets.length > 0 && (
 
@@ -191,6 +92,18 @@ export default function DashboardCanvas({
 
             widgets={
               dashboard.widgets
+            }
+
+            dashboards={
+              dashboards
+            }
+
+            dashboardId={
+              dashboard.id
+            }
+
+            saveDashboards={
+              saveDashboards
             }
 
             onDeleteWidget={

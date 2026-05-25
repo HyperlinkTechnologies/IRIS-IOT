@@ -2,28 +2,40 @@ import {
   Responsive,
 } from "react-grid-layout";
 
+import { useState } from "react";
+
 import "react-grid-layout/css/styles.css";
 
 import "react-resizable/css/styles.css";
 
 import {
+  Settings2,
   Trash2,
 } from "lucide-react";
 
 import WidgetRenderer
 from "./WidgetRender";
 
+import WidgetSettingsModal from "./WidgetSettingsModal";
+
 /* ================= GRID ================= */
 
 export default function DashboardGrid({
 
-  widgets,
+   widgets,
+
+  dashboards,
+
+  dashboardId,
+
+  saveDashboards,
 
   onDeleteWidget,
 
   layouts = [],
 
   setLayouts,
+
 
 }) {
 
@@ -43,6 +55,22 @@ export default function DashboardGrid({
       );
     }
   };
+
+  const [
+
+    settingsOpen,
+
+    setSettingsOpen,
+
+  ] = useState(false);
+
+  const [
+
+    selectedWidget,
+
+    setSelectedWidget,
+
+  ] = useState(null);
 
   return (
 
@@ -185,38 +213,72 @@ export default function DashboardGrid({
 
               </h3>
 
-              {/* DELETE */}
+              <div className="flex items-center gap-2">
 
-              <button
+                {/* SETTINGS */}
 
-                onClick={(e) => {
+                <button
 
-                  e.preventDefault();
+                  onClick={(e) => {
 
-                  e.stopPropagation();
+                    e.preventDefault();
 
-                  onDeleteWidget(
-                    widget.id
-                  );
-                }}
+                    e.stopPropagation();
 
-                className="
-                  no-drag
-                  text-red-500
-                  cursor-pointer
-                  hover:bg-red-100
-                  p-2
-                  rounded-full
-                  relative
-                  z-50
-                  transition-all
-                  shrink-0
-                "
-              >
+                    setSelectedWidget(widget);
 
-                <Trash2 size={18} />
+                    setSettingsOpen(true);
+                  }}
 
-              </button>
+                  className="
+                    no-drag
+                    text-gray-500
+                    cursor-pointer
+                    hover:bg-gray-100
+                    p-2
+                    rounded-full
+                    transition-all
+                  "
+                >
+
+                  <Settings2 size={18} />
+
+                </button>
+
+                {/* DELETE */}
+
+                <button
+
+                  onClick={(e) => {
+
+                    e.preventDefault();
+
+                    e.stopPropagation();
+
+                    onDeleteWidget(
+                      widget.id
+                    );
+                  }}
+
+                  className="
+                    no-drag
+                    text-red-500
+                    cursor-pointer
+                    hover:bg-red-100
+                    p-2
+                    rounded-full
+                    relative
+                    z-50
+                    transition-all
+                    shrink-0
+                  "
+                >
+
+                  <Trash2 size={18} />
+
+                </button>
+
+              </div>
 
             </div>
 
@@ -287,6 +349,26 @@ export default function DashboardGrid({
         ))}
 
       </Responsive>
+
+      <WidgetSettingsModal
+
+        open={settingsOpen}
+
+        onClose={() =>
+          setSettingsOpen(false)
+        }
+
+        widget={selectedWidget}
+
+        dashboards={dashboards}
+
+        dashboardId={dashboardId}
+
+        saveDashboards={
+          saveDashboards
+        }
+
+      />
 
     </div>
   );

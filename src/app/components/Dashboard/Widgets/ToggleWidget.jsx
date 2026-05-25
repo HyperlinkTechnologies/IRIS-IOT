@@ -1,17 +1,57 @@
-import { useState } from "react";
+import {
 
-import WidgetCard from "./WidgetCard";
+  useState,
 
-export default function ToggleWidget() {
+  useEffect,
 
-  const [enabled, setEnabled] =
-    useState(false);
+} from "react";
+
+import WidgetCard
+from "./WidgetCard";
+
+export default function ToggleWidget({
+
+  widget,
+
+}) {
+
+  /* ================= INITIAL STATE ================= */
+
+  const [
+
+    enabled,
+
+    setEnabled,
+
+  ] = useState(false);
+
+  useEffect(() => {
+
+  if (
+
+    typeof widget.value ===
+    "boolean"
+
+  ) {
+
+    setEnabled(
+      widget.value
+    );
+  }
+
+}, [widget.value]);
+
+  /* ================= READ ONLY ================= */
+
+  const isReadOnly =
+
+    widget.controlMode ===
+    "read";
 
   return (
 
     <WidgetCard
-      title="Toggle Switch"
-      className="w-full h-full"
+      title={widget.title}
     >
 
       <div
@@ -22,16 +62,15 @@ export default function ToggleWidget() {
           flex-col
           items-center
           justify-center
-          gap-4
-          sm:gap-5
-          md:gap-6
-          p-2
+          gap-6
         "
       >
 
-        {/* ================= SWITCH ================= */}
+        {/* SWITCH */}
 
         <button
+
+          disabled={isReadOnly}
 
           onClick={() =>
             setEnabled(!enabled)
@@ -39,57 +78,48 @@ export default function ToggleWidget() {
 
           className={`
             relative
+            rounded-full
             transition-all
             duration-300
-            cursor-pointer
-            rounded-full
 
-            w-16
-            h-8
-
-            sm:w-20
-            sm:h-10
-
-            md:w-24
-            md:h-12
+            w-24
+            h-12
 
             ${
               enabled
+
                 ? "bg-green-500"
+
                 : "bg-gray-300"
+            }
+
+            ${
+              isReadOnly
+
+                ? "opacity-50 cursor-not-allowed"
+
+                : "cursor-pointer"
             }
           `}
         >
 
-          {/* ================= KNOB ================= */}
+          {/* KNOB */}
 
           <div
             className={`
               absolute
               top-1
+              w-10
+              h-10
               rounded-full
               bg-white
               transition-all
               duration-300
-              shadow-md
-
-              w-6
-              h-6
-
-              sm:w-8
-              sm:h-8
-
-              md:w-10
-              md:h-10
 
               ${
                 enabled
 
-                  ? `
-                    left-9
-                    sm:left-11
-                    md:left-13
-                  `
+                  ? "left-13"
 
                   : "left-1"
               }
@@ -98,25 +128,13 @@ export default function ToggleWidget() {
 
         </button>
 
-        {/* ================= STATUS ================= */}
+        {/* STATUS */}
 
         <p
-          className={`
+          className="
+            text-lg
             font-semibold
-            transition-all
-
-            text-sm
-
-            sm:text-base
-
-            md:text-lg
-
-            ${
-              enabled
-                ? "text-green-600"
-                : "text-gray-500"
-            }
-          `}
+          "
         >
 
           {enabled ? "ON" : "OFF"}

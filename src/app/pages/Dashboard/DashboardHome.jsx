@@ -9,6 +9,8 @@ from "./DashboardList";
 import DashboardWorkspace
 from "./DashboardWorkspace";
 
+import useMQTTTelemetry from "../../hooks/useMQTTTelemetry";
+
 export default function DashboardHome() {
 
   /* ================= STATES ================= */
@@ -42,6 +44,8 @@ export default function DashboardHome() {
 
   }, []);
 
+
+
   /* ================= SAVE DASHBOARDS ================= */
 
   const saveDashboards = (
@@ -61,6 +65,13 @@ export default function DashboardHome() {
       )
     );
   };
+
+useMQTTTelemetry({
+
+  dashboards,
+
+  saveDashboards,
+});
 
   return (
 

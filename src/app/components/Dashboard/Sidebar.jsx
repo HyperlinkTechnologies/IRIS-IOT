@@ -144,6 +144,7 @@ export default function Sidebar({
           p-4
           space-y-2
           overflow-y-auto
+          custom-scrollbar
         ">
 
           <SidebarItem

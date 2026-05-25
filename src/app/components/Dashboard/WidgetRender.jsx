@@ -1,120 +1,71 @@
-import ToggleWidget
-from "./Widgets/ToggleWidget";
+import ToggleWidget from "./Widgets/ToggleWidget";
 
-import PushButtonWidget
-from "./Widgets/PushButtonWidget";
+import PushButtonWidget from "./Widgets/PushButtonWidget";
 
-import LEDWidget
-from "./Widgets/LEDWidget";
+import LEDWidget from "./Widgets/LEDWidget";
 
-import TemperatureWidget
-from "./Widgets/TemperatureWidget";
+import TemperatureWidget from "./Widgets/TemperatureWidget";
 
-import GaugeWidget
-from "./Widgets/GaugeWidget";
+import GaugeWidget from "./Widgets/GaugeWidget";
 
-import VerticalGaugeWidget
-from "./Widgets/VerticalGaugeWidget";
+import SemiCircleGaugeWidget from "./Widgets/SemiCircleGaugeWidget";
 
-import HorizontalGaugeWidget
-from "./Widgets/HorizontalGaugeWidget";
+import VerticalGaugeWidget from "./Widgets/VerticalGaugeWidget";
 
-import SliderWidget
-from "./Widgets/SliderWidget";
+import HorizontalGaugeWidget from "./Widgets/HorizontalGaugeWidget";
 
-import TextDisplayWidget
-from "./Widgets/TextDisplayWidget";
+import SliderWidget from "./Widgets/SliderWidget";
 
-import NumericInputWidget
-from "./Widgets/NumericInputWidget";
+import TextDisplayWidget from "./Widgets/TextDisplayWidget";
 
-import TextInputWidget
-from "./Widgets/TextInputWidget";
+import NumericInputWidget from "./Widgets/NumericInputWidget";
 
-import ChartWidget
-from "./Widgets/ChartWidget";
+import TextInputWidget from "./Widgets/TextInputWidget";
 
-export default function WidgetRenderer({
-  widget,
-}) {
+import ChartWidget from "./Widgets/ChartWidget";
 
+export default function WidgetRenderer({ widget }) {
   switch (widget.type) {
-
     case "toggle":
-      return <ToggleWidget />;
+      return <ToggleWidget widget={widget} />;
 
     case "pushbutton":
-      return <PushButtonWidget />;
+      return <PushButtonWidget widget={widget} />;
 
     case "led":
-      return <LEDWidget />;
+      return <LEDWidget widget={widget} />;
 
     case "temperature":
-      return <TemperatureWidget />;
+      return <TemperatureWidget widget={widget} />;
 
     case "gauge":
-      return <GaugeWidget />;
+      return <GaugeWidget widget={widget} />;
+
+    case "semicirclegauge":
+      return <SemiCircleGaugeWidget widget={widget} />;
 
     case "verticalgauge":
-      return <VerticalGaugeWidget />;
+      return <VerticalGaugeWidget widget={widget} />;
 
     case "horizontalgauge":
-      return <HorizontalGaugeWidget />;
+      return <HorizontalGaugeWidget widget={widget} />;
 
     case "slider":
-      return <SliderWidget />;
+      return <SliderWidget widget={widget} />;
 
     case "textdisplay":
-      return <TextDisplayWidget />;
+      return <TextDisplayWidget widget={widget} />;
 
     case "numericinput":
-      return <NumericInputWidget />;
+      return <NumericInputWidget widget={widget} />;
 
     case "textinput":
-      return <TextInputWidget />;
+      return <TextInputWidget widget={widget} />;
 
     case "chart":
-      return <ChartWidget />;
+      return <ChartWidget widget={widget} />;
 
     default:
       return null;
   }
 }
-
-// import GaugeWidget
-// from "./widgets/GaugeWidget";
-
-// import ToggleWidget
-// from "./widgets/ToggleWidget";
-
-// export default function WidgetRenderer({
-//   widget,
-// }) {
-
-//   switch (widget.type) {
-
-//     case "gauge":
-
-//       return (
-//         <GaugeWidget
-//           widget={widget}
-//         />
-//       );
-
-//     case "toggle":
-
-//       return (
-//         <ToggleWidget
-//           widget={widget}
-//         />
-//       );
-
-//     default:
-
-//       return (
-//         <div>
-//           Unknown Widget
-//         </div>
-//       );
-//   }
-// }
