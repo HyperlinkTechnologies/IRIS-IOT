@@ -378,12 +378,12 @@ export default function WidgetSettingsModal({
 
             {/* COLOR */}
 
-            <div>
+            <div className="flex items-center justify-between">
               <label
                 className="
-                block
                 mb-2
                 font-medium
+                w-50
                 "
               >
                 Widget Color
@@ -399,14 +399,11 @@ export default function WidgetSettingsModal({
                     color: e.target.value,
                   })
                 }
-                className="
-                w-full
+                className="w-full
                 h-14
-                border
-                border-gray-300
-                rounded-2xl
+                rounded
                 cursor-pointer
-                overflow-hidden
+                overflow-visible
                 "
               />
             </div>

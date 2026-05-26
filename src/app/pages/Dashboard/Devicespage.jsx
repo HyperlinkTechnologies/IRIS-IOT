@@ -15,9 +15,12 @@ import {
   useState,
 } from "react";
 
+
 export default function DevicesPage() {
 
   /* ================= STATES ================= */
+
+  const telemetry = useRealtimeTelemetry();
 
   const [search, setSearch] =
     useState("");
@@ -875,17 +878,21 @@ export default function DevicesPage() {
                 Latest Telemetry
               </h4>
 
-              <div
-                className="
-                  bg-black/5
-                  rounded-2xl
-                  p-4
-                "
-              >
+              <div className="p-6 text-black">
+              <h1 className="text-2xl mb-4">Live Telemetry</h1>
 
-                No telemetry yet
-
-              </div>
+              {telemetry ? (
+                <div className="space-y-2">
+                  <p>Device: {telemetry.deviceId}</p>
+                  <p>Battery: {telemetry.battery}%</p>
+                  <p>Temperature: {telemetry.temperature}°C</p>
+                  <p>Speed: {telemetry.speed} km/h</p>
+                  <p>Lock Status: {telemetry.lockStatus}</p>
+                </div>
+              ) : (
+                <p>Waiting for telemetry...</p>
+              )}
+            </div>
 
             </div>
 

@@ -5,28 +5,43 @@ export default function GaugeWidget({
 
   widget,
 
+  telemetry,
+
 }) {
 
-  /* ================= VALUES ================= */
+  /* ================= LIVE VALUE ================= */
 
   const value =
-    widget.value || 0;
+
+    telemetry?.battery ?? 0;
+
+  /* ================= CONFIG ================= */
 
   const min =
-    widget.min || 0;
+    widget.min ?? 0;
 
   const max =
-    widget.max || 100;
+    widget.max ?? 100;
 
   const threshold =
-    widget.threshold || 80;
+    widget.threshold ?? 80;
 
-  /* ================= PERCENT ================= */
+  /* ================= SAFE PERCENT ================= */
 
   const percentage =
 
-    ((value - min) /
-      (max - min)) * 100;
+    Math.min(
+
+      Math.max(
+
+        ((value - min) /
+          (max - min)) * 100,
+
+        0
+      ),
+
+      100
+    );
 
   /* ================= COLORS ================= */
 
@@ -55,7 +70,7 @@ export default function GaugeWidget({
         "
       >
 
-        {/* GAUGE */}
+        {/* ================= GAUGE ================= */}
 
         <div
           className="
@@ -72,18 +87,21 @@ export default function GaugeWidget({
             justify-center
             transition-all
           "
+
           style={{
 
-            background: `conic-gradient(
-              ${gaugeColor}
-              ${percentage * 3.6}deg,
+            background:
+              `conic-gradient(
 
-              #e5e7eb 0deg
-            )`,
+                ${gaugeColor}
+                ${percentage * 3.6}deg,
+
+                #e5e7eb 0deg
+              )`,
           }}
         >
 
-          {/* INNER CIRCLE */}
+          {/* ================= INNER CIRCLE ================= */}
 
           <div
             className="
@@ -107,6 +125,7 @@ export default function GaugeWidget({
                 font-black
                 transition-all
               "
+
               style={{
                 color: gaugeColor,
               }}

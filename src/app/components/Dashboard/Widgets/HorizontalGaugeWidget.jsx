@@ -1,8 +1,10 @@
 import WidgetCard from "./WidgetCard";
 
-export default function HorizontalGaugeWidget() {
+export default function HorizontalGaugeWidget( widget, telemetry,) {
 
-  const value = 82;
+  const value =
+
+    telemetry?.speed ?? 0;
 
   return (
 

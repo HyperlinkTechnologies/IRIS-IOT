@@ -1,92 +1,127 @@
+import { readFileSync } from "fs";
+
 import express from "express";
+
 import cors from "cors";
 
+import { connect } from "mqtt";
+
+import { Server } from "socket.io";
+
+import http from "http";
 
 const app = express();
 
 app.use(cors());
 
-app.use(express.json());
+const server =
+  http.createServer(app);
 
-/* ================= MEMORY DATABASE ================= */
+const io =
+  new Server(server, {
+    cors: {
+      origin: "*",
+    },
+  });
 
-let widgetValues = {};
+const mqttClient =
+  connect({
+    host:
+      "aiwxcvfxicr6k-ats.iot.us-east-1.amazonaws.com",
 
-/* =========================================================
-   DEVICE → PLATFORM
-========================================================= */
+    port: 8883,
 
-app.post(
-  "/api/widget/update",
+    protocol: "mqtts",
 
-  (req, res) => {
+    clientId:
+      `backend-${Math.random()
+        .toString(16)
+        .slice(2, 8)}`,
 
-    const {
-      apiKey,
-      deviceId,
-      widgetId,
-      data,
-    } = req.body;
+    key:
+      readFileSync(
+        "./server/certs/private.pem.key"
+      ),
+
+    cert:
+      readFileSync(
+        "./server/certs/device.pem.crt"
+      ),
+
+    ca:
+      readFileSync(
+        "./server/certs/AmazonRootCA1.pem"
+      ),
+  });
+
+const MQTT_TOPIC =
+  "startup/bikes/+/telemetry";
+
+mqttClient.on(
+  "connect",
+  () => {
 
     console.log(
-      "Incoming Device Data:",
-      req.body
+      "AWS IoT Connected"
     );
 
-    widgetValues[widgetId] =
-      data;
+    mqttClient.subscribe(
+      MQTT_TOPIC,
+      () => {
 
-    res.json({
-      success: true,
-    });
+        console.log(
+          "Subscribed:",
+          MQTT_TOPIC
+        );
+      }
+    );
   }
 );
 
-/* =========================================================
-   DASHBOARD → DEVICE
-========================================================= */
+mqttClient.on(
+  "message",
+  (topic, message) => {
 
-app.post(
-  "/api/widget/write",
+    try {
 
-  (req, res) => {
+      const data =
+        JSON.parse(
+          message.toString()
+        );
+
+      console.log(
+        "Telemetry:",
+        data
+      );
+
+      io.emit(
+        "telemetry",
+        data
+      );
+
+    } catch (err) {
+
+      console.error(err);
+    }
+  }
+);
+
+io.on(
+  "connection",
+  () => {
 
     console.log(
-      "Toggle Command:",
-      req.body
+      "Dashboard Connected"
     );
-
-    res.json({
-      success: true,
-    });
   }
 );
 
-/* =========================================================
-   FRONTEND GET WIDGET VALUE
-========================================================= */
+server.listen(
+  4000,
+  () => {
 
-app.get(
-  "/api/widget/:widgetId",
-
-  (req, res) => {
-
-    const widgetId =
-      req.params.widgetId;
-
-    res.json({
-
-      value:
-        widgetValues[
-          widgetId
-        ] || 0,
-    });
+    console.log(
+      "Realtime server running on 4000"
+    );
   }
 );
-
-app.listen(5000, () => {
-
-  console.log(
-    "Backend Running on Port 5000"
-  );
-});

@@ -10,16 +10,24 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-amplify/pubsub": "^6.1.70",
     "@aws-amplify/ui-react": "^6.15.4",
+    "@aws-crypto/sha256-js": "^5.2.0",
+    "@aws-sdk/client-cognito-identity": "^3.1053.0",
     "@aws-sdk/client-dynamodb": "^3.1050.0",
     "@aws-sdk/client-iot-data-plane": "^3.1050.0",
     "@aws-sdk/client-s3": "^3.1050.0",
+    "@aws-sdk/credential-provider-cognito-identity": "^3.972.36",
     "@aws-sdk/lib-dynamodb": "^3.1050.0",
     "@aws-sdk/s3-request-presigner": "^3.1050.0",
+    "@aws-sdk/signature-v4": "^3.370.0",
+    "@aws-sdk/util-format-url": "^3.972.15",
+    "@aws-sdk/util-uri-escape": "^3.310.0",
     "@emailjs/browser": "^4.4.1",
     "@tailwindcss/postcss": "^4.2.4",
     "amazon-cognito-identity-js": "^6.3.16",
     "aws-amplify": "^6.17.0",
+    "aws4fetch": "^1.0.20",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -38,6 +46,8 @@
     "react-resizable": "^4.0.1",
     "react-router-dom": "^7.15.0",
     "recharts": "^3.8.1",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "tailwindcss": "^4.2.4"
   },
   "devDependencies": {

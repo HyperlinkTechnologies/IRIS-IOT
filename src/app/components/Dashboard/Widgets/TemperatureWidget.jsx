@@ -1,35 +1,18 @@
 import WidgetCard from "./WidgetCard";
 
-export default function TemperatureWidget() {
+export default function TemperatureWidget({
+  telemetry,
+}) {
 
-  const temperature = 32;
+  const temperature =
+    telemetry?.temperature || 0;
 
   return (
 
-    <WidgetCard title="Temperature">
+    <div className="text-5xl font-bold">
 
-      <div
-        className="
-          flex
-          flex-col
-          items-center
-          justify-center
-          h-full
-        "
-      >
+      {temperature}°C
 
-        <h1
-          className="
-            text-6xl
-            font-black
-            text-[#ff5700]
-          "
-        >
-          {temperature}°C
-        </h1>
-
-      </div>
-
-    </WidgetCard>
+    </div>
   );
 }

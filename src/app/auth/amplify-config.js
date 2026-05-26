@@ -1,6 +1,4 @@
-import { Amplify } from "aws-amplify";
-
-Amplify.configure({
+const amplifyConfig = {
 
   Auth: {
 
@@ -11,6 +9,11 @@ Amplify.configure({
 
       userPoolClientId:
         "5d8uo8cktjc6ukhnps699nj68i",
+
+      identityPoolId:
+        "us-east-1:f1165c57-e88d-4010-b774-bda20f0882c6",
+
+      allowGuestAccess: true,
 
       loginWith: {
 
@@ -40,4 +43,6 @@ Amplify.configure({
       },
     },
   },
-});
+};
+
+export default amplifyConfig;

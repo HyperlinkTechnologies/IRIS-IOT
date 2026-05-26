@@ -5,6 +5,8 @@ export default function TextDisplayWidget({
 
   widget,
 
+  telemetry,
+
 }) {
 
   /* ================= FONT SIZE ================= */
@@ -20,6 +22,9 @@ export default function TextDisplayWidget({
     large:
       "text-6xl",
   };
+
+  const locked =
+  telemetry?.lockStatus;
 
   /* ================= ALIGNMENT ================= */
 
@@ -76,7 +81,7 @@ export default function TextDisplayWidget({
           }}
         >
 
-          {widget.value ||
+          {locked ||
             "MACHINE ACTIVE"}
 
         </h1>
