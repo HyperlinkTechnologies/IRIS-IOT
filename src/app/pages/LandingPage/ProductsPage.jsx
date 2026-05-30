@@ -105,8 +105,8 @@ export default function ProductsPage() {
 
       {/* CTA Section */}
       <section className='bg-white px-12 py-10'>
-        <div className="bg-gray-100 rounded-xl p-8 shadow-lg text-center border border-gray-300 mb-10 ">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="bg-gray-100 rounded-xl p-4 shadow-lg text-center border border-gray-300 mb-10 ">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center items-center flex flex-col justify-center">
           <h2 className="text-3xl font-bold text-[#333333] mb-4">
             Ready to bring your devices online?
           </h2>

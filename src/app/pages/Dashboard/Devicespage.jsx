@@ -20,8 +20,6 @@ export default function DevicesPage() {
 
   /* ================= STATES ================= */
 
-  const telemetry = useRealtimeTelemetry();
-
   const [search, setSearch] =
     useState("");
 
