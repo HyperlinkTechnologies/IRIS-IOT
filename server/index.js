@@ -40,17 +40,17 @@ const mqttClient =
 
     key:
       readFileSync(
-        "./server/certs/private.pem.key"
+        "./certs/private.pem.key"
       ),
 
     cert:
       readFileSync(
-        "./server/certs/device.pem.crt"
+        "./certs/device.pem.crt"
       ),
 
     ca:
       readFileSync(
-        "./server/certs/AmazonRootCA1.pem"
+        "./certs/AmazonRootCA1.pem"
       ),
   });
 
@@ -89,14 +89,24 @@ mqttClient.on(
           message.toString()
         );
 
+      const topicDeviceId =
+        topic.split("/")[2];
+
+      const telemetry = {
+        ...data,
+        deviceId:
+          data.deviceId ||
+          topicDeviceId,
+      };
+
       console.log(
         "Telemetry:",
-        data
+        telemetry
       );
 
       io.emit(
         "telemetry",
-        data
+        telemetry
       );
 
     } catch (err) {

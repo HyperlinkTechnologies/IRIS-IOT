@@ -65,4 +65,9 @@ export const widgetRegistry = [
     title: "Numeric Input",
   },
 
+  {
+    type: "map",
+    title: "Map Widget",
+  }
+
 ];

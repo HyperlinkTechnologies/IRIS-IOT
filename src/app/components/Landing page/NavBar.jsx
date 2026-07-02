@@ -2,6 +2,7 @@ import React from 'react'
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { signInWithRedirect,getCurrentUser } from 'aws-amplify/auth';
+import irisLogo from '../../../assets/IRIS Logo(light).png';
 
 function NavBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -36,9 +37,13 @@ function NavBar() {
   return (
     <nav className="backdrop-blur-sm drop-shadow-2xl bg-[#010c29]/60 border-b border-[rgba(255,136,0,0.23)] h-17 fixed top-0 left-0 right-0 z-50">
         <div className="h-full flex items-center justify-between px-4 sm:px-6 lg:px-12">
-          <div className="text-[#e8f0ff] text-xl sm:text-2xl font-black">
-            Iris <span className="text-[#ff5700]">IOT</span>
+          <div className='flex items-center gap-5'>
+            <img src={irisLogo} alt="" className='w-10 md:w-11 sm:w-10 object-contain' />
+            <div className="text-[#e8f0ff] text-xl sm:text-2xl font-black">
+              Iris <span className="text-[#ff5700]">IOT</span>
+            </div>
           </div>
+        
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center gap-8">

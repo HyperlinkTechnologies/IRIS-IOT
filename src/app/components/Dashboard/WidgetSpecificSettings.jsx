@@ -21,6 +21,145 @@ export default function WidgetSpecificSettings({
     focus:border-[#ff5700]
   `;
 
+  /* ================= MAP SETTINGS ================= */
+
+  if (widget.type === "map") {
+    return (
+      <div className="space-y-6">
+        <div>
+          <label className="block mb-2 font-medium">
+            Display Mode
+          </label>
+          <select
+            value={formData.mapMode}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                mapMode: e.target.value,
+              })
+            }
+            className={inputClass}
+          >
+            <option value="single">Selected Device</option>
+            <option value="fleet">All Live Devices</option>
+          </select>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-2 font-medium">
+              Latitude
+            </label>
+            <input
+              type="number"
+              step="any"
+              min="-90"
+              max="90"
+              value={formData.latitude}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  latitude: Number(e.target.value),
+                })
+              }
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2 font-medium">
+              Longitude
+            </label>
+            <input
+              type="number"
+              step="any"
+              min="-180"
+              max="180"
+              value={formData.longitude}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  longitude: Number(e.target.value),
+                })
+              }
+              className={inputClass}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium">
+            Default Zoom ({formData.zoom})
+          </label>
+          <input
+            type="range"
+            min="2"
+            max="19"
+            value={formData.zoom}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                zoom: Number(e.target.value),
+              })
+            }
+            className="w-full accent-[#ff5700]"
+          />
+        </div>
+
+        <label className="flex items-center gap-3 font-medium">
+          <input
+            type="checkbox"
+            checked={formData.showRouteHistory}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                showRouteHistory: e.target.checked,
+              })
+            }
+            className="h-5 w-5 accent-[#ff5700]"
+          />
+          Show route history
+        </label>
+
+        <label className="flex items-center gap-3 font-medium">
+          <input
+            type="checkbox"
+            checked={formData.geofenceEnabled}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                geofenceEnabled: e.target.checked,
+              })
+            }
+            className="h-5 w-5 accent-[#ff5700]"
+          />
+          Enable geofence
+        </label>
+
+        {formData.geofenceEnabled && (
+          <div>
+            <label className="block mb-2 font-medium">
+              Geofence Radius (meters)
+            </label>
+            <input
+              type="number"
+              min="25"
+              step="25"
+              value={formData.geofenceRadius}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  geofenceRadius: Math.max(25, Number(e.target.value)),
+                })
+              }
+              className={inputClass}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
+
   /* ================= GAUGE SETTINGS ================= */
 
   if (

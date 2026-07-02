@@ -11,15 +11,35 @@ import TextDisplayWidget from "./Widgets/TextDisplayWidget";
 import NumericInputWidget from "./Widgets/NumericInputWidget";
 import TextInputWidget from "./Widgets/TextInputWidget";
 import ChartWidget from "./Widgets/ChartWidget";
+import MapWidget from "./Widgets/MapWidget";
 
-import { useTelemetry } from "../../../context/TelemetryContext";
+import {
+  useTelemetry,
+  useTelemetryHistory,
+} from "../../../context/TelemetryContext";
 
 export default function WidgetRenderer({ widget }) {
 
   const devices = useTelemetry();
+  const telemetryHistory = useTelemetryHistory();
 
-  const telemetry =
-    devices?.["bike-001"];
+  let selectedDevice = null;
+
+  try {
+    const savedDevices =
+      JSON.parse(localStorage.getItem("iris_devices")) || [];
+
+    selectedDevice = savedDevices.find(
+      (device) => String(device.id) === String(widget.deviceId)
+    );
+  } catch {
+    selectedDevice = null;
+  }
+
+  const telemetryDeviceId =
+    selectedDevice?.deviceId || widget.deviceId;
+
+  const telemetry = devices?.[telemetryDeviceId];
 
   switch (widget.type) {
 
@@ -124,6 +144,16 @@ export default function WidgetRenderer({ widget }) {
         <ChartWidget
           widget={widget}
           telemetry={telemetry}
+        />
+      );
+
+    case "map":
+      return (
+        <MapWidget
+          widget={widget}
+          telemetry={telemetry}
+          telemetryDevices={devices}
+          telemetryHistory={telemetryHistory}
         />
       );
 

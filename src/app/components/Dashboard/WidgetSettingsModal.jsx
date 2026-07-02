@@ -45,6 +45,20 @@ export default function WidgetSettingsModal({
     fontSize: "large",
 
     textAlign: "center",
+
+    latitude: 12.9716,
+
+    longitude: 77.5946,
+
+    zoom: 13,
+
+    mapMode: "single",
+
+    showRouteHistory: true,
+
+    geofenceEnabled: false,
+
+    geofenceRadius: 500,
   });
 
   /* ================= LOAD DATA ================= */
@@ -62,13 +76,35 @@ export default function WidgetSettingsModal({
 
         color: widget.color || "#ff5700",
 
-        min: widget.min || 0,
+        min: widget.min ?? 0,
 
-        max: widget.max || 100,
+        max: widget.max ?? 100,
 
-        threshold: widget.threshold || 0,
+        threshold: widget.threshold ?? 0,
 
-        refreshRate: widget.refreshRate || 1000,
+        refreshRate: widget.refreshRate ?? 1000,
+
+        defaultState: widget.defaultState || "OFF",
+
+        controlMode: widget.controlMode || "readwrite",
+
+        fontSize: widget.fontSize || "large",
+
+        textAlign: widget.textAlign || "center",
+
+        latitude: widget.latitude ?? 12.9716,
+
+        longitude: widget.longitude ?? 77.5946,
+
+        zoom: widget.zoom ?? 13,
+
+        mapMode: widget.mapMode || "single",
+
+        showRouteHistory: widget.showRouteHistory ?? true,
+
+        geofenceEnabled: widget.geofenceEnabled ?? false,
+
+        geofenceRadius: widget.geofenceRadius ?? 500,
       });
     }
   }, [widget]);
