@@ -10,238 +10,143 @@ import {
   Copy,
 } from "lucide-react";
 
-import {
-  useEffect,
-  useState,
-} from "react";
-
+import { useEffect, useState } from "react";
 
 export default function DevicesPage() {
-
   /* ================= STATES ================= */
 
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
 
-  const [devices, setDevices] =
-    useState([]);
+  const [devices, setDevices] = useState([]);
 
-  const [showAddModal, setShowAddModal] =
-    useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
 
-  const [selectedDevice, setSelectedDevice] =
-    useState(null);
+  const [selectedDevice, setSelectedDevice] = useState(null);
 
-  const [editingDevice, setEditingDevice] =
-    useState(null);
+  const [editingDevice, setEditingDevice] = useState(null);
 
-  const [errors, setErrors] =
-  useState({});
+  const [errors, setErrors] = useState({});
 
-  const [deviceForm, setDeviceForm] =
-    useState({
-
-      name: "",
-
-      location: "",
-
-      description: "",
-    });
-
-  /* ================= LOAD DEVICES ================= */
-
-  useEffect(() => {
-
-    const savedDevices =
-      localStorage.getItem(
-        "iris_devices"
-      );
-
-    if (savedDevices) {
-
-      setDevices(
-        JSON.parse(savedDevices)
-      );
-    }
-
-  }, []);
-
-  /* ================= SAVE DEVICES ================= */
-
-  const saveDevices = (
-    updatedDevices
-  ) => {
-
-    setDevices(updatedDevices);
-
-    localStorage.setItem(
-
-      "iris_devices",
-
-      JSON.stringify(updatedDevices)
-    );
-  };
-
-  /* ================= GENERATE IDS ================= */
-
-  const generateDeviceId = () => {
-
-    return `IRIS-${Math.floor(
-      100000 +
-      Math.random() * 900000
-    )}`;
-  };
-
-  const generateApiKey = () => {
-
-    return `iris_${Math.random()
-      .toString(36)
-      .substring(2, 14)}`;
-  };
-
-  /* ================= ADD DEVICE ================= */
-
-  const handleAddDevice = () => {
-
-  /* ================= VALIDATION ================= */
-
-  let validationErrors = {};
-
-  if (
-    !deviceForm.name.trim()
-  ) {
-
-    validationErrors.name =
-      "Device name is required";
-  }
-
-  setErrors(
-    validationErrors
-  );
-
-  /* ================= STOP IF ERROR ================= */
-
-  if (
-    Object.keys(
-      validationErrors
-    ).length > 0
-  ) {
-
-    return;
-  }
-
-  /* ================= CREATE DEVICE ================= */
-
-  const newDevice = {
-
-    id: Date.now(),
-
-    deviceId:
-      generateDeviceId(),
-
-    apiKey:
-      generateApiKey(),
-
-    name:
-      deviceForm.name,
-
-    location:
-      deviceForm.location,
-
-    description:
-      deviceForm.description,
-
-    firmware: "v1.0.0",
-
-    status: "offline",
-
-    telemetry: [],
-
-    lastSeen: "Never",
-
-    createdAt:
-      new Date().toLocaleString(),
-  };
-
-  const updatedDevices = [
-    ...devices,
-    newDevice,
-  ];
-
-  saveDevices(
-    updatedDevices
-  );
-
-  /* ================= RESET ================= */
-
-  setShowAddModal(false);
-
-  setErrors({});
-
-  setDeviceForm({
-
+  const [deviceForm, setDeviceForm] = useState({
     name: "",
 
     location: "",
 
     description: "",
   });
-};
+
+  /* ================= LOAD DEVICES ================= */
+
+  useEffect(() => {
+    setDevices(deviceRegistry.getAll());
+  }, []);
+
+  /* ================= SAVE DEVICES ================= */
+
+  const refreshDevices = () => {
+    setDevices(deviceRegistry.getAll());
+  };
+
+  /* ================= GENERATE IDS ================= */
+
+  const generateDeviceId = () => {
+    return `IRIS-${Math.floor(100000 + Math.random() * 900000)}`;
+  };
+
+  const generateApiKey = () => {
+    return `iris_${Math.random().toString(36).substring(2, 14)}`;
+  };
+
+  /* ================= ADD DEVICE ================= */
+
+  const handleAddDevice = () => {
+    /* ================= VALIDATION ================= */
+
+    let validationErrors = {};
+
+    if (!deviceForm.name.trim()) {
+      validationErrors.name = "Device name is required";
+    }
+
+    setErrors(validationErrors);
+
+    /* ================= STOP IF ERROR ================= */
+
+    if (Object.keys(validationErrors).length > 0) {
+      return;
+    }
+
+    /* ================= CREATE DEVICE ================= */
+
+    const newDevice = {
+      id: Date.now(),
+
+      deviceId: generateDeviceId(),
+
+      apiKey: generateApiKey(),
+
+      name: deviceForm.name,
+
+      location: deviceForm.location,
+
+      description: deviceForm.description,
+
+      firmware: "v1.0.0",
+
+      status: "offline",
+
+      telemetry: [],
+
+      lastSeen: "Never",
+
+      createdAt: new Date().toLocaleString(),
+    };
+
+    deviceRegistry.add(newDevice);
+    refreshDevices();
+
+    /* ================= RESET ================= */
+
+    setShowAddModal(false);
+
+    setErrors({});
+
+    setDeviceForm({
+      name: "",
+
+      location: "",
+
+      description: "",
+    });
+  };
 
   /* ================= DELETE DEVICE ================= */
 
-  const handleDeleteDevice = (
-    id
-  ) => {
+  const handleDeleteDevice = (deviceId) => {
+    deviceRegistry.remove(deviceId);
 
-    const updatedDevices =
-      devices.filter(
-        (device) =>
-          device.id !== id
-      );
-
-    saveDevices(
-      updatedDevices
-    );
+    refreshDevices();
   };
 
   /* ================= EDIT DEVICE ================= */
 
   const handleEditDevice = () => {
+    deviceRegistry.update(editingDevice.deviceId, editingDevice);
 
-    const updatedDevices =
-      devices.map((device) =>
+    refreshDevices();
 
-        device.id ===
-        editingDevice.id
-
-          ? editingDevice
-
-          : device
-      );
-
-    saveDevices(
-      updatedDevices);
-
+    setEditingDevice(null);
     setEditingDevice(null);
   };
 
   /* ================= FILTER DEVICES ================= */
 
-  const filteredDevices =
-    devices.filter((device) =>
-
-      device.name
-        .toLowerCase()
-        .includes(
-          search.toLowerCase()
-        )
-    );
+  const filteredDevices = devices.filter((device) =>
+    device.name.toLowerCase().includes(search.toLowerCase()),
+  );
 
   return (
-
     <div className="w-full">
-
       {/* ================= TOP CARDS ================= */}
 
       <div
@@ -255,42 +160,21 @@ export default function DevicesPage() {
           mb-8
         "
       >
-
-        <StatusCard
-          title="Total Devices"
-          value={devices.length}
-        />
+        <StatusCard title="Total Devices" value={devices.length} />
 
         <StatusCard
           title="Online"
-          value={
-            devices.filter(
-              (d) =>
-                d.status ===
-                "online"
-            ).length
-          }
+          value={devices.filter((d) => d.status === "online").length}
           green
         />
 
         <StatusCard
           title="Offline"
-          value={
-            devices.filter(
-              (d) =>
-                d.status ===
-                "offline"
-            ).length
-          }
+          value={devices.filter((d) => d.status === "offline").length}
           red
         />
 
-        <StatusCard
-          title="Telemetry"
-          value={124}
-          orange
-        />
-
+        <StatusCard title="Telemetry" value={124} orange />
       </div>
 
       {/* ================= ACTIONS ================= */}
@@ -306,7 +190,6 @@ export default function DevicesPage() {
           mb-8
         "
       >
-
         {/* SEARCH */}
 
         <div
@@ -325,7 +208,6 @@ export default function DevicesPage() {
             shadow-sm
           "
         >
-
           <Search
             className="
               text-gray-400
@@ -337,28 +219,19 @@ export default function DevicesPage() {
             type="text"
             placeholder="Search Devices..."
             value={search}
-            onChange={(e) =>
-              setSearch(
-                e.target.value
-              )
-            }
+            onChange={(e) => setSearch(e.target.value)}
             className="
               bg-transparent
               outline-none
               w-full
             "
           />
-
         </div>
 
         {/* ADD BUTTON */}
 
         <button
-
-          onClick={() =>
-            setShowAddModal(true)
-          }
-
+          onClick={() => setShowAddModal(true)}
           className="
             w-full
             sm:w-auto
@@ -378,25 +251,18 @@ export default function DevicesPage() {
             cursor-pointer
           "
         >
-
           <Plus size={20} />
-
           Add Device
-
         </button>
-
       </div>
 
       {/* ================= DEVICE LIST ================= */}
 
       <div className="grid gap-5">
-
-        {filteredDevices.map(
-          (device) => (
-
-            <div
-              key={device.id}
-              className="
+        {filteredDevices.map((device) => (
+          <div
+            key={device.id}
+            className="
                 bg-black/5
                 border
                 border-black/10
@@ -404,10 +270,9 @@ export default function DevicesPage() {
                 p-5
                 shadow-md
               "
-            >
-
-              <div
-                className="
+          >
+            <div
+              className="
                   flex
                   flex-col
                   lg:flex-row
@@ -415,98 +280,75 @@ export default function DevicesPage() {
                   lg:justify-between
                   gap-5
                 "
-              >
+            >
+              {/* LEFT */}
 
-                {/* LEFT */}
-
-                <div>
-
-                  <div
-                    className="
+              <div>
+                <div
+                  className="
                       flex
                       items-center
                       gap-3
                     "
-                  >
-
-                    <h3
-                      className="
+                >
+                  <h3
+                    className="
                         text-xl
                         font-bold
                       "
-                    >
+                  >
+                    {device.name}
+                  </h3>
 
-                      {device.name}
-
-                    </h3>
-
-                    {device.status ===
-                    "online" ? (
-
-                      <Wifi
-                        className="
+                  {device.status === "online" ? (
+                    <Wifi
+                      className="
                           text-green-500
                         "
-                      />
-
-                    ) : (
-
-                      <WifiOff
-                        className="
+                    />
+                  ) : (
+                    <WifiOff
+                      className="
                           text-red-500
                         "
-                      />
+                    />
+                  )}
+                </div>
 
-                    )}
-
-                  </div>
-
-                  <p
-                    className="
+                <p
+                  className="
                       text-gray-500
                       mt-1
                     "
-                  >
+                >
+                  {device.deviceId}
+                </p>
 
-                    {device.deviceId}
-
-                  </p>
-
-                  <p
-                    className="
+                <p
+                  className="
                       text-sm
                       text-gray-400
                       mt-2
                     "
-                  >
+                >
+                  {device.location}
+                </p>
+              </div>
 
-                    {device.location}
+              {/* RIGHT */}
 
-                  </p>
-
-                </div>
-
-                {/* RIGHT */}
-
-                <div
-                  className="
+              <div
+                className="
                     flex
                     flex-wrap
                     gap-3
                   "
-                >
+              >
+                {/* VIEW */}
 
-                  {/* VIEW */}
-
-                  <button
-
-                    onClick={() =>
-                      setSelectedDevice(
-                        device
-                      )
-                    }
-
-                    className="group relative
+                <button
+                  onClick={() => setSelectedDevice(device)}
+                  className="group relative
                       px-4
                       py-2
                       rounded-xl
@@ -516,12 +358,10 @@ export default function DevicesPage() {
                       cursor-pointer
                       hover:text-white
                     "
-                  >
-
-                    <Activity
-                      size={18}
-                    />
-                    <span className="
+                >
+                  <Activity size={18} />
+                  <span
+                    className="
                     absolute
                     -top-10
                     left-[50%]
@@ -542,23 +382,17 @@ export default function DevicesPage() {
                     duration-300
                     group-hover:scale-100
                     group-hover:text-blue-500
-                    ">
+                    "
+                  >
                     Details
-                    </span>
+                  </span>
+                </button>
 
-                  </button>
+                {/* EDIT */}
 
-                  {/* EDIT */}
-
-                  <button
-
-                    onClick={() =>
-                      setEditingDevice(
-                        device
-                      )
-                    }
-
-                    className="group relative
+                <button
+                  onClick={() => setEditingDevice(device)}
+                  className="group relative
                       px-4
                       py-2
                       rounded-xl
@@ -569,12 +403,10 @@ export default function DevicesPage() {
                       hover:text-white
 
                     "
-                  >
-
-                    <Pencil
-                      size={18}
-                    />
-                    <span className="
+                >
+                  <Pencil size={18} />
+                  <span
+                    className="
                     absolute
                     -top-10
                     left-[50%]
@@ -595,23 +427,17 @@ export default function DevicesPage() {
                     duration-300
                     group-hover:scale-100
                     group-hover:text-[#ff5700]
-                    ">
+                    "
+                  >
                     Edit
-                    </span>
+                  </span>
+                </button>
 
-                  </button>
+                {/* DELETE */}
 
-                  {/* DELETE */}
-
-                  <button
-
-                    onClick={() =>
-                      handleDeleteDevice(
-                        device.id
-                      )
-                    }
-
-                    className="group relative
+                <button
+                  onClick={() => handleDeleteDevice(device.deviceId)}
+                  className="group relative
                       px-4
                       py-2
                       rounded-xl
@@ -621,12 +447,10 @@ export default function DevicesPage() {
                       hover:text-white
                       cursor-pointer
                     "
-                  >
-
-                    <Trash2
-                      size={18}
-                    />
-                    <span className="
+                >
+                  <Trash2 size={18} />
+                  <span
+                    className="
                     absolute
                     -top-10
                     left-[50%]
@@ -647,62 +471,44 @@ export default function DevicesPage() {
                     duration-300
                     group-hover:scale-100
                     group-hover:text-red-500
-                    ">
+                    "
+                  >
                     Delete
-                    </span>
-
-                  </button>
-
-                </div>
-
+                  </span>
+                </button>
               </div>
-
             </div>
-          )
-        )}
-
+          </div>
+        ))}
       </div>
 
       {/* ================= ADD DEVICE MODAL ================= */}
 
       {showAddModal && (
-
-        <Modal
-          title="Add Device"
-          onClose={() =>
-            setShowAddModal(false)
-          }
-        >
-
+        <Modal title="Add Device" onClose={() => setShowAddModal(false)}>
           <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Device Name *"
+              value={deviceForm.name}
+              onChange={(e) => {
+                setDeviceForm({
+                  ...deviceForm,
 
-              <input
-                type="text"
-                placeholder="Device Name *"
-                value={deviceForm.name}
-                onChange={(e) => {
+                  name: e.target.value,
+                });
 
-                  setDeviceForm({
+                /* REMOVE ERROR LIVE */
 
-                    ...deviceForm,
+                if (errors.name) {
+                  setErrors({
+                    ...errors,
 
-                    name:
-                      e.target.value,
+                    name: "",
                   });
-
-                  /* REMOVE ERROR LIVE */
-
-                  if (errors.name) {
-
-                    setErrors({
-
-                      ...errors,
-
-                      name: "",
-                    });
-                  }
-                }}
-                className={`
+                }
+              }}
+              className={`
                   w-full
                   rounded-xl
                   px-4
@@ -712,13 +518,11 @@ export default function DevicesPage() {
 
                   ${
                     errors.name
-
                       ? `
                         border
                         border-red-500
                         focus:border-red-500
                       `
-
                       : `
                         border
                         border-gray-300
@@ -726,26 +530,22 @@ export default function DevicesPage() {
                       `
                   }
                 `}
-              />
+            />
 
-              {/* ERROR MESSAGE */}
+            {/* ERROR MESSAGE */}
 
-              {errors.name && (
-
-                <p
-                  className="
+            {errors.name && (
+              <p
+                className="
                     text-red-500
                     text-sm
                     mt-2
                     font-medium
                   "
-                >
-
-                  {errors.name}
-
-                </p>
-              )}
-
+              >
+                {errors.name}
+              </p>
+            )}
 
             <input
               type="text"
@@ -753,11 +553,9 @@ export default function DevicesPage() {
               value={deviceForm.location}
               onChange={(e) =>
                 setDeviceForm({
-
                   ...deviceForm,
 
-                  location:
-                    e.target.value,
+                  location: e.target.value,
                 })
               }
               className="
@@ -771,16 +569,12 @@ export default function DevicesPage() {
 
             <textarea
               placeholder="Description"
-              value={
-                deviceForm.description
-              }
+              value={deviceForm.description}
               onChange={(e) =>
                 setDeviceForm({
-
                   ...deviceForm,
 
-                  description:
-                    e.target.value,
+                  description: e.target.value,
                 })
               }
               className="
@@ -793,11 +587,7 @@ export default function DevicesPage() {
             />
 
             <button
-
-              onClick={
-                handleAddDevice
-              }
-
+              onClick={handleAddDevice}
               className="
                 w-full
                 py-3
@@ -807,66 +597,28 @@ export default function DevicesPage() {
                 cursor-pointer
               "
             >
-
               Create Device
-
             </button>
-
           </div>
-
         </Modal>
       )}
 
       {/* ================= VIEW DEVICE ================= */}
 
       {selectedDevice && (
-
-        <Modal
-          title="Device Details"
-          onClose={() =>
-            setSelectedDevice(null)
-          }
-        >
-
+        <Modal title="Device Details" onClose={() => setSelectedDevice(null)}>
           <div className="space-y-4">
+            <InfoRow label="Device ID" value={selectedDevice.deviceId} />
 
-            <InfoRow
-              label="Device ID"
-              value={
-                selectedDevice.deviceId
-              }
-            />
+            <InfoRow label="API Key" value={selectedDevice.apiKey} />
 
-            <InfoRow
-              label="API Key"
-              value={
-                selectedDevice.apiKey
-              }
-            />
+            <InfoRow label="Firmware" value={selectedDevice.firmware} />
 
-            <InfoRow
-              label="Firmware"
-              value={
-                selectedDevice.firmware
-              }
-            />
+            <InfoRow label="Last Seen" value={selectedDevice.lastSeen} />
 
-            <InfoRow
-              label="Last Seen"
-              value={
-                selectedDevice.lastSeen
-              }
-            />
-
-            <InfoRow
-              label="Created At"
-              value={
-                selectedDevice.createdAt
-              }
-            />
+            <InfoRow label="Created At" value={selectedDevice.createdAt} />
 
             <div>
-
               <h4
                 className="
                   font-bold
@@ -877,53 +629,38 @@ export default function DevicesPage() {
               </h4>
 
               <div className="p-6 text-black">
-              <h1 className="text-2xl mb-4">Live Telemetry</h1>
+                <h1 className="text-2xl mb-4">Live Telemetry</h1>
 
-              {telemetry ? (
-                <div className="space-y-2">
-                  <p>Device: {telemetry.deviceId}</p>
-                  <p>Battery: {telemetry.battery}%</p>
-                  <p>Temperature: {telemetry.temperature}°C</p>
-                  <p>Speed: {telemetry.speed} km/h</p>
-                  <p>Lock Status: {telemetry.lockStatus}</p>
-                </div>
-              ) : (
-                <p>Waiting for telemetry...</p>
-              )}
+                {telemetry ? (
+                  <div className="space-y-2">
+                    <p>Device: {telemetry.deviceId}</p>
+                    <p>Battery: {telemetry.battery}%</p>
+                    <p>Temperature: {telemetry.temperature}°C</p>
+                    <p>Speed: {telemetry.speed} km/h</p>
+                    <p>Lock Status: {telemetry.lockStatus}</p>
+                  </div>
+                ) : (
+                  <p>Waiting for telemetry...</p>
+                )}
+              </div>
             </div>
-
-            </div>
-
           </div>
-
         </Modal>
       )}
 
       {/* ================= EDIT DEVICE ================= */}
 
       {editingDevice && (
-
-        <Modal
-          title="Edit Device"
-          onClose={() =>
-            setEditingDevice(null)
-          }
-        >
-
+        <Modal title="Edit Device" onClose={() => setEditingDevice(null)}>
           <div className="space-y-4">
-
             <input
               type="text"
-              value={
-                editingDevice.name
-              }
+              value={editingDevice.name}
               onChange={(e) =>
                 setEditingDevice({
-
                   ...editingDevice,
 
-                  name:
-                    e.target.value,
+                  name: e.target.value,
                 })
               }
               className="
@@ -938,16 +675,12 @@ export default function DevicesPage() {
             <input
               type="text"
               placeholder="Location"
-              value={
-                editingDevice.location
-              }
+              value={editingDevice.location}
               onChange={(e) =>
                 setEditingDevice({
-
                   ...editingDevice,
 
-                  location:
-                    e.target.value,
+                  location: e.target.value,
                 })
               }
               className="
@@ -960,17 +693,13 @@ export default function DevicesPage() {
             />
 
             <textarea
-            placeholder="Description"
-              value={
-                editingDevice.description
-              }
+              placeholder="Description"
+              value={editingDevice.description}
               onChange={(e) =>
                 setEditingDevice({
-
                   ...editingDevice,
 
-                  description:
-                    e.target.value,
+                  description: e.target.value,
                 })
               }
               className="
@@ -983,11 +712,7 @@ export default function DevicesPage() {
             />
 
             <button
-
-              onClick={
-                handleEditDevice
-              }
-
+              onClick={handleEditDevice}
               className="
                 w-full
                 py-3
@@ -997,32 +722,19 @@ export default function DevicesPage() {
                 cursor-pointer
               "
             >
-
               Save Changes
-
             </button>
-
           </div>
-
         </Modal>
       )}
-
     </div>
   );
 }
 
 /* ================= STATUS CARD ================= */
 
-function StatusCard({
-  title,
-  value,
-  green,
-  red,
-  orange,
-}) {
-
+function StatusCard({ title, value, green, red, orange }) {
   return (
-
     <div
       className="
         bg-black/5
@@ -1032,10 +744,7 @@ function StatusCard({
         p-6
       "
     >
-
-      <p className="text-gray-500">
-        {title}
-      </p>
+      <p className="text-gray-500">{title}</p>
 
       <h3
         className={`
@@ -1045,40 +754,25 @@ function StatusCard({
 
           ${
             green
-
               ? "text-green-500"
-
               : red
-
-              ? "text-red-500"
-
-              : orange
-
-              ? "text-orange-500"
-
-              : "text-[#010c29]"
+                ? "text-red-500"
+                : orange
+                  ? "text-orange-500"
+                  : "text-[#010c29]"
           }
         `}
       >
-
         {value}
-
       </h3>
-
     </div>
   );
 }
 
 /* ================= MODAL ================= */
 
-function Modal({
-  title,
-  children,
-  onClose,
-}) {
-
+function Modal({ title, children, onClose }) {
   return (
-
     <div
       className="
         fixed
@@ -1092,7 +786,6 @@ function Modal({
         p-4
       "
     >
-
       <div
         className="
           bg-white
@@ -1105,7 +798,6 @@ function Modal({
           overflow-y-auto
         "
       >
-
         <div
           className="
             flex
@@ -1114,46 +806,33 @@ function Modal({
             mb-6
           "
         >
-
           <h2
             className="
               text-2xl
               font-bold
             "
           >
-
             {title}
-
           </h2>
 
           <button
             onClick={onClose}
             className="cursor-pointer hover:bg-gray-100 rounded-full p-1.5"
           >
-
             <X />
-
           </button>
-
         </div>
 
         {children}
-
       </div>
-
     </div>
   );
 }
 
 /* ================= INFO ROW ================= */
 
-function InfoRow({
-  label,
-  value,
-}) {
-
+function InfoRow({ label, value }) {
   return (
-
     <div
       className="
         flex
@@ -1165,10 +844,7 @@ function InfoRow({
         pb-3
       "
     >
-
-      <p className="font-medium">
-        {label}
-      </p>
+      <p className="font-medium">{label}</p>
 
       <p
         className="
@@ -1176,11 +852,8 @@ function InfoRow({
           break-all
         "
       >
-
         {value}
-
       </p>
-
     </div>
   );
 }

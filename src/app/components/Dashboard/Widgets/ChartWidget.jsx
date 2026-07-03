@@ -1,4 +1,9 @@
 import WidgetCard from "./WidgetCard";
+import { useEffect, useState } from "react";
+
+import {
+  CartesianGrid,
+} from "recharts";
 
 import {
   LineChart,
@@ -9,17 +14,40 @@ import {
   Tooltip,
 } from "recharts";
 
-export default function ChartWidget() {
+import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
 
-  const data = [
+export default function ChartWidget({
+  widget,
+  telemetry,
+}) {
 
-    { time: "1", value: 20 },
-    { time: "2", value: 35 },
-    { time: "3", value: 28 },
-    { time: "4", value: 50 },
-    { time: "5", value: 42 },
+  const value = getTelemetryValue(
+  widget,
+  telemetry
+);
 
-  ];
+const [data, setData] = useState([]);
+
+useEffect(() => {
+
+  setData((prev) => {
+
+    const updated = [
+
+      ...prev,
+
+      {
+        time: new Date().toLocaleTimeString(),
+        value,
+      },
+
+    ];
+
+    return updated.slice(-20);
+
+  });
+
+}, [value]);
 
   return (
 
@@ -27,15 +55,12 @@ export default function ChartWidget() {
 
       <div className="
     w-full
-    h-full
-    flex
-    items-center
-    justify-center
+    h-65
   ">
 
         <ResponsiveContainer
           width="100%"
-          height="100%"
+          height={260}
         >
 
           <LineChart data={data}>
@@ -45,6 +70,8 @@ export default function ChartWidget() {
             <YAxis />
 
             <Tooltip />
+
+            <CartesianGrid strokeDasharray="3 3" />
 
             <Line
               type="monotone"

@@ -1,6 +1,8 @@
 import WidgetCard
 from "./WidgetCard";
 
+import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
+
 export default function TextDisplayWidget({
 
   widget,
@@ -23,8 +25,11 @@ export default function TextDisplayWidget({
       "text-6xl",
   };
 
-  const locked =
-  telemetry?.lockStatus;
+  const value =
+  getTelemetryValue(
+    widget,
+    telemetry
+  );
 
   /* ================= ALIGNMENT ================= */
 

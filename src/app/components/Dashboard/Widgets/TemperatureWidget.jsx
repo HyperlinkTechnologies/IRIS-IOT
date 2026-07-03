@@ -1,11 +1,15 @@
 import WidgetCard from "./WidgetCard";
+import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
 
 export default function TemperatureWidget({
   telemetry,
 }) {
 
-  const temperature =
-    telemetry?.temperature || 0;
+  const value =
+  getTelemetryValue(
+    widget,
+    telemetry
+  );
 
   return (
 

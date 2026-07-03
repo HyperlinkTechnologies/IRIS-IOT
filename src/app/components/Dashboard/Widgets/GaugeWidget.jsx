@@ -1,6 +1,8 @@
 import WidgetCard
 from "./WidgetCard";
 
+import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
+
 export default function GaugeWidget({
 
   widget,
@@ -12,16 +14,15 @@ export default function GaugeWidget({
   /* ================= LIVE VALUE ================= */
 
   const value =
-
-    telemetry?.battery ?? 0;
+  getTelemetryValue(
+    widget,
+    telemetry
+  );
 
   /* ================= CONFIG ================= */
 
-  const min =
-    widget.min ?? 0;
-
-  const max =
-    widget.max ?? 100;
+ const min = widget.min ?? 0;
+const max = widget.max ?? 100;
 
   const threshold =
     widget.threshold ?? 80;

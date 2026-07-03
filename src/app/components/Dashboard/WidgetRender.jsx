@@ -14,14 +14,12 @@ import ChartWidget from "./Widgets/ChartWidget";
 import MapWidget from "./Widgets/MapWidget";
 
 import {
-  useTelemetry,
-  useTelemetryHistory,
+  useTelemetry
 } from "../../../context/TelemetryContext";
 
 export default function WidgetRenderer({ widget }) {
 
   const devices = useTelemetry();
-  const telemetryHistory = useTelemetryHistory();
 
   let selectedDevice = null;
 
@@ -153,7 +151,6 @@ export default function WidgetRenderer({ widget }) {
           widget={widget}
           telemetry={telemetry}
           telemetryDevices={devices}
-          telemetryHistory={telemetryHistory}
         />
       );
 

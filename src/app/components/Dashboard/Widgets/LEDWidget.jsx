@@ -1,11 +1,16 @@
 import { useState } from "react";
 
+import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
+
 import WidgetCard from "./WidgetCard";
 
 export default function LEDWidget() {
 
-  const [online] =
-    useState(true);
+  const state =
+  getTelemetryValue(
+    widget,
+    telemetry
+  );
 
   return (
 

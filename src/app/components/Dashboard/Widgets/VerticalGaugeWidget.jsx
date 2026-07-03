@@ -1,12 +1,22 @@
 import WidgetCard from "./WidgetCard";
+import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
 
-export default function VerticalGaugeWidget() {
+export default function VerticalGaugeWidget({
 
-  const value = 68;
+  widget,
+
+  telemetry,
+
+}) {
+
+  const value = getTelemetryValue(
+    widget,
+    telemetry
+  );
 
   return (
 
-    <WidgetCard title="Vertical Gauge">
+    <WidgetCard title={widget.title}>
 
       <div
         className="
@@ -21,25 +31,27 @@ export default function VerticalGaugeWidget() {
 
         <div
           className="
-            w-16
+            w-12
             h-64
             bg-gray-200
             rounded-full
             overflow-hidden
             flex
             items-end
+            p-0.5
           "
         >
 
           <div
             className="
               w-full
-              bg-[#ff5700]
               rounded-full
               transition-all
             "
             style={{
               height: `${value}%`,
+              background:
+                widget.color || "#ff5700",
             }}
           />
 
@@ -50,12 +62,21 @@ export default function VerticalGaugeWidget() {
             text-2xl
             font-bold
           "
+          style={{
+            color:
+              widget.color || "#ff5700",
+          }}
         >
-          {value}%
+
+          {value}
+
+          {widget.unit || "%"}
+
         </p>
 
       </div>
 
     </WidgetCard>
+
   );
 }

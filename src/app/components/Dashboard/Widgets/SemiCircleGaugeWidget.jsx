@@ -1,44 +1,46 @@
 import WidgetCard
 from "./WidgetCard";
 
+import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
+
 export default function SemiCircleGaugeWidget({
 
   widget,
+  telemetry,
 
 }) {
 
-  /* ================= VALUES ================= */
+  /* ================= VALUE ================= */
 
-  const value =
-    widget.value || 0;
+const value = getTelemetryValue(
+  widget,
+  telemetry
+);
 
-  const min =
-    widget.min || 0;
+/* ================= CONFIG ================= */
 
-  const max =
-    widget.max || 100;
+const min = widget.min ?? 0;
 
-  const threshold =
-    widget.threshold || 80;
+const max = widget.max ?? 100;
 
-  /* ================= PERCENT ================= */
+const threshold = widget.threshold ?? 80;
 
-  const percentage =
+/* ================= PERCENT ================= */
 
-    ((value - min) /
-      (max - min)) * 100;
+const percentage = Math.min(
+  Math.max(
+    ((value - min) / (max - min)) * 100,
+    0
+  ),
+  100
+);
 
-  /* ================= COLORS ================= */
+/* ================= COLORS ================= */
 
-  const gaugeColor =
-
-    value >= threshold
-
-      ? "#ef4444"
-
-      : widget.color ||
-        "#ff0055";
-
+const gaugeColor =
+  value >= threshold
+    ? "#ef4444"
+    : widget.color || "#ff0055";
   return (
 
     <WidgetCard

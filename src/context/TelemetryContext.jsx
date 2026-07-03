@@ -5,148 +5,70 @@ import {
   useState,
 } from "react";
 
-import { io }
-from "socket.io-client";
+import telemetryStore from "../app/core/telemetry/telemetryStore";
 
-const TelemetryContext =
-  createContext();
-const TelemetryHistoryContext =
-  createContext({});
+import telemetrySimulator from "../app/core/telemetry/telemetrySimulator";
 
-const MAX_HISTORY_POINTS = 500;
+import mqttClient from "../app/core/mqtt/mqttClient";
+import { MQTT_TOPICS } from "../app/core/mqtt/mqttTopics";
 
-function readCoordinates(data) {
-  const lat = Number(
-    data?.lat ??
-    data?.latitude ??
-    data?.gps?.lat ??
-    data?.gps?.latitude ??
-    data?.location?.lat ??
-    data?.location?.latitude
+const TelemetryContext = createContext();
+
+export function TelemetryProvider({ children }) {
+  const [telemetry, setTelemetry] = useState(
+    telemetryStore.getAll()
   );
-  const lng = Number(
-    data?.lng ??
-    data?.lon ??
-    data?.longitude ??
-    data?.gps?.lng ??
-    data?.gps?.lon ??
-    data?.gps?.longitude ??
-    data?.location?.lng ??
-    data?.location?.lon ??
-    data?.location?.longitude
-  );
-
-  if (
-    !Number.isFinite(lat) ||
-    lat < -90 ||
-    lat > 90 ||
-    !Number.isFinite(lng) ||
-    lng < -180 ||
-    lng > 180
-  ) {
-    return null;
-  }
-
-  return { lat, lng };
-}
-
-export function
-TelemetryProvider({
-  children,
-}) {
-
-  const [devices,
-    setDevices] =
-      useState({});
-  const [history, setHistory] =
-    useState({});
 
   useEffect(() => {
 
-    const socket =
-      io(
-        "http://localhost:4000"
-      );
+  // Listen to telemetryStore
+  const unsubscribe =
+    telemetryStore.subscribe(setTelemetry);
 
-    socket.on(
-      "telemetry",
-      (data) => {
+  // Connect MQTT
+  mqttClient.connect(
+    import.meta.env.VITE_MQTT_BROKER_URL
+  );
 
-        if (!data?.deviceId) {
-          return;
-        }
+  // Subscribe to telemetry
+  mqttClient.subscribe(
+    MQTT_TOPICS.TELEMETRY
+  );
 
-        setDevices(
-          prev => ({
+  const devices =
+  JSON.parse(localStorage.getItem("iris_devices")) || [];
 
-            ...prev,
+if (devices.length > 0) {
 
-            [data.deviceId]:
-              {
-                ...data,
-                lastSeen:
-                  Date.now(),
-              },
-          })
-        );
+  telemetrySimulator.start(
+    devices[0].deviceId
+  );
 
-        const coordinates = readCoordinates(data);
+}
 
-        if (coordinates) {
-          setHistory((previous) => {
-            const deviceHistory = previous[data.deviceId] || [];
-            const lastPoint = deviceHistory[deviceHistory.length - 1];
+  return () => {
 
-            if (
-              lastPoint?.lat === coordinates.lat &&
-              lastPoint?.lng === coordinates.lng
-            ) {
-              return previous;
-            }
+    unsubscribe();
 
-            return {
-              ...previous,
-              [data.deviceId]: [
-                ...deviceHistory,
-                {
-                  ...coordinates,
-                  timestamp: Date.now(),
-                },
-              ].slice(-MAX_HISTORY_POINTS),
-            };
-          });
-        }
-      }
-    );
+    telemetrySimulator.stop();
 
-    return () => {
+    mqttClient.disconnect();
 
-      socket.disconnect();
-    };
+  };
 
-  }, []);
+}, []);
 
   return (
-
     <TelemetryContext.Provider
-      value={devices}
+      value={{
+        telemetry,
+      }}
     >
-      <TelemetryHistoryContext.Provider value={history}>
-        {children}
-      </TelemetryHistoryContext.Provider>
-
+      {children}
     </TelemetryContext.Provider>
   );
 }
 
-export function
-useTelemetry() {
-
-  return useContext(
-    TelemetryContext
-  );
-}
-
-export function useTelemetryHistory() {
-  return useContext(TelemetryHistoryContext);
+export function useTelemetry() {
+  return useContext(TelemetryContext).telemetry;
 }
