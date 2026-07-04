@@ -1,59 +1,26 @@
-import {
+import { useState, useEffect } from "react";
 
-  useState,
+import commandService from "../../../core/commands/commandService";
+import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
+import useCommand from "../../../hooks/useCommand";
 
-  useEffect,
+import WidgetCard from "./WidgetCard";
 
-} from "react";
-
-import WidgetCard
-from "./WidgetCard";
-
-export default function ToggleWidget({
-
-  widget,
-
-}) {
-
+export default function ToggleWidget({ widget, telemetry }) {
   /* ================= INITIAL STATE ================= */
 
-  const [
-
-    enabled,
-
-    setEnabled,
-
-  ] = useState(false);
-
-  useEffect(() => {
-
-  if (
-
-    typeof widget.value ===
-    "boolean"
-
-  ) {
-
-    setEnabled(
-      widget.value
-    );
-  }
-
-}, [widget.value]);
+  const enabled = Boolean(getTelemetryValue(widget, telemetry));
 
   /* ================= READ ONLY ================= */
 
-  const isReadOnly =
+  const isReadOnly = widget.controlMode === "read";
 
-    widget.controlMode ===
-    "read";
+  const {
+  sendCommand,
+} = useCommand(widget);
 
   return (
-
-    <WidgetCard
-      title={widget.title}
-    >
-
+    <WidgetCard title={widget.title}>
       <div
         className="
           w-full
@@ -65,17 +32,17 @@ export default function ToggleWidget({
           gap-6
         "
       >
-
         {/* SWITCH */}
 
         <button
-
           disabled={isReadOnly}
+          onClick={() => {
+            if (isReadOnly) return;
 
-          onClick={() =>
-            setEnabled(!enabled)
-          }
-
+            sendCommand(
+  !enabled
+);
+          }}
           className={`
             relative
             rounded-full
@@ -85,24 +52,11 @@ export default function ToggleWidget({
             w-24
             h-12
 
-            ${
-              enabled
+            ${enabled ? "bg-green-500" : "bg-gray-300"}
 
-                ? "bg-green-500"
-
-                : "bg-gray-300"
-            }
-
-            ${
-              isReadOnly
-
-                ? "opacity-50 cursor-not-allowed"
-
-                : "cursor-pointer"
-            }
+            ${isReadOnly ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
           `}
         >
-
           {/* KNOB */}
 
           <div
@@ -116,16 +70,9 @@ export default function ToggleWidget({
               transition-all
               duration-300
 
-              ${
-                enabled
-
-                  ? "left-13"
-
-                  : "left-1"
-              }
+              ${enabled ? "left-13" : "left-1"}
             `}
           />
-
         </button>
 
         {/* STATUS */}
@@ -136,13 +83,9 @@ export default function ToggleWidget({
             font-semibold
           "
         >
-
           {enabled ? "ON" : "OFF"}
-
         </p>
-
       </div>
-
     </WidgetCard>
   );
 }

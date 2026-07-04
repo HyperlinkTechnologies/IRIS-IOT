@@ -1,16 +1,16 @@
-import { useState } from "react";
-
 import WidgetCard from "./WidgetCard";
+import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
+import useCommand from "../../../hooks/useCommand";
 
-export default function SliderWidget() {
+export default function SliderWidget({ widget, telemetry }) {
+  const value = getTelemetryValue(widget, telemetry);
 
-  const [value, setValue] =
-    useState(45);
+  const { sendCommand } = useCommand(widget);
+
+  const isReadOnly = widget.controlMode === "read";
 
   return (
-
     <WidgetCard title="Slider Control">
-
       <div
         className="
           flex
@@ -20,20 +20,20 @@ export default function SliderWidget() {
           gap-8
         "
       >
-
         <input
           type="range"
-          min="0"
-          max="100"
+          min={widget.min ?? 0}
+          max={widget.max ?? 100}
           value={value}
-          onChange={(e) =>
-            setValue(e.target.value)
-          }
+          disabled={isReadOnly}
+          onChange={(e) => sendCommand(Number(e.target.value))}
           className="
-            w-full
-            accent-[#ff5700]
-            cursor-pointer
-          "
+    w-full
+    accent-[#ff5700]
+    cursor-pointer
+    disabled:opacity-50
+    disabled:cursor-not-allowed
+  "
         />
 
         <h2
@@ -44,10 +44,9 @@ export default function SliderWidget() {
           "
         >
           {value}
+          {widget.unit || ""}
         </h2>
-
       </div>
-
     </WidgetCard>
   );
 }

@@ -1,5 +1,5 @@
 import mqttClient from "../mqtt/mqttClient";
-import { MQTT_TOPICS } from "../mqtt/mqttTopics";
+import telemetryStore from "../telemetry/telemetryStore";
 
 class CommandService {
 
@@ -7,27 +7,24 @@ class CommandService {
 
     if (!widget.deviceId) return;
 
-    const payload = {
-
-      deviceId: widget.deviceId,
-
-      command: widget.telemetryKey,
-
-      value,
-
-      timestamp: Date.now(),
-
-    };
-
     mqttClient.publish(
-      MQTT_TOPICS.COMMAND,
-      payload
+
+      `iris/${widget.deviceId}/command`,
+
+      {
+
+        key: widget.telemetryKey,
+
+        value,
+
+        timestamp: Date.now(),
+
+      }
+
     );
 
   }
 
 }
 
-const commandService = new CommandService();
-
-export default commandService;
+export default new CommandService();

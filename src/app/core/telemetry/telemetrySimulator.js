@@ -13,7 +13,8 @@ const telemetrySimulator = {
         console.log("Simulator:", {
   deviceId,
   battery: Math.floor(50 + Math.random() * 50),
-});
+}
+);
 
       telemetryStore.update(deviceId, {
 
