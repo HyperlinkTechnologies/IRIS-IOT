@@ -2,6 +2,7 @@ import WidgetCard from "../WidgetCard";
 import { getTelemetryValue } from "../../../../core/telemetry/telemetryResolver";
 
 export default function TemperatureWidget({
+  widget,
   telemetry,
 }) {
 
@@ -15,7 +16,7 @@ export default function TemperatureWidget({
 
     <div className="text-5xl font-bold">
 
-      {temperature}°C
+      {value}°C
 
     </div>
   );

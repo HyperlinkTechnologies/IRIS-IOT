@@ -1,20 +1,29 @@
-import { useState } from "react";
+import WidgetCard from "../WidgetCard";
 
 import { getTelemetryValue } from "../../../../core/telemetry/telemetryResolver";
 
-import WidgetCard from "../WidgetCard";
+export default function LEDWidget({
 
-export default function LEDWidget() {
+  widget,
+
+  telemetry,
+
+}) {
 
   const state =
-  getTelemetryValue(
-    widget,
-    telemetry
-  );
+    getTelemetryValue(
+      widget,
+      telemetry
+    );
+
+  const online =
+    Boolean(state);
 
   return (
 
-    <WidgetCard title="LED Indicator">
+    <WidgetCard
+      title={widget.title}
+    >
 
       <div
         className="
@@ -32,6 +41,9 @@ export default function LEDWidget() {
             w-20
             h-20
             rounded-full
+            transition-all
+            duration-300
+
             ${
               online
                 ? "bg-green-500 shadow-[0_0_40px_#22c55e]"
@@ -54,5 +66,7 @@ export default function LEDWidget() {
       </div>
 
     </WidgetCard>
+
   );
+
 }

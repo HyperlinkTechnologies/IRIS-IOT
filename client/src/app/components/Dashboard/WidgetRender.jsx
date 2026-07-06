@@ -1,17 +1,17 @@
-import ToggleWidget from "./Widgets/ToggleWidget";
-import PushButtonWidget from "./Widgets/PushButtonWidget";
-import LEDWidget from "./Widgets/LEDWidget";
-import TemperatureWidget from "./Widgets/TemperatureWidget";
-import GaugeWidget from "./Widgets/GaugeWidget";
-import SemiCircleGaugeWidget from "./Widgets/SemiCircleGaugeWidget";
-import VerticalGaugeWidget from "./Widgets/VerticalGaugeWidget";
-import HorizontalGaugeWidget from "./Widgets/HorizontalGaugeWidget";
-import SliderWidget from "./Widgets/SliderWidget";
-import TextDisplayWidget from "./Widgets/TextDisplayWidget";
-import NumericInputWidget from "./Widgets/NumericInputWidget";
-import TextInputWidget from "./Widgets/TextInputWidget";
-import ChartWidget from "./Widgets/ChartWidget";
-import MapWidget from "./Widgets/MapWidget";
+import ToggleWidget from "./Widgets/control/ToggleWidget";
+import PushButtonWidget from "./Widgets/control/PushButtonWidget";
+import LEDWidget from "./Widgets/display/LEDWidget";
+import TemperatureWidget from "./Widgets/display/TemperatureWidget";
+import GaugeWidget from "./Widgets/display/GaugeWidget";
+import SemiCircleGaugeWidget from "./Widgets/display/SemiCircleGaugeWidget";
+import VerticalGaugeWidget from "./Widgets/display/VerticalGaugeWidget";
+import HorizontalGaugeWidget from "./Widgets/display/HorizontalGaugeWidget";
+import SliderWidget from "./Widgets/control/SliderWidget";
+import TextDisplayWidget from "./Widgets/display/TextDisplayWidget";
+import NumericInputWidget from "./Widgets/control/NumericInputWidget";
+import TextInputWidget from "./Widgets/control/TextInputWidget";
+import ChartWidget from "./Widgets/display/ChartWidget";
+import MapWidget from "./Widgets/map/MapWidget";
 
 import {
   useTelemetry

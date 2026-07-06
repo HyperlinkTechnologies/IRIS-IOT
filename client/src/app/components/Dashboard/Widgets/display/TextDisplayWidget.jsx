@@ -71,7 +71,7 @@ export default function TextDisplayWidget({
         <h1
           className={`
             font-black
-            wrap-break-word
+            break-words
 
             ${
               fontSizeMap[
@@ -86,7 +86,7 @@ export default function TextDisplayWidget({
           }}
         >
 
-          {locked ||
+          {value ??
             "MACHINE ACTIVE"}
 
         </h1>
