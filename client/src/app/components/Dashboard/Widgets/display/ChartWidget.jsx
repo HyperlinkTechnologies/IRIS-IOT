@@ -1,4 +1,4 @@
-import WidgetCard from "./WidgetCard";
+import WidgetCard from "../WidgetCard";
 import { useEffect, useState } from "react";
 
 import {
@@ -14,7 +14,7 @@ import {
   Tooltip,
 } from "recharts";
 
-import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
+import { getTelemetryValue } from "../../../../core/telemetry/telemetryResolver";
 
 export default function ChartWidget({
   widget,

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import WidgetCard from "./WidgetCard";
+import WidgetCard from "../WidgetCard";
 
 export default function TextInputWidget() {
 

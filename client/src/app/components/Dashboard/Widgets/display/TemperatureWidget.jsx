@@ -1,5 +1,5 @@
-import WidgetCard from "./WidgetCard";
-import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
+import WidgetCard from "../WidgetCard";
+import { getTelemetryValue } from "../../../../core/telemetry/telemetryResolver";
 
 export default function TemperatureWidget({
   telemetry,

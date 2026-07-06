@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
-import commandService from "../../../core/commands/commandService";
-import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
-import useCommand from "../../../hooks/useCommand";
+import commandService from "../../../../core/commands/commandService";
+import { getTelemetryValue } from "../../../../core/telemetry/telemetryResolver";
+import useCommand from "../../../../hooks/useCommand";
 
-import WidgetCard from "./WidgetCard";
+import WidgetCard from "../WidgetCard";
 
 export default function ToggleWidget({ widget, telemetry }) {
   /* ================= INITIAL STATE ================= */

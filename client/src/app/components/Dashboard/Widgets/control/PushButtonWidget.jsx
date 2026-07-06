@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import WidgetCard from "./WidgetCard";
-import useCommand from "../../../hooks/useCommand";
+import WidgetCard from "../WidgetCard";
+import useCommand from "../../../../hooks/useCommand";
 
 export default function PushButtonWidget(widget,) {
 

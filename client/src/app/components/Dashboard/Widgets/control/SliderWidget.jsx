@@ -1,6 +1,6 @@
-import WidgetCard from "./WidgetCard";
-import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
-import useCommand from "../../../hooks/useCommand";
+import WidgetCard from "../WidgetCard";
+import { getTelemetryValue } from "../../../../core/telemetry/telemetryResolver";
+import useCommand from "../../../../hooks/useCommand";
 
 export default function SliderWidget({ widget, telemetry }) {
   const value = getTelemetryValue(widget, telemetry);

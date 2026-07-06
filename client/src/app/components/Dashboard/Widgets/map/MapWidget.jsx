@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import FleetMap from "../../FleetMap/FleetMap";
+import FleetMap from "../../../FleetMap/FleetMap";
 
 function readGpsCoordinates(telemetry) {
   const latitude =

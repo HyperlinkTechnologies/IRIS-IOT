@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
+import { getTelemetryValue } from "../../../../core/telemetry/telemetryResolver";
 
-import WidgetCard from "./WidgetCard";
+import WidgetCard from "../WidgetCard";
 
 export default function LEDWidget() {
 

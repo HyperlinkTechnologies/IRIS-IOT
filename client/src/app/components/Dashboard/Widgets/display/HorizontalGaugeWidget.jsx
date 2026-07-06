@@ -1,6 +1,6 @@
-import WidgetCard from "./WidgetCard";
+import WidgetCard from "../WidgetCard";
 
-import { getTelemetryValue } from "../../../core/telemetry/telemetryResolver";
+import { getTelemetryValue } from "../../../../core/telemetry/telemetryResolver";
 
 export default function HorizontalGaugeWidget( {widget, telemetry,}) {
 
