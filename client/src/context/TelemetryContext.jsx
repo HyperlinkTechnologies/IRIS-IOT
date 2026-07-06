@@ -38,19 +38,19 @@ export function TelemetryProvider({ children }) {
   const devices =
   JSON.parse(localStorage.getItem("iris_devices")) || [];
 
-if (devices.length > 0) {
+// if (devices.length > 0) {
 
-  telemetrySimulator.start(
-    devices[0].deviceId
-  );
+//   telemetrySimulator.start(
+//     devices[0].deviceId
+//   );
 
-}
+// }
 
   return () => {
 
     unsubscribe();
 
-    telemetrySimulator.stop();
+    // telemetrySimulator.stop();
 
     mqttClient.disconnect();
 

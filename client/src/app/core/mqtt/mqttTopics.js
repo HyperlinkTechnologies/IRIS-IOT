@@ -2,8 +2,11 @@ export const MQTT_TOPICS = {
 
   TELEMETRY: "iris/+/telemetry",
 
-  COMMAND: "iris/command",
+  COMMAND: (deviceId) =>
+    `iris/${deviceId}/command`,
 
   STATUS: "iris/+/status",
+
+  HEARTBEAT: "iris/+/heartbeat",
 
 };

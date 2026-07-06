@@ -32,13 +32,14 @@ class MQTTClient {
 
   this.client.on("message", (receivedTopic, message) => {
 
-    if (receivedTopic !== topic) return;
-
     try {
 
-      const payload = JSON.parse(message.toString());
+      const payload =
+        JSON.parse(message.toString());
 
-      telemetryService.handleTelemetry(payload);
+      telemetryService.handleTelemetry(
+        payload
+      );
 
     } catch (error) {
 
