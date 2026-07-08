@@ -303,7 +303,7 @@ export default function WidgetSettingsModal({
                 <option value="">Select Device</option>
 
                 {devices.map((device) => (
-                  <option key={device.id} value={device.id}>
+                  <option key={device.id} value={device.deviceId}>
                     {device.name}
                   </option>
                 ))}

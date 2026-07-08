@@ -3,6 +3,37 @@ class TelemetryStore {
   constructor() {
     this.devices = {};
     this.listeners = new Set();
+
+    setInterval(() => {
+
+  let changed = false;
+
+  const now = Date.now();
+
+  Object.keys(this.devices).forEach(deviceId => {
+
+    const device = this.devices[deviceId];
+
+    const isOnline =
+      (now - device.lastUpdated) < 15000;
+
+    if (device.online !== isOnline) {
+
+      device.online = isOnline;
+
+      changed = true;
+
+    }
+
+  });
+
+  if (changed) {
+
+    this.notify();
+
+  }
+
+}, 1000);
   }
 
   // Update telemetry for a device
@@ -10,19 +41,24 @@ class TelemetryStore {
 
   this.devices = {
 
-    ...this.devices,
+  ...this.devices,
 
-    [deviceId]: {
+  [deviceId]: {
 
-      ...this.devices[deviceId],
+    ...this.devices[deviceId],
 
-      ...telemetry,
+    ...telemetry,
 
-      lastUpdated: Date.now(),
+    lastUpdated: Date.now(),
 
-    },
+    lastSeen: new Date().toLocaleTimeString(),
 
-  };
+    online: true,
+
+  },
+
+};
+console.log("Telemetry Store:", this.devices);
 
   this.notify();
 
