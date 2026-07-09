@@ -1,0 +1,133 @@
+import useTelemetry from "../../hooks/useTelemetry";
+import Modal from "./Modal";
+import InfoRow from "./InfoRow";
+
+export default function DeviceDetailsModal({ selectedDevice, onClose }) {
+  const telemetry = useTelemetry(selectedDevice.deviceId);
+
+  const formatUptime = (seconds = 0) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+
+    return [h, m, s].map((v) => String(v).padStart(2, "0")).join(":");
+  };
+
+  function formatLastSeen(lastUpdated) {
+    if (!lastUpdated) return "--";
+
+    const diff = Math.floor((Date.now() - lastUpdated) / 1000);
+
+    if (diff < 5) return "Just now";
+
+    if (diff < 60) return `${diff} seconds ago`;
+
+    if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+
+    return `${Math.floor(diff / 86400)} days ago`;
+  }
+
+  function getSignal(rssi) {
+    if (rssi >= -50)
+      return {
+        text: "Excellent",
+        color: "text-green-500",
+      };
+
+    if (rssi >= -65)
+      return {
+        text: "Good",
+        color: "text-yellow-500",
+      };
+
+    if (rssi >= -75)
+      return {
+        text: "Fair",
+        color: "text-orange-500",
+      };
+
+    return {
+      text: "Poor",
+      color: "text-red-500",
+    };
+  }
+
+  function formatLabel(key) {
+    return key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase());
+  }
+
+  function formatValue(key, value) {
+    if (typeof value === "boolean") {
+      return value ? "ON" : "OFF";
+    }
+
+    switch (key) {
+      case "temperature":
+        return `${value} °C`;
+
+      case "humidity":
+        return `${value} %`;
+
+      default:
+        return value;
+    }
+  }
+
+  const signal = getSignal(telemetry?.rssi ?? -100);
+
+  return (
+    <Modal title="Device Details" onClose={onClose}>
+      <div className="space-y-4">
+        <InfoRow label="Device ID" value={selectedDevice.deviceId} />
+        <InfoRow label="API Key" value={selectedDevice.apiKey} />
+        <InfoRow label="Firmware" value={selectedDevice.firmware} />
+        <InfoRow label="Created At" value={selectedDevice.createdAt} />
+
+        <h4 className="font-bold mt-6">Device Health</h4>
+
+        <InfoRow
+          label="Status"
+          value={telemetry?.online ? "🟢 Online" : "🔴 Offline "}
+        />
+
+        <div className="flex items-center justify-between border-b border-black/5 pb-3">
+          <p className="font-medium">Signal Strength</p>
+
+          <p className={signal.color}>{signal.text}</p>
+        </div>
+
+        <InfoRow
+          label="Last Seen"
+          value={formatLastSeen(telemetry?.lastUpdated)}
+        />
+
+        <InfoRow label="Uptime" value={formatUptime(telemetry?.uptime ?? 0)} />
+
+        <h4 className="font-bold mt-6">Live Telemetry</h4>
+
+        {Object.entries(telemetry || {})
+          .filter(
+            ([key]) =>
+              ![
+                "online",
+                "lastUpdated",
+                "lastSeen",
+                "uptime",
+                "rssi",
+                "deviceId",
+                "battery",
+              ].includes(key),
+          )
+          .map(([key, value]) => (
+            <InfoRow
+              key={key}
+              label={formatLabel(key)}
+              value={formatValue(key, value)}
+            />
+          ))}
+      </div>
+    </Modal>
+  );
+}

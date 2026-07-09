@@ -1,18 +1,24 @@
-import {
-  Plus,
-  Search,
-  Trash2,
-  Wifi,
-  WifiOff,
-  Pencil,
-  X,
-  Activity,
-  Copy,
-} from "lucide-react";
+import { Plus, Search } from "lucide-react";
 
 import { useEffect, useState } from "react";
 
+import StatusCard from "../../components/Dashboard/statusCard";
+import DeviceDetailsModal from "../../components/Dashboard/deviceDetailsModal";
+import Modal from "../../components/Dashboard/Modal";
+import deviceRegistry from "../../core/devices/deviceRegistry";
+import DeviceCard from "../../components/Dashboard/DeviceCard";
+import telemetryStore from "../../core/telemetry/telemetryStore";
+
 export default function DevicesPage() {
+  const [telemetry, setTelemetry] = useState(telemetryStore.getAll());
+
+  useEffect(() => {
+    const unsubscribe = telemetryStore.subscribe((snapshot) => {
+      setTelemetry(snapshot);
+    });
+
+    return unsubscribe;
+  }, []);
   /* ================= STATES ================= */
 
   const [search, setSearch] = useState("");
@@ -145,6 +151,12 @@ export default function DevicesPage() {
     device.name.toLowerCase().includes(search.toLowerCase()),
   );
 
+  const onlineCount = devices.filter(
+    (device) => telemetry[device.deviceId]?.online,
+  ).length;
+
+  const offlineCount = devices.length - onlineCount;
+
   return (
     <div className="w-full">
       {/* ================= TOP CARDS ================= */}
@@ -154,7 +166,7 @@ export default function DevicesPage() {
           grid
           grid-cols-1
           sm:grid-cols-2
-          xl:grid-cols-4
+          xl:grid-cols-3
           gap-4
           sm:gap-6
           mb-8
@@ -162,19 +174,9 @@ export default function DevicesPage() {
       >
         <StatusCard title="Total Devices" value={devices.length} />
 
-        <StatusCard
-          title="Online"
-          value={devices.filter((d) => d.status === "online").length}
-          green
-        />
+        <StatusCard title="Online" value={onlineCount} green />
 
-        <StatusCard
-          title="Offline"
-          value={devices.filter((d) => d.status === "offline").length}
-          red
-        />
-
-        <StatusCard title="Telemetry" value={124} orange />
+        <StatusCard title="Offline" value={offlineCount} red />
       </div>
 
       {/* ================= ACTIONS ================= */}
@@ -260,225 +262,13 @@ export default function DevicesPage() {
 
       <div className="grid gap-5">
         {filteredDevices.map((device) => (
-          <div
+          <DeviceCard
             key={device.id}
-            className="
-                bg-black/5
-                border
-                border-black/10
-                rounded-3xl
-                p-5
-                shadow-md
-              "
-          >
-            <div
-              className="
-                  flex
-                  flex-col
-                  lg:flex-row
-                  lg:items-center
-                  lg:justify-between
-                  gap-5
-                "
-            >
-              {/* LEFT */}
-
-              <div>
-                <div
-                  className="
-                      flex
-                      items-center
-                      gap-3
-                    "
-                >
-                  <h3
-                    className="
-                        text-xl
-                        font-bold
-                      "
-                  >
-                    {device.name}
-                  </h3>
-
-                  {device.status === "online" ? (
-                    <Wifi
-                      className="
-                          text-green-500
-                        "
-                    />
-                  ) : (
-                    <WifiOff
-                      className="
-                          text-red-500
-                        "
-                    />
-                  )}
-                </div>
-
-                <p
-                  className="
-                      text-gray-500
-                      mt-1
-                    "
-                >
-                  {device.deviceId}
-                </p>
-
-                <p
-                  className="
-                      text-sm
-                      text-gray-400
-                      mt-2
-                    "
-                >
-                  {device.location}
-                </p>
-              </div>
-
-              {/* RIGHT */}
-
-              <div
-                className="
-                    flex
-                    flex-wrap
-                    gap-3
-                  "
-              >
-                {/* VIEW */}
-
-                <button
-                  onClick={() => setSelectedDevice(device)}
-                  className="group relative
-                      px-4
-                      py-2
-                      rounded-xl
-                      bg-blue-500/10
-                      text-blue-500
-                      hover:bg-blue-500/90
-                      cursor-pointer
-                      hover:text-white
-                    "
-                >
-                  <Activity size={18} />
-                  <span
-                    className="
-                    absolute
-                    -top-10
-                    left-[50%]
-                    translate-x-[-50%]
-                    z-20
-                    origin-bottom
-                    scale-0
-                    px-3
-                    rounded-lg
-                    border
-                    border-gray-300
-                    bg-white
-                    py-2
-                    text-sm
-                    font-bold
-                    shadow-md
-                    transition-all
-                    duration-300
-                    group-hover:scale-100
-                    group-hover:text-blue-500
-                    "
-                  >
-                    Details
-                  </span>
-                </button>
-
-                {/* EDIT */}
-
-                <button
-                  onClick={() => setEditingDevice(device)}
-                  className="group relative
-                      px-4
-                      py-2
-                      rounded-xl
-                      bg-orange-500/10
-                      text-orange-500
-                      cursor-pointer
-                      hover:bg-orange-500/90
-                      hover:text-white
-
-                    "
-                >
-                  <Pencil size={18} />
-                  <span
-                    className="
-                    absolute
-                    -top-10
-                    left-[50%]
-                    translate-x-[-50%]
-                    z-20
-                    origin-bottom
-                    scale-0
-                    px-3
-                    rounded-lg
-                    border
-                    border-gray-300
-                    bg-white
-                    py-2
-                    text-sm
-                    font-bold
-                    shadow-md
-                    transition-all
-                    duration-300
-                    group-hover:scale-100
-                    group-hover:text-[#ff5700]
-                    "
-                  >
-                    Edit
-                  </span>
-                </button>
-
-                {/* DELETE */}
-
-                <button
-                  onClick={() => handleDeleteDevice(device.deviceId)}
-                  className="group relative
-                      px-4
-                      py-2
-                      rounded-xl
-                      bg-red-500/10
-                      text-red-500
-                      hover:bg-red-500/90
-                      hover:text-white
-                      cursor-pointer
-                    "
-                >
-                  <Trash2 size={18} />
-                  <span
-                    className="
-                    absolute
-                    -top-10
-                    left-[50%]
-                    translate-x-[-50%]
-                    z-20
-                    origin-bottom
-                    scale-0
-                    px-3
-                    rounded-lg
-                    border
-                    border-gray-300
-                    bg-white
-                    py-2
-                    text-sm
-                    font-bold
-                    shadow-md
-                    transition-all
-                    duration-300
-                    group-hover:scale-100
-                    group-hover:text-red-500
-                    "
-                  >
-                    Delete
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
+            device={device}
+            onDetails={() => setSelectedDevice(device)}
+            onEdit={() => setEditingDevice(device)}
+            onDelete={() => handleDeleteDevice(device.deviceId)}
+          />
         ))}
       </div>
 
@@ -603,49 +393,11 @@ export default function DevicesPage() {
         </Modal>
       )}
 
-      {/* ================= VIEW DEVICE ================= */}
-
       {selectedDevice && (
-        <Modal title="Device Details" onClose={() => setSelectedDevice(null)}>
-          <div className="space-y-4">
-            <InfoRow label="Device ID" value={selectedDevice.deviceId} />
-
-            <InfoRow label="API Key" value={selectedDevice.apiKey} />
-
-            <InfoRow label="Firmware" value={selectedDevice.firmware} />
-
-            <InfoRow label="Last Seen" value={selectedDevice.lastSeen} />
-
-            <InfoRow label="Created At" value={selectedDevice.createdAt} />
-
-            <div>
-              <h4
-                className="
-                  font-bold
-                  mb-3
-                "
-              >
-                Latest Telemetry
-              </h4>
-
-              <div className="p-6 text-black">
-                <h1 className="text-2xl mb-4">Live Telemetry</h1>
-
-                {telemetry ? (
-                  <div className="space-y-2">
-                    <p>Device: {telemetry.deviceId}</p>
-                    <p>Battery: {telemetry.battery}%</p>
-                    <p>Temperature: {telemetry.temperature}°C</p>
-                    <p>Speed: {telemetry.speed} km/h</p>
-                    <p>Lock Status: {telemetry.lockStatus}</p>
-                  </div>
-                ) : (
-                  <p>Waiting for telemetry...</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </Modal>
+        <DeviceDetailsModal
+          selectedDevice={selectedDevice}
+          onClose={() => setSelectedDevice(null)}
+        />
       )}
 
       {/* ================= EDIT DEVICE ================= */}
@@ -727,133 +479,6 @@ export default function DevicesPage() {
           </div>
         </Modal>
       )}
-    </div>
-  );
-}
-
-/* ================= STATUS CARD ================= */
-
-function StatusCard({ title, value, green, red, orange }) {
-  return (
-    <div
-      className="
-        bg-black/5
-        border
-        border-black/10
-        rounded-3xl
-        p-6
-      "
-    >
-      <p className="text-gray-500">{title}</p>
-
-      <h3
-        className={`
-          text-4xl
-          font-bold
-          mt-3
-
-          ${
-            green
-              ? "text-green-500"
-              : red
-                ? "text-red-500"
-                : orange
-                  ? "text-orange-500"
-                  : "text-[#010c29]"
-          }
-        `}
-      >
-        {value}
-      </h3>
-    </div>
-  );
-}
-
-/* ================= MODAL ================= */
-
-function Modal({ title, children, onClose }) {
-  return (
-    <div
-      className="
-        fixed
-        inset-0
-        z-50
-        bg-black/40
-        backdrop-blur-sm
-        flex
-        items-center
-        justify-center
-        p-4
-      "
-    >
-      <div
-        className="
-          bg-white
-          rounded-3xl
-          w-full
-          max-w-xl
-          p-6
-          shadow-2xl
-          max-h-[90vh]
-          overflow-y-auto
-        "
-      >
-        <div
-          className="
-            flex
-            items-center
-            justify-between
-            mb-6
-          "
-        >
-          <h2
-            className="
-              text-2xl
-              font-bold
-            "
-          >
-            {title}
-          </h2>
-
-          <button
-            onClick={onClose}
-            className="cursor-pointer hover:bg-gray-100 rounded-full p-1.5"
-          >
-            <X />
-          </button>
-        </div>
-
-        {children}
-      </div>
-    </div>
-  );
-}
-
-/* ================= INFO ROW ================= */
-
-function InfoRow({ label, value }) {
-  return (
-    <div
-      className="
-        flex
-        items-center
-        justify-between
-        gap-4
-        border-b
-        border-black/5
-        pb-3
-      "
-    >
-      <p className="font-medium">{label}</p>
-
-      <p
-        className="
-          text-gray-500
-          break-all
-        "
-      >
-        {value}
-      </p>
     </div>
   );
 }

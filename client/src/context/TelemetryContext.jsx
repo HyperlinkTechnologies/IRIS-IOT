@@ -1,9 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import telemetryStore from "../app/core/telemetry/telemetryStore";
 
@@ -15,48 +10,26 @@ import { MQTT_TOPICS } from "../app/core/mqtt/mqttTopics";
 const TelemetryContext = createContext();
 
 export function TelemetryProvider({ children }) {
-  const [telemetry, setTelemetry] = useState(
-    telemetryStore.getAll()
-  );
+  const [telemetry, setTelemetry] = useState(telemetryStore.getAll());
 
   useEffect(() => {
+    // Listen to telemetryStore
+    const unsubscribe = telemetryStore.subscribe(setTelemetry);
 
-  // Listen to telemetryStore
-  const unsubscribe =
-    telemetryStore.subscribe(setTelemetry);
+    // Connect MQTT
+    mqttClient.connect(import.meta.env.VITE_MQTT_BROKER_URL);
 
-  // Connect MQTT
-  mqttClient.connect(
-    import.meta.env.VITE_MQTT_BROKER_URL
-  );
+    // Subscribe to telemetry
+    mqttClient.subscribe(MQTT_TOPICS.TELEMETRY);
 
-  // Subscribe to telemetry
-  mqttClient.subscribe(
-    MQTT_TOPICS.TELEMETRY
-  );
+    const devices = JSON.parse(localStorage.getItem("iris_devices")) || [];
 
-  const devices =
-  JSON.parse(localStorage.getItem("iris_devices")) || [];
+    return () => {
+      unsubscribe();
 
-// if (devices.length > 0) {
-
-//   telemetrySimulator.start(
-//     devices[0].deviceId
-//   );
-
-// }
-
-  return () => {
-
-    unsubscribe();
-
-    // telemetrySimulator.stop();
-
-    mqttClient.disconnect();
-
-  };
-
-}, []);
+      mqttClient.disconnect();
+    };
+  }, []);
 
   return (
     <TelemetryContext.Provider
