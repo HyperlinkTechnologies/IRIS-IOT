@@ -1,6 +1,11 @@
 import { signOut } from "aws-amplify/auth";
 
-import { Settings, User } from "lucide-react";
+import { Settings, User, Bell, X } from "lucide-react";
+
+import { useEffect, useState } from "react";
+
+import triggeredAlertStore from "../../core/alerts/triggeredAlertStore";
+import deviceRegistry from "../../core/devices/deviceRegistry";
 
 export default function Topbar({
   activeTab,
@@ -11,6 +16,48 @@ export default function Topbar({
   /* ================= USER ================= */
 
   const user = JSON.parse(localStorage.getItem("iris_user"));
+
+  const [notifications, setNotifications] = useState(
+    triggeredAlertStore.getAll(),
+  );
+
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = triggeredAlertStore.subscribe(setNotifications);
+
+    return unsubscribe;
+  }, []);
+
+  const unreadCount = notifications.filter(
+    (notification) => !notification.resolved,
+  ).length;
+
+  const getDeviceName = (deviceId) => {
+    const device = deviceRegistry.get(deviceId);
+
+    return device ? device.name : deviceId;
+  };
+
+  const getRelativeTime = (timestamp) => {
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+
+    if (seconds < 5) return "Just now";
+
+    if (seconds < 60) return `${seconds} sec ago`;
+
+    const minutes = Math.floor(seconds / 60);
+
+    if (minutes < 60) return `${minutes} min ago`;
+
+    const hours = Math.floor(minutes / 60);
+
+    if (hours < 24) return `${hours} hr ago`;
+
+    const days = Math.floor(hours / 24);
+
+    return `${days} day ago`;
+  };
 
   /* ================= LOGOUT ================= */
 
@@ -72,42 +119,335 @@ export default function Topbar({
 
       {/* ================= PROFILE ================= */}
 
-      <div className="relative">
+      <div
+        className="
+    flex
+    items-center
+    gap-5
+  "
+      >
+        {/* Notification Bell */}
+
         <button
-          onClick={() => setShowProfileMenu(!showProfileMenu)}
+          onClick={() => {
+            setShowNotifications(!showNotifications);
+
+            setShowProfileMenu(false);
+          }}
           className="
+      relative
+      w-11
+      h-11
+      rounded-full
+      hover:bg-black/5
+      flex
+      items-center
+      justify-center
+      transition-all
+      cursor-pointer
+    "
+        >
+          <Bell size={22} className="text-[#010c29]" />
+
+          {unreadCount > 0 && (
+            <span
+              className="
+          absolute
+          -top-1
+          -right-1
+          min-w-5
+          h-5
+          rounded-full
+          bg-red-500
+          text-white
+          text-[10px]
+          font-bold
+          flex
+          items-center
+          justify-center
+          px-1
+        "
+            >
+              {unreadCount}
+            </span>
+          )}
+        </button>
+
+        {showNotifications && (
+          <div
+            className="
+              absolute
+              right-20
+              top-16
+              w-104
+              max-h-125
+              overflow-y-auto
+              rounded-2xl
+              bg-white
+              border
+              border-black/10
+              shadow-[0px_0px_20px_0px_rgba(255,87,0,0.15)]
+              z-50
+            "
+          >
+            {/* Header */}
+
+            <div
+  className="
+    px-5
+    py-4
+    border-b
+    border-black/10
+  "
+>
+
+  {/* Top Row */}
+
+  <div
+    className="
+      flex
+      items-center
+      justify-between
+    "
+  >
+
+    <h3
+      className="
+        text-lg
+        font-semibold
+        text-[#010c29]
+      "
+    >
+      Notifications
+    </h3>
+
+    <div
+      className="
+        flex
+        items-center
+        gap-4
+      "
+    >
+
+      {unreadCount > 0 && (
+
+        <button
+          onClick={() =>
+            triggeredAlertStore.markAllAsRead()
+          }
+          className="
+            text-sm
+            text-[#ff5700]
+            hover:bg-orange-100
+            px-2
+            py-1
+            rounded-full
+            cursor-pointer
+          "
+        >
+          Mark all as read
+        </button>
+
+      )}
+
+      {notifications.length > 0 && (
+
+        <button
+          onClick={() =>
+            triggeredAlertStore.clear()
+          }
+          className="
+            text-sm
+            text-red-500
+            hover:bg-red-100
+            px-2
+            py-1
+            rounded-full
+            cursor-pointer
+          "
+        >
+          Clear all
+        </button>
+
+      )}
+
+    </div>
+
+  </div>
+
+  {/* Unread Count */}
+
+  <p
+    className="
+      mt-2
+      text-sm
+      text-gray-500
+    "
+  >
+    {unreadCount} Unread
+  </p>
+
+</div>
+
+            {/* Empty State */}
+
+            {notifications.length === 0 ? (
+              <div
+                className="
+          p-8
+          text-center
+          text-gray-400
+        "
+              >
+                No notifications
+              </div>
+            ) : (
+              notifications.map((notification, index) => (
+                <div
+                  key={index}
+                  className="
+            px-5
+            py-4
+            border-b
+            border-black/5
+            hover:bg-black/5
+            transition-all
+          "
+                >
+                  <div
+                    className="
+    flex
+    justify-between
+    items-start
+  "
+                  >
+                    <span
+                      className={`
+      text-sm
+      font-semibold
+
+      ${notification.severity === "Critical"
+                          ? "text-red-600"
+                          : "text-yellow-600"
+                        }
+    `}
+                    >
+                      {notification.ruleName}
+                    </span>
+
+                    <div
+                      className="
+      flex
+      items-center
+      gap-3
+    "
+                    >
+                      {!notification.resolved && (
+                        <span
+                          className="
+          w-2
+          h-2
+          rounded-full
+          bg-red-500
+        "
+                        />
+                      )}
+
+                      <button
+                        onClick={() =>
+                          triggeredAlertStore.remove(notification.timestamp)
+                        }
+                        className="
+        text-gray-400
+        hover:text-red-500
+        transition-all
+      "
+                      >
+                        <X size={15} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div
+                    className="
+    text-sm
+    text-gray-500
+    mt-2
+    space-y-1
+  "
+                  >
+                    <p>
+                      <span className="font-medium">Device:</span>{" "}
+                      {getDeviceName(notification.deviceId)}
+                    </p>
+
+                    <p>
+                      <span className="font-medium">Current:</span>{" "}
+                      {notification.currentValue}
+                    </p>
+
+                    <p>
+                      <span className="font-medium">Rule:</span>{" "}
+                      {notification.telemetryKey} {notification.condition}{" "}
+                      {notification.threshold}
+                    </p>
+                  </div>
+
+                  <p
+                    className="
+              text-xs
+              text-gray-400
+              mt-2
+            "
+                  >
+                    {getRelativeTime(notification.timestamp)}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        <div className="relative">
+          <button
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            className="
             flex
             items-center
             gap-2
             sm:gap-4
             cursor-pointer
+            rounded-full
+            px-2
+            py-2
+            hover:bg-black/5
           "
-        >
-          {/* Name */}
+          >
+            {/* Name */}
 
-          <div
-            className="
+            <div
+              className="
               text-right
               hidden
               sm:block
             "
-          >
-            <p
-              className="
+            >
+              <p
+                className="
                 font-semibold
                 text-[#010c29]
                 text-sm
                 sm:text-base
               "
-            >
-              {user?.username}
-            </p>
-          </div>
+              >
+                {user?.username}
+              </p>
+            </div>
 
-          {/* Avatar */}
+            {/* Avatar */}
 
-          <div
-            className="
+            <div
+              className="
               w-11
               h-11
               sm:w-12
@@ -122,16 +462,16 @@ export default function Topbar({
               font-bold
               shadow-lg
             "
-          >
-            <User className="text-white" size={20} />
-          </div>
-        </button>
+            >
+              <User className="text-white" size={20} />
+            </div>
+          </button>
 
-        {/* ================= DROPDOWN ================= */}
+          {/* ================= DROPDOWN ================= */}
 
-        {showProfileMenu && (
-          <div
-            className="
+          {showProfileMenu && (
+            <div
+              className="
               absolute
               right-0
               top-16
@@ -144,49 +484,49 @@ export default function Topbar({
               p-5
               z-50
             "
-          >
-            {/* Top */}
+            >
+              {/* Top */}
 
-            <div
-              className="
+              <div
+                className="
                 flex
                 items-start
                 justify-between
                 gap-2
                 mb-5
               "
-            >
-              <div>
-                <p
-                  className="
+              >
+                <div>
+                  <p
+                    className="
                     font-semibold
                     text-[#010c29]
                     text-lg
                   "
-                >
-                  {user?.username}
-                </p>
+                  >
+                    {user?.username}
+                  </p>
 
-                <p
-                  className="
+                  <p
+                    className="
                     text-sm
                     text-gray-500
                     break-all
                   "
-                >
-                  {user?.email}
-                </p>
-              </div>
+                  >
+                    {user?.email}
+                  </p>
+                </div>
 
-              {/* Settings */}
+                {/* Settings */}
 
-              <button
-                onClick={() => {
-                  setActiveTab("settings");
+                <button
+                  onClick={() => {
+                    setActiveTab("settings");
 
-                  setShowProfileMenu(false);
-                }}
-                className="
+                    setShowProfileMenu(false);
+                  }}
+                  className="
                   p-2.5
                   rounded-full
                   hover:bg-gray-200
@@ -194,26 +534,26 @@ export default function Topbar({
                   shrink-0
                   cursor-pointer
                 "
-              >
-                <Settings className="text-gray-500" size={20} />
-              </button>
-            </div>
+                >
+                  <Settings className="text-gray-500" size={20} />
+                </button>
+              </div>
 
-            {/* Divider */}
+              {/* Divider */}
 
-            <div
-              className="
+              <div
+                className="
                 h-px
                 bg-black/10
                 mb-5
               "
-            />
+              />
 
-            {/* Logout */}
+              {/* Logout */}
 
-            <button
-              onClick={handleLogout}
-              className="
+              <button
+                onClick={handleLogout}
+                className="
                 w-full
                 py-3
                 rounded-xl
@@ -226,11 +566,12 @@ export default function Topbar({
                 text-white
                 font-medium
               "
-            >
-              Logout
-            </button>
-          </div>
-        )}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

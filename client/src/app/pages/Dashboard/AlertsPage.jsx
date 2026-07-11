@@ -2,35 +2,51 @@ import {
   Bell,
   TriangleAlert,
   ShieldAlert,
-  Thermometer,
   Plus,
+  Pencil,
+  Trash2,
+  Power,
 } from "lucide-react";
+
+import { useEffect, useState } from "react";
+
+import alertRegistry from "../../core/alerts/alertRegistry";
+import AlertModal from "../../components/Dashboard/AlertModal";
+import deviceRegistry from "../../core/devices/deviceRegistry";
+
+import { nanoid } from "nanoid";
 
 export default function AlertsPage() {
 
-  const alerts = [
-    {
-      id: 1,
-      type: "Temperature High",
-      device: "Boiler Sensor",
-      severity: "Critical",
-      time: "2 mins ago",
-    },
-    {
-      id: 2,
-      type: "Device Offline",
-      device: "Pressure Monitor",
-      severity: "Warning",
-      time: "10 mins ago",
-    },
-    {
-      id: 3,
-      type: "Voltage Drop",
-      device: "Energy Meter",
-      severity: "Critical",
-      time: "20 mins ago",
-    },
-  ];
+  const [alerts, setAlerts] = useState(
+  alertRegistry.getAll()
+);
+
+const [showModal, setShowModal] =
+  useState(false);
+
+const [selectedAlert, setSelectedAlert] =
+  useState(null);
+
+useEffect(() => {
+
+  const unsubscribe =
+    alertRegistry.subscribe(setAlerts);
+
+  return unsubscribe;
+
+}, []);
+
+const getDeviceName = (deviceId) => {
+
+  const device =
+    deviceRegistry.get(deviceId);
+
+  return device
+    ? device.name
+    : deviceId;
+
+};
 
   return (
 
@@ -79,7 +95,14 @@ export default function AlertsPage() {
 
         {/* Button */}
         <button
-          className="
+  onClick={() => {
+
+  setSelectedAlert(null);
+
+  setShowModal(true);
+
+}}
+  className="
             w-full
             sm:w-auto
 
@@ -137,200 +160,507 @@ export default function AlertsPage() {
         <AlertCard
           icon={<Bell />}
           title="Total Alerts"
-          value="14"
+          value={alerts.length}
         />
 
         <AlertCard
           icon={<ShieldAlert />}
           title="Critical"
-          value="5"
+          value={
+  alerts.filter(
+    alert => alert.severity === "Critical"
+  ).length
+}
           red
         />
 
         <AlertCard
           icon={<TriangleAlert />}
           title="Warnings"
-          value="9"
+          value={
+  alerts.filter(
+    alert => alert.severity === "Warning"
+  ).length
+}
           orange
         />
 
       </div>
 
-      {/* ================= ALERT LIST ================= */}
+      {/* ================= ALERT RULES ================= */}
 
-      <div
-        className="
-          bg-black/5
+<div
+  className="
+    bg-black/5
+    border
+    border-black/10
+    rounded-3xl
+    shadow-lg
+    overflow-hidden
+  "
+>
 
-          border
-          border-black/10
+  {/* Header */}
 
-          shadow-lg
+  <div
+    className="
+      px-6
+      py-4
+      border-b
+      border-black/10
+      font-semibold
+      text-[#010c29]
+    "
+  >
+    Alert Rules
+  </div>
 
-          rounded-3xl
+  {alerts.length === 0 ? (
 
-          overflow-hidden
-        "
-      >
+    <div
+      className="
+        py-16
+        text-center
+        text-gray-400
+      "
+    >
+      No alert rules created.
+    </div>
 
-        {/* ================= HEADER ================= */}
+  ) : (
 
-        <div
+    <div className="overflow-x-auto">
+
+      <table className="w-full">
+
+        <thead
           className="
-            px-5
-            sm:px-6
-
-            py-4
-
+            bg-black/5
             border-b
             border-black/10
-
-            font-semibold
-
-            text-[#010c29]
-
-            text-sm
-            sm:text-base
           "
         >
-          Recent Alerts
-        </div>
 
-        {/* ================= ALERT ITEMS ================= */}
+          <tr>
 
-        {alerts.map((alert) => (
+            <th className="px-6 py-4 text-left">
+              Alert
+            </th>
 
-          <div
-            key={alert.id}
-            className="
-              flex
-              flex-col
-              sm:flex-row
+            <th className="px-6 py-4 text-left">
+              Device
+            </th>
 
-              sm:items-center
-              sm:justify-between
+            <th className="px-6 py-4 text-left">
+              Telemetry
+            </th>
 
-              gap-4
+            <th className="px-6 py-4 text-left">
+              Rule
+            </th>
 
-              px-5
-              sm:px-6
+            <th className="px-6 py-4 text-left">
+              Severity
+            </th>
 
-              py-5
+            <th className="px-6 py-4 text-left">
+              Status
+            </th>
 
-              border-b
-              border-black/5
+            <th className="px-6 py-4 text-center">
+              Actions
+            </th>
 
-              hover:bg-black/2
+          </tr>
 
-              transition-all
-            "
-          >
+        </thead>
 
-            {/* ================= LEFT ================= */}
+        <tbody>
 
-            <div
+          {alerts.map(alert => (
+
+            <tr
+              key={alert.id}
               className="
-                flex
-                items-start
-                sm:items-center
-                gap-4
+                border-b
+                border-black/5
+                hover:bg-black/2
+                transition-all
               "
             >
 
-              {/* Icon */}
-              <div
-                className="
-                  w-12
-                  h-12
+              {/* Alert */}
 
-                  rounded-2xl
+              <td className="px-6 py-5 font-medium">
 
-                  bg-orange-500/10
+                {alert.name}
 
-                  flex
-                  items-center
-                  justify-center
+              </td>
 
-                  text-orange-500
+              {/* Device */}
 
-                  shrink-0
-                "
-              >
+              <td className="px-6 py-5">
 
-                <Thermometer size={22} />
+                {getDeviceName(alert.deviceId)}
 
-              </div>
+              </td>
 
-              {/* Text */}
-              <div>
+              {/* Telemetry */}
 
-                <p
-                  className="
-                    font-semibold
-                    text-[#010c29]
+              <td className="px-6 py-5">
 
-                    text-sm
-                    sm:text-base
-                  "
+                {alert.telemetryKey}
+
+              </td>
+
+              {/* Rule */}
+
+              <td className="px-6 py-5">
+
+                {alert.condition} {alert.threshold}
+
+              </td>
+
+              {/* Severity */}
+
+              <td className="px-6 py-5">
+
+                <span
+                  className={`
+                    px-3
+                    py-1
+                    rounded-full
+                    text-xs
+                    font-medium
+
+                    ${
+                      alert.severity === "Critical"
+
+                        ? "bg-red-100 text-red-600"
+
+                        : "bg-yellow-100 text-yellow-700"
+                    }
+                  `}
                 >
-                  {alert.type}
-                </p>
 
-                <p
-                  className="
-                    text-sm
-                    text-gray-400
-                    mt-1
-                  "
+                  {alert.severity}
+
+                </span>
+
+              </td>
+
+              {/* Status */}
+
+              <td className="px-6 py-5">
+
+                <span
+                  className={`
+                    px-3
+                    py-1
+                    rounded-full
+                    text-xs
+                    font-medium
+
+                    ${
+                      alert.enabled
+
+                        ? "bg-green-100 text-green-600"
+
+                        : "bg-gray-200 text-gray-600"
+                    }
+                  `}
                 >
-                  {alert.device}
-                </p>
 
-              </div>
+                  {alert.enabled
+                    ? "Enabled"
+                    : "Disabled"}
 
-            </div>
+                </span>
 
-            {/* ================= RIGHT ================= */}
+              </td>
 
-            <div
-              className="
-                sm:text-right
-              "
-            >
+              {/* Actions */}
 
-              <p
-                className={`
-                  font-medium
-                  text-sm
-                  sm:text-base
+              <td className="px-6 py-5">
 
-                  ${
-                    alert.severity === "Critical"
-                      ? "text-red-500"
-                      : "text-orange-500"
-                  }
-                `}
-              >
-                {alert.severity}
-              </p>
+                <div
+  className="
+    flex
+    items-center
+    justify-center
+    gap-4
+  "
+>
 
-              <p
-                className="
-                  text-sm
-                  text-gray-400
-                  mt-1
-                "
-              >
-                {alert.time}
-              </p>
+  {/* Edit */}
+  <button
+                  
 
-            </div>
+  title="Edit Alert"
 
-          </div>
+  onClick={() => {
 
-        ))}
+    setSelectedAlert(alert);
 
-      </div>
+    setShowModal(true);
+
+  }}
+                    className="
+                      group
+                      relative
+                      w-10
+                      h-10
+                      rounded-xl
+                      bg-blue-500/10
+                      text-blue-500
+                      hover:bg-blue-500/80
+                      hover:text-white
+                      flex
+                      items-center
+                      justify-center
+                      transition-all
+                      cursor-pointer
+                    "
+                  >
+                    <Pencil size={18} />
+  
+                    <span
+                      className="
+                        hidden
+                        lg:block
+                        absolute
+                        -top-10
+                        left-1/2
+                        -translate-x-1/2
+                        z-20
+                        origin-bottom
+                        scale-0
+                        px-3
+                        rounded-lg
+                        border
+                        border-gray-300
+                        bg-white
+                        py-2
+                        text-sm
+                        font-bold
+                        shadow-md
+                        transition-all
+                        duration-300
+                        group-hover:scale-100
+                        group-hover:text-blue-500
+                      "
+                    >
+                      Edit
+                    </span>
+                  </button>
+  
+                  {/* DELETE */}
+  
+                  <button
+                    onClick={() => {
+
+    if (
+
+      window.confirm(
+
+        "Delete this alert?"
+
+      )
+
+    ) {
+
+      alertRegistry.remove(
+        alert.id
+      );
+
+    }
+
+  }}
+
+                    className="
+                      group
+                      relative
+                      w-10
+                      h-10
+                      rounded-xl
+                      bg-red-500/10
+                      hover:bg-red-500/80
+                      text-red-500
+                      hover:text-white
+                      flex
+                      items-center
+                      justify-center
+                      transition-all
+                      cursor-pointer
+                    "
+                  >
+                    <Trash2 size={18} />
+  
+                    <span
+                      className="
+                        hidden
+                        lg:block
+                        absolute
+                        -top-10
+                        left-1/2
+                        -translate-x-1/2
+                        z-20
+                        origin-bottom
+                        scale-0
+                        px-3
+                        rounded-lg
+                        border
+                        border-gray-300
+                        bg-white
+                        py-2
+                        text-sm
+                        font-bold
+                        shadow-md
+                        transition-all
+                        duration-300
+                        group-hover:scale-100
+                        group-hover:text-red-500
+                      "
+                    >
+                      Delete
+                    </span>
+                  </button>
+
+  {/* ENABLE / DISABLE */}
+
+<button
+  title={alert.enabled ? "Disable Alert" : "Enable Alert"}
+  onClick={() =>
+
+    alertRegistry.update(
+
+      alert.id,
+
+      {
+        enabled: !alert.enabled,
+      }
+
+    )
+
+  }
+  className={`
+    group
+    relative
+    w-10
+    h-10
+    rounded-xl
+    flex
+    items-center
+    justify-center
+    transition-all
+    cursor-pointer
+    ${
+      alert.enabled
+        ? "bg-gray-500/10 hover:bg-gray-500/80 text-gray-600 hover:text-white"
+        : "bg-green-500/10 hover:bg-green-500/80 text-green-500 hover:text-white"
+    }
+  `}
+>
+  <Power size={18} />
+
+  <span
+    className={`
+      hidden
+      lg:block
+      absolute
+      -top-10
+      left-1/2
+      -translate-x-1/2
+      z-20
+      origin-bottom
+      scale-0
+      px-3
+      py-2
+      rounded-lg
+      border
+      border-gray-300
+      bg-white
+      text-sm
+      font-bold
+      shadow-md
+      transition-all
+      duration-300
+      group-hover:scale-100
+      ${
+        alert.enabled
+          ? "group-hover:text-gray-600"
+          : "group-hover:text-green-600"
+      }
+    `}
+  >
+    {alert.enabled ? "Disable" : "Enable"}
+  </span>
+</button>
+
+</div>
+
+              </td>
+
+            </tr>
+
+          ))}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  )}
+
+</div>
+
+      {/* ===================create alert modal===================== */}
+
+      {showModal && (
+
+ <AlertModal
+
+  alert={selectedAlert}
+
+  onClose={() => {
+    setShowModal(false);
+    setSelectedAlert(null);
+  }}
+
+    onSave={(form) => {
+
+  if (selectedAlert) {
+
+    alertRegistry.update(
+
+      selectedAlert.id,
+
+      form
+
+    );
+
+  } else {
+
+    alertRegistry.add({
+
+      id: nanoid(),
+
+      ...form,
+
+    });
+
+  }
+
+  setShowModal(false);
+
+  setSelectedAlert(null);
+
+}}
+
+  />
+
+)}
 
     </div>
   );

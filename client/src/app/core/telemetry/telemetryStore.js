@@ -1,3 +1,7 @@
+import telemetryHistory from "./telemetryHistory";
+import alertEngine from "../alerts/alertEngine";
+import triggeredAlertStore from "../alerts/triggeredAlertStore";
+
 class TelemetryStore {
 
   constructor() {
@@ -58,9 +62,46 @@ class TelemetryStore {
   },
 
 };
-console.log("Telemetry Store:", this.devices);
 
-  this.notify();
+telemetryHistory.add(
+  deviceId,
+  telemetry
+);
+
+const triggeredAlerts =
+  alertEngine.evaluate(
+    deviceId,
+    telemetry
+  );
+
+triggeredAlerts.forEach(alert => {
+
+  triggeredAlertStore.add({
+
+  ruleId: alert.id,
+
+  ruleName: alert.name,
+
+  severity: alert.severity,
+
+  deviceId,
+
+  telemetryKey: alert.telemetryKey,
+
+  currentValue:
+    telemetry[
+      alert.telemetryKey
+    ],
+
+  threshold: alert.threshold,
+
+  condition: alert.condition,
+
+});
+
+});
+
+this.notify();
 
 }
 

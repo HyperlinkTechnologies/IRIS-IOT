@@ -2,14 +2,9 @@ import { useState, useEffect } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import {
-  getCurrentUser,
-  fetchAuthSession,
-} from "aws-amplify/auth";
+import { getCurrentUser, fetchAuthSession } from "aws-amplify/auth";
 
-import {
-  PanelLeftCloseIcon,
-} from "lucide-react";
+import { PanelLeftCloseIcon } from "lucide-react";
 
 /* ================= PAGES ================= */
 
@@ -27,6 +22,8 @@ import GetStartedPage from "./GetStartedPage";
 
 import DocumentationPage from "./DocumentationPage";
 
+import AnalyticsPage from "./AnalyticsPage";
+
 /* ================= COMPONENTS ================= */
 
 import Sidebar from "../../components/Dashboard/Sidebar";
@@ -34,74 +31,52 @@ import Sidebar from "../../components/Dashboard/Sidebar";
 import Topbar from "../../components/Dashboard/Topbar";
 
 export default function DashboardPage() {
-
   /* ================= STATES ================= */
 
-  const [activeTab, setActiveTab] =
-    useState("getstarted");
+  const [activeTab, setActiveTab] = useState("getstarted");
 
-  const [showProfileMenu, setShowProfileMenu] =
-    useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  const [sidebarOpen, setSidebarOpen] =
-    useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const navigate = useNavigate();
 
   /* ================= AUTH CHECK ================= */
 
   useEffect(() => {
-
     const checkUser = async () => {
-
       try {
-
         /* Current Cognito User */
 
-        const user =
-          await getCurrentUser();
+        const user = await getCurrentUser();
 
         /* Current Session */
 
-        const session =
-          await fetchAuthSession();
+        const session = await fetchAuthSession();
 
         /* User Data */
 
-        const payload =
-        session.tokens?.idToken?.payload;
+        const payload = session.tokens?.idToken?.payload;
 
         const userData = {
-
           username:
             payload?.name ||
             payload?.preferred_username ||
             payload?.email?.split("@")[0] ||
             "User",
 
-          email:
-            payload?.email || "",
+          email: payload?.email || "",
         };
 
         /* Store User */
 
-        localStorage.setItem(
-          "iris_user",
-          JSON.stringify(userData)
-        );
-
+        localStorage.setItem("iris_user", JSON.stringify(userData));
       } catch (error) {
-
-        console.error(
-          "AUTH ERROR:",
-          error
-        );
+        console.error("AUTH ERROR:", error);
 
         /* Remove Invalid User */
 
-        localStorage.removeItem(
-          "iris_user"
-        );
+        localStorage.removeItem("iris_user");
 
         /* Redirect to Home */
 
@@ -110,11 +85,9 @@ export default function DashboardPage() {
     };
 
     checkUser();
-
   }, []);
 
   return (
-
     <div
       className="
         flex
@@ -123,7 +96,6 @@ export default function DashboardPage() {
         overflow-hidden
       "
     >
-
       {/* ================= SIDEBAR ================= */}
 
       <Sidebar
@@ -143,14 +115,9 @@ export default function DashboardPage() {
           overflow-hidden
           transition-all
           duration-300
-          ${
-            sidebarOpen
-              ? "lg:ml-72"
-              : "ml-0"
-          }
+          ${sidebarOpen ? "lg:ml-72" : "ml-0"}
         `}
       >
-
         {/* ================= HEADER ================= */}
 
         <div
@@ -176,15 +143,10 @@ export default function DashboardPage() {
             rounded-2xl
           "
         >
-
           {/* ================= SIDEBAR TOGGLE ================= */}
 
           <button
-            onClick={() =>
-              setSidebarOpen(
-                !sidebarOpen
-              )
-            }
+            onClick={() => setSidebarOpen(!sidebarOpen)}
             className="
               w-11
               h-11
@@ -202,26 +164,19 @@ export default function DashboardPage() {
               shadow-sm
             "
           >
-
-            <PanelLeftCloseIcon
-              size={24}
-            />
-
+            <PanelLeftCloseIcon size={24} />
           </button>
 
           {/* ================= TOPBAR ================= */}
 
           <div className="flex-1">
-
             <Topbar
               activeTab={activeTab}
               showProfileMenu={showProfileMenu}
               setShowProfileMenu={setShowProfileMenu}
               setActiveTab={setActiveTab}
             />
-
           </div>
-
         </div>
 
         {/* ================= CONTENT ================= */}
@@ -236,53 +191,40 @@ export default function DashboardPage() {
             custom-scrollbar
           "
         >
-
           {/* Dashboard */}
 
-          {activeTab === "dashboard" && (
-            <DashboardHome />
-          )}
+          {activeTab === "dashboard" && <DashboardHome />}
 
           {/* Devices */}
 
-          {activeTab === "devices" && (
-            <DevicesPage />
-          )}
+          {activeTab === "devices" && <DevicesPage />}
 
           {/* Alerts */}
 
-          {activeTab === "alerts" && (
-            <AlertsPage />
-          )}
+          {activeTab === "alerts" && <AlertsPage />}
 
           {/* Billing */}
 
-          {activeTab === "billing" && (
-            <BillingPage />
-          )}
+          {activeTab === "billing" && <BillingPage />}
 
           {/* Settings */}
 
-          {activeTab === "settings" && (
-            <SettingsPage />
-          )}
+          {activeTab === "settings" && <SettingsPage />}
 
           {/* Get Started */}
 
           {activeTab === "getstarted" && (
-            <GetStartedPage />
+            <GetStartedPage setActiveTab={setActiveTab} />
           )}
 
           {/* Documentation */}
 
-          {activeTab === "documentation" && (
-            <DocumentationPage />
-          )}
+          {activeTab === "documentation" && <DocumentationPage />}
 
+          {/* Analytics */}
+          {activeTab === "analytics" && <AnalyticsPage />}
         </section>
-
       </main>
-
     </div>
   );
 }

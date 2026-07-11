@@ -224,7 +224,7 @@ export default function DashboardList({
           "
         >
           <div className="col-span-3">
-            Created Time
+            Created At
           </div>
 
           <div className="col-span-3">
@@ -288,7 +288,7 @@ export default function DashboardList({
                       text-left
                       font-bold
                       text-lg
-                      hover:text-[#ff5700]
+                      hover:text-[#474240]
                       transition-all
                     "
                   >
@@ -340,23 +340,11 @@ export default function DashboardList({
                   lg:col-span-3
                   items-center
                   justify-center
+                  font-bold
                 "
               >
-                <button
-                  onClick={() =>
-                    onOpenDashboard(
-                      dashboard
-                    )
-                  }
-                  className="
-                    font-bold
-                    hover:text-[#ff5700]
-                    transition-all
-                    cursor-pointer
-                  "
-                >
+                
                   {dashboard.name}
-                </button>
               </div>
 
               {/* WIDGETS */}
@@ -440,6 +428,7 @@ export default function DashboardList({
                     items-center
                     justify-center
                     transition-all
+                    cursor-pointer
                   "
                 >
                   <LayoutDashboard
@@ -500,6 +489,7 @@ export default function DashboardList({
                     items-center
                     justify-center
                     transition-all
+                    cursor-pointer
                   "
                 >
                   <Pencil size={18} />
@@ -556,6 +546,7 @@ export default function DashboardList({
                     items-center
                     justify-center
                     transition-all
+                    cursor-pointer
                   "
                 >
                   <Trash2 size={18} />

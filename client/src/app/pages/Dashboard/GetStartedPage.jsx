@@ -4,43 +4,71 @@ import {
   Bell,
   BarChart3,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
 
+import { useState, useEffect } from "react";
+
+import deviceRegistry from "../../core/devices/deviceRegistry";
+import telemetryStore from "../../core/telemetry/telemetryStore";
 import DashboardCard from "../../components/Dashboard/DashboardCard";
 
-export default function GetStartedPage() {
+export default function GetStartedPage({ setActiveTab }) {
+  const [devices, setDevices] = useState(deviceRegistry.getAll());
+
+  const [telemetry, setTelemetry] = useState(telemetryStore.getAll());
+
+  useEffect(() => {
+    const unsubscribeDevices = deviceRegistry.subscribe(setDevices);
+
+    const unsubscribeTelemetry = telemetryStore.subscribe(setTelemetry);
+
+    return () => {
+      unsubscribeDevices();
+
+      unsubscribeTelemetry();
+    };
+  }, []);
+
+  const totalDevices = devices.length;
+
+  const onlineDevices = devices.filter(
+    (device) => telemetry[device.deviceId]?.online,
+  ).length;
+
+  const offlineDevices = totalDevices - onlineDevices;
 
   const steps = [
     {
       icon: <Rocket size={24} />,
       title: "Setup Your Workspace",
       desc: "Configure your organization and dashboard",
+      action: () => setActiveTab("dashboard"),
     },
     {
       icon: <Cpu size={24} />,
       title: "Connect Devices",
       desc: "Add and monitor IoT devices",
+      action: () => setActiveTab("devices"),
     },
     {
       icon: <Bell size={24} />,
       title: "Configure Alerts",
       desc: "Set real-time notifications",
+      action: () => setActiveTab("alerts"),
     },
     {
       icon: <BarChart3 size={24} />,
       title: "Monitor Analytics",
       desc: "Visualize telemetry and insights",
+      action: () => setActiveTab("analytics"),
     },
   ];
 
   return (
-
     <div className="w-full">
-
       {/* Header */}
       <div className="mb-8 md:mb-10">
-
         <h2
           className="
             text-xl
@@ -63,7 +91,6 @@ export default function GetStartedPage() {
         >
           Setup and manage your industrial IoT platform efficiently
         </p>
-
       </div>
 
       {/* Top Cards */}
@@ -78,22 +105,11 @@ export default function GetStartedPage() {
           mb-8
         "
       >
+        <DashboardCard title="Total Devices" value={totalDevices} />
 
-        <DashboardCard
-          title="Total Devices"
-          value="124"
-        />
+        <DashboardCard title="Online Devices" value={onlineDevices} />
 
-        <DashboardCard
-          title="Online Devices"
-          value="118"
-        />
-
-        <DashboardCard
-          title="Offline Devices"
-          value="6"
-        />
-
+        <DashboardCard title="Offline Devices" value={offlineDevices} />
       </div>
 
       {/* Steps */}
@@ -106,11 +122,10 @@ export default function GetStartedPage() {
           lg:gap-6
         "
       >
-
         {steps.map((step, index) => (
-
           <div
             key={index}
+            onClick={step.action}
             className="
               bg-black/5
               border
@@ -126,8 +141,6 @@ export default function GetStartedPage() {
               cursor-pointer
             "
           >
-
-
             <div className="flex items-center justify-between text-gray-400">
               {/* Icon */}
               <div
@@ -145,17 +158,12 @@ export default function GetStartedPage() {
                   mb-3
                 "
               >
-
                 {step.icon}
-
               </div>
 
-
               {/* Arrow Icon */}
-              <ChevronRight size={25}/>
+              <ChevronRight size={25} />
             </div>
-
-            
 
             {/* Title */}
             <h3
@@ -181,13 +189,9 @@ export default function GetStartedPage() {
             >
               {step.desc}
             </p>
-
           </div>
-
         ))}
-
       </div>
-
     </div>
   );
 }
