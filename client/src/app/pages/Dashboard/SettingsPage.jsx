@@ -1,98 +1,109 @@
-import {
-  useState,
-  useEffect,
-} from "react";
+import { useState, useEffect } from "react";
 
 import {
   User,
   Bell,
   Shield,
   Globe,
+  Info,
   ArrowRightCircle,
   X,
   Camera,
   Save,
 } from "lucide-react";
 
-export default function SettingsPage() {
+import organizationStore from "../../core/settings/organizationStore";
+import settingsStore from "../../core/settings/settingsStore";
 
+export default function SettingsPage() {
   /* ================= ACTIVE MODAL ================= */
 
-  const [activeModal, setActiveModal] =
-    useState(null);
+  const [activeModal, setActiveModal] = useState(null);
 
   /* ================= PROFILE DATA ================= */
 
-  const [profileData, setProfileData] =
-    useState({
+  const [profileData, setProfileData] = useState({
+    username: "",
 
-      username: "",
+    email: "",
 
-      email: "",
+    fullName: "",
 
-      bio: "",
+    jobTitle: "",
 
-      image: "",
-    });
+    organization: "",
+
+    phone: "",
+
+    bio: "",
+
+    image: "",
+  });
+
+  const [organizationData, setOrganizationData] = useState(
+    organizationStore.get(),
+  );
+
+  const [settingsData, setSettingsData] = useState(settingsStore.get());
 
   /* ================= LOAD SAVED PROFILE ================= */
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("iris_user"));
 
-    const savedProfile =
-      localStorage.getItem(
-        "iris_profile"
-      );
+    const savedProfile = JSON.parse(
+      localStorage.getItem("iris_profile") || "{}",
+    );
 
-    if (savedProfile) {
+    setProfileData({
+      username: savedProfile.username || user?.username || "",
 
-      setProfileData(
-        JSON.parse(savedProfile)
-      );
-    }
+      email: user?.email || "",
 
+      fullName: savedProfile.fullName || "",
+
+      jobTitle: savedProfile.jobTitle || "",
+
+      phone: savedProfile.phone || "",
+
+      bio: savedProfile.bio || "",
+
+      image: savedProfile.image || "",
+    });
+
+    setOrganizationData(organizationStore.get());
+
+    setSettingsData(settingsStore.get());
   }, []);
 
   /* ================= SAVE PROFILE ================= */
 
   const handleSaveProfile = () => {
+    localStorage.setItem(
+      "iris_profile",
 
-  localStorage.setItem(
+      JSON.stringify(profileData),
+    );
 
-    "iris_profile",
+    /* REALTIME UPDATE */
 
-    JSON.stringify(profileData)
-  );
+    window.dispatchEvent(new Event("profileUpdated"));
 
-  /* REALTIME UPDATE */
+    alert("Profile Updated Successfully");
 
-  window.dispatchEvent(
-    new Event("profileUpdated")
-  );
-
-  alert(
-    "Profile Updated Successfully"
-  );
-
-  setActiveModal(null);
-};
+    setActiveModal(null);
+  };
 
   /* ================= IMAGE UPLOAD ================= */
 
-  const handleImageUpload = (
-    e
-  ) => {
-
-    const file =
-      e.target.files[0];
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
 
     if (!file) return;
 
-    const imageUrl =
-      URL.createObjectURL(file);
+    const imageUrl = URL.createObjectURL(file);
 
     setProfileData({
-
       ...profileData,
 
       image: imageUrl,
@@ -100,13 +111,10 @@ export default function SettingsPage() {
   };
 
   return (
-
     <div className="w-full">
-
       {/* ================= HEADER ================= */}
 
       <div className="mb-8">
-
         <h2
           className="
             text-2xl
@@ -128,7 +136,6 @@ export default function SettingsPage() {
         >
           Configure platform preferences
         </p>
-
       </div>
 
       {/* ================= SETTINGS GRID ================= */}
@@ -142,58 +149,50 @@ export default function SettingsPage() {
           sm:gap-6
         "
       >
-
         <SettingsCard
           icon={<User />}
           title="Profile Settings"
           desc="Manage account details, profile information and user preferences."
-          onClick={() =>
-            setActiveModal("profile")
-          }
+          onClick={() => setActiveModal("profile")}
         />
 
         <SettingsCard
           icon={<Bell />}
           title="Notifications"
           desc="Configure email alerts, push notifications and system warnings."
-          onClick={() =>
-            setActiveModal("notifications")
-          }
+          onClick={() => setActiveModal("notifications")}
         />
 
         <SettingsCard
           icon={<Shield />}
           title="Security"
           desc="Manage passwords, authentication and device access permissions."
-          onClick={() =>
-            setActiveModal("security")
-          }
+          onClick={() => setActiveModal("security")}
         />
 
         <SettingsCard
           icon={<Globe />}
-          title="Platform Preferences"
-          desc="Configure timezone, language and dashboard personalization options."
-          onClick={() =>
-            setActiveModal("platform")
-          }
+          title="Organization"
+          desc="Manage organization information, timezone and workspace settings."
+          onClick={() => setActiveModal("organization")}
         />
 
+        <SettingsCard
+          icon={<Info />}
+          title="About IRIS"
+          desc="Platform information, version details and build information."
+          onClick={() => setActiveModal("about")}
+        />
       </div>
 
       {/* ================= PROFILE MODAL ================= */}
 
       {activeModal === "profile" && (
-
         <SettingsModal
           title="Profile Settings"
-          onClose={() =>
-            setActiveModal(null)
-          }
+          onClose={() => setActiveModal(null)}
         >
-
           <div className="space-y-6">
-
             {/* ================= PROFILE IMAGE ================= */}
 
             <div
@@ -205,7 +204,6 @@ export default function SettingsPage() {
                 gap-5
               "
             >
-
               <div
                 className="
                   w-28
@@ -218,9 +216,7 @@ export default function SettingsPage() {
                   justify-center
                 "
               >
-
                 {profileData.image ? (
-
                   <img
                     src={profileData.image}
                     alt="Profile"
@@ -230,23 +226,13 @@ export default function SettingsPage() {
                       object-cover
                     "
                   />
-
                 ) : (
-
-                  <Camera
-                    size={34}
-                    className="text-[#ff5700]"
-                  />
-
+                  <Camera size={34} className="text-[#ff5700]" />
                 )}
-
               </div>
 
               <div className="flex-1">
-
-                <label className="font-semibold">
-                  Upload Profile Picture
-                </label>
+                <label className="font-semibold">Upload Profile Picture</label>
 
                 <input
                   type="file"
@@ -276,18 +262,14 @@ export default function SettingsPage() {
                 {/* DELETE IMAGE */}
 
                 {profileData.image && (
-
                   <button
                     onClick={() =>
-
                       setProfileData({
-
                         ...profileData,
 
                         image: "",
                       })
                     }
-
                     className="
                       mt-4
                       px-4
@@ -302,41 +284,26 @@ export default function SettingsPage() {
                   >
                     Remove Profile Picture
                   </button>
-
                 )}
-
               </div>
-
             </div>
 
             {/* ================= USERNAME ================= */}
 
             <div>
-
-              <label className="font-semibold">
-                Update Username
-              </label>
+              <label className="font-semibold">Update Username</label>
 
               <input
                 type="text"
-
-                value={
-                  profileData.username
-                }
-
+                value={profileData.username}
                 onChange={(e) =>
-
                   setProfileData({
-
                     ...profileData,
 
-                    username:
-                      e.target.value,
+                    username: e.target.value,
                   })
                 }
-
                 placeholder="Enter username"
-
                 className="
                   mt-2
                   w-full
@@ -349,37 +316,20 @@ export default function SettingsPage() {
                   focus:border-[#ff5700]
                 "
               />
-
             </div>
 
-            {/* ================= EMAIL ================= */}
-
-            {/* <div>
-
-              <label className="font-semibold">
-                Email
-              </label>
+            <div>
+              <label className="font-semibold">Full Name</label>
 
               <input
-                type="email"
-
-                value={
-                  profileData.email
-                }
-
+                type="text"
+                value={profileData.fullName}
                 onChange={(e) =>
-
                   setProfileData({
-
                     ...profileData,
-
-                    email:
-                      e.target.value,
+                    fullName: e.target.value,
                   })
                 }
-
-                placeholder="Enter email"
-
                 className="
                   mt-2
                   w-full
@@ -392,38 +342,20 @@ export default function SettingsPage() {
                   focus:border-[#ff5700]
                 "
               />
+            </div>
 
-            </div> */}
+            <div>
+              <label className="font-semibold">Job Title</label>
 
-            {/* ================= BIO ================= */}
-
-            {/* <div>
-
-              <label className="font-semibold">
-                Bio
-              </label>
-
-              <textarea
-
-                rows={4}
-
-                value={
-                  profileData.bio
-                }
-
+              <input
+                type="text"
+                value={profileData.jobTitle}
                 onChange={(e) =>
-
                   setProfileData({
-
                     ...profileData,
-
-                    bio:
-                      e.target.value,
+                    jobTitle: e.target.value,
                   })
                 }
-
-                placeholder="Write something..."
-
                 className="
                   mt-2
                   w-full
@@ -433,21 +365,41 @@ export default function SettingsPage() {
                   px-4
                   py-3
                   outline-none
-                  resize-none
                   focus:border-[#ff5700]
                 "
               />
+            </div>
 
-            </div> */}
+            <div>
+              <label className="font-semibold">Phone Number</label>
+
+              <input
+                type="tel"
+                value={profileData.phone}
+                onChange={(e) =>
+                  setProfileData({
+                    ...profileData,
+                    phone: e.target.value,
+                  })
+                }
+                className="
+                  mt-2
+                  w-full
+                  border
+                  border-black/10
+                  rounded-xl
+                  px-4
+                  py-3
+                  outline-none
+                  focus:border-[#ff5700]
+                "
+              />
+            </div>
 
             {/* ================= SAVE BUTTON ================= */}
 
             <button
-
-              onClick={
-                handleSaveProfile
-              }
-
+              onClick={handleSaveProfile}
               className="
                 w-full
                 sm:w-auto
@@ -464,225 +416,309 @@ export default function SettingsPage() {
                 transition-all
               "
             >
-
               <Save size={18} />
-
               Save Changes
-
             </button>
-
           </div>
-
         </SettingsModal>
       )}
 
       {/* ================= NOTIFICATIONS MODAL ================= */}
 
       {activeModal === "notifications" && (
-
         <SettingsModal
           title="Notification Settings"
-          onClose={() =>
-            setActiveModal(null)
-          }
+          onClose={() => setActiveModal(null)}
         >
-
           <div className="space-y-5">
-
             <ToggleSetting
               title="Email Notifications"
+              value={settingsData.emailNotifications}
+              onChange={(value) =>
+                setSettingsData({
+                  ...settingsData,
+                  emailNotifications: value,
+                })
+              }
             />
 
             <ToggleSetting
               title="Push Notifications"
+              value={settingsData.pushNotifications}
+              onChange={(value) =>
+                setSettingsData({
+                  ...settingsData,
+                  pushNotifications: value,
+                })
+              }
             />
 
             <ToggleSetting
               title="Critical Alerts"
+              value={settingsData.criticalAlerts}
+              onChange={(value) =>
+                setSettingsData({
+                  ...settingsData,
+                  criticalAlerts: value,
+                })
+              }
             />
 
             <ToggleSetting
               title="Device Offline Alerts"
+              value={settingsData.offlineAlerts}
+              onChange={(value) =>
+                setSettingsData({
+                  ...settingsData,
+                  offlineAlerts: value,
+                })
+              }
             />
 
-          </div>
+            <button
+              onClick={() => {
+                settingsStore.save(settingsData);
 
+                alert("Notification settings saved.");
+
+                setActiveModal(null);
+              }}
+              className="
+                  px-6
+                  py-3
+                  rounded-xl
+                  bg-[#ff5700]
+                  text-white
+                  hover:opacity-90
+                "
+            >
+              Save Settings
+            </button>
+          </div>
         </SettingsModal>
       )}
 
       {/* ================= SECURITY MODAL ================= */}
 
       {activeModal === "security" && (
-
         <SettingsModal
           title="Security Settings"
-          onClose={() =>
-            setActiveModal(null)
-          }
+          onClose={() => setActiveModal(null)}
         >
-
-          <div className="space-y-5">
-
-            <input
-              type="password"
-              placeholder="Current Password"
+          <div
+            className="
+    space-y-6
+    text-gray-600
+  "
+          >
+            <div
               className="
-                w-full
-                border
-                border-black/10
-                rounded-xl
-                px-4
-                py-3
-              "
-            />
-
-            <input
-              type="password"
-              placeholder="New Password"
-              className="
-                w-full
-                border
-                border-black/10
-                rounded-xl
-                px-4
-                py-3
-              "
-            />
-
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              className="
-                w-full
-                border
-                border-black/10
-                rounded-xl
-                px-4
-                py-3
-              "
-            />
-
-            <button
-              className="
-                px-6
-                py-3
-                rounded-xl
-                bg-[#ff5700]
-                text-white
-                hover:opacity-90
-              "
+      rounded-2xl
+      border
+      border-orange-200
+      bg-orange-50
+      p-5
+    "
             >
-              Update Password
-            </button>
+              <h3
+                className="
+        font-semibold
+        text-[#010c29]
+        mb-2
+      "
+              >
+                Password Management
+              </h3>
 
+              <p
+                className="
+        text-sm
+        leading-relaxed
+      "
+              >
+                IRIS uses <strong>AWS Cognito</strong> for secure
+                authentication. Password changes will be managed directly
+                through AWS Cognito in a future update.
+              </p>
+            </div>
           </div>
-
         </SettingsModal>
       )}
 
-      {/* ================= PLATFORM MODAL ================= */}
+      {/* ==============ABOUT MODAL=================== */}
 
-      {activeModal === "platform" && (
+      {activeModal === "about" && (
+        <SettingsModal title="About IRIS" onClose={() => setActiveModal(null)}>
+          <div className="space-y-6">
+            <InfoRow label="Platform" value="IRIS IoT Platform" />
 
+            <InfoRow label="Version" value={__APP_VERSION__} />
+
+            <InfoRow label="Build Date" value={__BUILD_DATE__} />
+
+            <InfoRow
+              label="Application Mode"
+              value={
+                import.meta.env.MODE === "development"
+                  ? "Development"
+                  : "Production"
+              }
+            />
+
+            <InfoRow label="Developed By" value="Hyperlink Technologies" />
+          </div>
+        </SettingsModal>
+      )}
+
+      {/* ================= ORGANIZATION MODAL ================= */}
+
+      {activeModal === "organization" && (
         <SettingsModal
-          title="Platform Preferences"
-          onClose={() =>
-            setActiveModal(null)
-          }
+          title="Organization Settings"
+          onClose={() => setActiveModal(null)}
         >
+          <div>
+            <label className="font-semibold">Organization Name</label>
 
-          <div className="space-y-5">
+            <input
+              type="text"
+              value={organizationData.organizationName}
+              onChange={(e) =>
+                setOrganizationData({
+                  ...organizationData,
 
-            <div>
-
-              <label className="font-semibold">
-                Language
-              </label>
-
-              <select
-                className="
-                  mt-2
-                  w-full
-                  border
-                  border-black/10
-                  rounded-xl
-                  px-4
-                  py-3
-                "
-              >
-
-                <option>English</option>
-
-                <option>Tamil</option>
-
-                <option>Hindi</option>
-
-              </select>
-
-            </div>
-
-            <div>
-
-              <label className="font-semibold">
-                Timezone
-              </label>
-
-              <select
-                className="
-                  mt-2
-                  w-full
-                  border
-                  border-black/10
-                  rounded-xl
-                  px-4
-                  py-3
-                "
-              >
-
-                <option>
-                  Asia/Kolkata
-                </option>
-
-                <option>
-                  UTC
-                </option>
-
-                <option>
-                  America/New_York
-                </option>
-
-              </select>
-
-            </div>
-
-            <ToggleSetting
-              title="Dark Mode"
+                  organizationName: e.target.value,
+                })
+              }
+              className="
+      mt-2
+      w-full
+      border
+      border-black/10
+      rounded-xl
+      px-4
+      py-3
+    "
             />
-
-            <ToggleSetting
-              title="Compact Dashboard"
-            />
-
           </div>
 
+          <div>
+            <label className="font-semibold">Industry</label>
+
+            <select
+              className="
+      mt-2
+      w-full
+      border
+      border-black/10
+      rounded-xl
+      px-4
+      py-3
+    "
+              value={organizationData.industry}
+              onChange={(e) =>
+                setOrganizationData({
+                  ...organizationData,
+
+                  industry: e.target.value,
+                })
+              }
+            >
+              <option>Manufacturing</option>
+              <option>Energy</option>
+              <option>Agriculture</option>
+              <option>Healthcare</option>
+              <option>Smart Home</option>
+              <option>Education</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="font-semibold">Timezone</label>
+
+            <select
+              className="
+                  mt-2
+                  w-full
+                  border
+                  border-black/10
+                  rounded-xl
+                  px-4
+                  py-3
+                "
+              value={organizationData.timezone}
+              onChange={(e) =>
+                setOrganizationData({
+                  ...organizationData,
+
+                  timezone: e.target.value,
+                })
+              }
+            >
+              <option>Asia/Kolkata</option>
+
+              <option>UTC</option>
+
+              <option>America/New_York</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="font-semibold">Country</label>
+
+            <input
+              type="text"
+              value={organizationData.country}
+              onChange={(e) =>
+                setOrganizationData({
+                  ...organizationData,
+
+                  country: e.target.value,
+                })
+              }
+              className="
+      mt-2
+      w-full
+      border
+      border-black/10
+      rounded-xl
+      px-4
+      py-3
+    "
+            />
+          </div>
+
+          <button
+            onClick={() => {
+              organizationStore.save(organizationData);
+
+              alert("Organization updated successfully");
+
+              setActiveModal(null);
+            }}
+            className="
+    mt-6
+    px-6
+    py-3
+    rounded-xl
+    bg-[#ff5700]
+    text-white
+    hover:opacity-90
+  "
+          >
+            Save Organization
+          </button>
         </SettingsModal>
       )}
-
     </div>
   );
 }
 
 /* ================= SETTINGS CARD ================= */
 
-function SettingsCard({
-  icon,
-  title,
-  desc,
-  onClick,
-}) {
-
+function SettingsCard({ icon, title, desc, onClick }) {
   return (
-
     <div
       className="
         bg-black/5
@@ -700,7 +736,6 @@ function SettingsCard({
         duration-300
       "
     >
-
       <div
         className="
           flex
@@ -709,7 +744,6 @@ function SettingsCard({
           mb-2
         "
       >
-
         <div
           className="
             w-14
@@ -743,7 +777,6 @@ function SettingsCard({
             duration-300
           "
         >
-
           <ArrowRightCircle
             size={30}
             className="
@@ -777,9 +810,7 @@ function SettingsCard({
           >
             Edit
           </span>
-
         </button>
-
       </div>
 
       <h3
@@ -804,21 +835,14 @@ function SettingsCard({
       >
         {desc}
       </p>
-
     </div>
   );
 }
 
 /* ================= MODAL ================= */
 
-function SettingsModal({
-  title,
-  children,
-  onClose,
-}) {
-
+function SettingsModal({ title, children, onClose }) {
   return (
-
     <div
       className="
         fixed
@@ -832,7 +856,6 @@ function SettingsModal({
         p-4
       "
     >
-
       <div
         className="
           bg-white
@@ -844,7 +867,6 @@ function SettingsModal({
           overflow-y-auto
         "
       >
-
         {/* ================= HEADER ================= */}
 
         <div
@@ -857,7 +879,6 @@ function SettingsModal({
             border-b
           "
         >
-
           <h2
             className="
               text-2xl
@@ -873,38 +894,25 @@ function SettingsModal({
               p-2
               rounded-full
               hover:bg-gray-100
+              cursor-pointer
             "
           >
-
             <X size={24} />
-
           </button>
-
         </div>
 
         {/* ================= BODY ================= */}
 
-        <div className="p-6">
-          {children}
-        </div>
-
+        <div className="p-6">{children}</div>
       </div>
-
     </div>
   );
 }
 
 /* ================= TOGGLE ================= */
 
-function ToggleSetting({
-  title,
-}) {
-
-  const [enabled, setEnabled] =
-    useState(true);
-
+function ToggleSetting({ title, value, onChange }) {
   return (
-
     <div
       className="
         flex
@@ -917,29 +925,19 @@ function ToggleSetting({
         py-4
       "
     >
-
-      <p className="font-medium">
-        {title}
-      </p>
+      <p className="font-medium">{title}</p>
 
       <button
-        onClick={() =>
-          setEnabled(!enabled)
-        }
+        onClick={() => onChange(!value)}
         className={`
           w-14
           h-8
           rounded-full
           transition-all
           relative
-          ${
-            enabled
-              ? "bg-[#ff5700]"
-              : "bg-gray-300"
-          }
+          ${value ? "bg-[#ff5700]" : "bg-gray-300"}
         `}
       >
-
         <div
           className={`
             absolute
@@ -949,16 +947,45 @@ function ToggleSetting({
             rounded-full
             bg-white
             transition-all
-            ${
-              enabled
-                ? "left-7"
-                : "left-1"
-            }
+            ${value ? "left-7" : "left-1"}
           `}
         />
-
       </button>
+    </div>
+  );
+}
 
+function InfoRow({ label, value }) {
+  return (
+    <div
+      className="
+        flex
+        justify-between
+        items-center
+        border
+        border-black/10
+        rounded-2xl
+        px-5
+        py-4
+      "
+    >
+      <span
+        className="
+          font-medium
+          text-gray-500
+        "
+      >
+        {label}
+      </span>
+
+      <span
+        className="
+          font-semibold
+          text-[#010c29]
+        "
+      >
+        {value}
+      </span>
     </div>
   );
 }

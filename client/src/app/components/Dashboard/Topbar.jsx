@@ -15,7 +15,30 @@ export default function Topbar({
 }) {
   /* ================= USER ================= */
 
-  const user = JSON.parse(localStorage.getItem("iris_user"));
+  const [user, setUser] = useState(() => {
+
+  const authUser = JSON.parse(
+    localStorage.getItem("iris_user")
+  );
+
+  const profile = JSON.parse(
+    localStorage.getItem("iris_profile") || "{}"
+  );
+
+  return {
+
+    ...authUser,
+
+    username:
+      profile.username ||
+      authUser?.username,
+
+    image:
+      profile.image || "",
+
+  };
+
+});
 
   const [notifications, setNotifications] = useState(
     triggeredAlertStore.getAll(),
@@ -28,6 +51,47 @@ export default function Topbar({
 
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+
+  const updateProfile = () => {
+
+    const authUser = JSON.parse(
+      localStorage.getItem("iris_user")
+    );
+
+    const profile = JSON.parse(
+      localStorage.getItem("iris_profile") || "{}"
+    );
+
+    setUser({
+
+      ...authUser,
+
+      username:
+        profile.username ||
+        authUser?.username,
+
+      image:
+        profile.image || "",
+
+    });
+
+  };
+
+  window.addEventListener(
+    "profileUpdated",
+    updateProfile
+  );
+
+  return () =>
+
+    window.removeEventListener(
+      "profileUpdated",
+      updateProfile
+    );
+
+}, []);
 
   const unreadCount = notifications.filter(
     (notification) => !notification.resolved,
@@ -463,7 +527,27 @@ export default function Topbar({
               shadow-lg
             "
             >
-              <User className="text-white" size={20} />
+              {user?.image ? (
+
+  <img
+    src={user.image}
+    alt="Profile"
+    className="
+      w-full
+      h-full
+      object-cover
+      rounded-full
+    "
+  />
+
+) : (
+
+  <User
+    className="text-white"
+    size={20}
+  />
+
+)}
             </div>
           </button>
 
