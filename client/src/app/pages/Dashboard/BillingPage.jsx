@@ -2,19 +2,42 @@ import {
   CreditCard,
   Calendar,
   BadgeCheck,
-  Wallet
+  Wallet,
+  BarChart3,
+  BadgeDollarSign,
+  ReceiptText,
+  ChevronRight,
 } from "lucide-react";
 
+import { useEffect, useState } from "react";
+
+import billingStore from "../../core/billing/billingStore";
+import BillingActionCard from "../../components/Dashboard/BillingActionCard";
+import { plans, billingActions } from "../../core/billing/billingData";
+import { SubscriptionModal, UsageModal, PlansModal } from "../../components/Dashboard/billingModals";
+
 export default function BillingPage() {
+  const [billing, setBilling] = useState(billingStore.get());
+
+  const [activeModal, setActiveModal] = useState(null);
+
+  useEffect(() => {
+    const updateBilling = () => {
+      setBilling(billingStore.get());
+    };
+
+    window.addEventListener("billingUpdated", updateBilling);
+
+    return () => window.removeEventListener("billingUpdated", updateBilling);
+  }, []);
+
+  
 
   return (
-
     <div className="w-full">
-
       {/* ================= HEADER ================= */}
 
       <div className="mb-8">
-
         <h2
           className="
             text-2xl
@@ -36,7 +59,6 @@ export default function BillingPage() {
         >
           Manage subscription and payments
         </p>
-
       </div>
 
       {/* ================= CARDS ================= */}
@@ -51,157 +73,133 @@ export default function BillingPage() {
           sm:gap-6
         "
       >
-
         <BillingCard
           icon={<Wallet />}
           title="Current Plan"
-          value="Industrial"
+          value={billing.currentPlan}
         />
 
         <BillingCard
           icon={<CreditCard />}
           title="Last Payment"
-          value="$499"
+          value={`${billing.currency}${billing.lastPayment}`}
         />
 
         <BillingCard
           icon={<Calendar />}
           title="Next Due"
-          value="12 Sep 2026"
+          value={billing.nextRenewal}
         />
 
         <BillingCard
           icon={<BadgeCheck />}
           title="Valid Till"
-          value="1 Year"
+          value={billing.validTill}
         />
-
       </div>
 
-      {/* ================= SUBSCRIPTION BOX ================= */}
+      
 
-      <div
-        className="
-          mt-8
+      {/* ================= MANAGE BILLING ================= */}
 
-          bg-black/5
+<div className="mt-10">
 
-          border
-          border-black/10
+  <h3
+    className="
+      text-2xl
+      sm:text-3xl
+      font-bold
+      text-[#010c29]
+      mb-2
+    "
+  >
+    Billing Services
+  </h3>
 
-          shadow-md
+  <p
+    className="
+      text-gray-500
+      mb-8
+    "
+  >
+    Manage your subscription, billing history and payment information.
+  </p>
 
-          rounded-3xl
+  <div
+    className="
+      grid
+      grid-cols-1
+      md:grid-cols-2
+      gap-6
+    "
+  >
 
-          p-5
-          sm:p-6
-          lg:p-8
+    {billingActions.map(action => (
 
-          hover:shadow-lg
+  <BillingActionCard
 
-          transition-all
-          duration-300
-        "
-      >
+    key={action.id}
 
-        <div
-          className="
-            flex
-            flex-col
-            lg:flex-row
+    action={action}
 
-            lg:items-center
-            lg:justify-between
+    onClick={() =>
+      setActiveModal(action.id)
+    }
 
-            gap-6
-          "
-        >
+  />
 
-          {/* Left */}
-          <div>
+))}
 
-            <h3
-              className="
-                text-2xl
-                sm:text-3xl
-                font-bold
-                mb-3
-                text-[#010c29]
-              "
-            >
-              Industrial Plan
-            </h3>
+  </div>
 
-            <p
-              className="
-                text-gray-400
-                text-sm
-                sm:text-base
-                leading-relaxed
-                max-w-125
-              "
-            >
-              Access all premium IoT platform features
-              including device analytics, alerts,
-              monitoring, API access and cloud storage.
-            </p>
+</div>
 
-          </div>
+{/* ================= CURRENT SUBSCRIPTION ================= */}
 
-          {/* Button */}
-          <button
-            className="
-              w-full
-              sm:w-auto
+<SubscriptionModal
 
-              px-6
-              sm:px-8
+  billing={billing}
 
-              py-3
-              sm:py-4
+  open={activeModal === "subscription"}
 
-              rounded-2xl
+  onClose={() => setActiveModal(null)}
 
-              bg-linear-to-r
-              from-[#d84800]
-              to-[#ff5700]
+/>
 
-              text-white
+{/* ================= USAGE & LIMITS ================= */}
 
-              cursor-pointer
+<UsageModal
 
-              hover:opacity-90
-              hover:scale-[1.02]
+  billing={billing}
 
-              transition-all
-              duration-300
+  open={activeModal === "usage"}
 
-              font-medium
+  onClose={() => setActiveModal(null)}
 
-              shadow-lg
-            "
-          >
-            Upgrade Plan
-          </button>
+/>
 
-        </div>
+<PlansModal
 
-      </div>
+  plans={plans}
+
+  open={activeModal === "plans"}
+
+  onClose={() => setActiveModal(null)}
+
+/>
 
     </div>
   );
 }
 
+
+
+
+
 /* ================= BILLING CARD ================= */
 
-function BillingCard({
-  icon,
-  title,
-  value
-}) {
-
+function BillingCard({ icon, title, value }) {
   return (
-
     <div
       className="
         bg-black/5
@@ -223,7 +221,6 @@ function BillingCard({
         duration-300
       "
     >
-
       {/* Icon */}
       <div
         className="
@@ -278,7 +275,6 @@ function BillingCard({
       >
         {value}
       </h3>
-
     </div>
   );
 }

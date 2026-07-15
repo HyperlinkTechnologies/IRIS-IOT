@@ -53,6 +53,8 @@ export default function AlertModal({
       ? "Edit Alert"
       : "Create Alert"
   }
+  
+  onClose={onClose}
     >
 
       <div className="space-y-4">
@@ -223,6 +225,7 @@ export default function AlertModal({
           {alert
   ? "Update Alert"
   : "Save Alert"}
+
 
         </button>
 

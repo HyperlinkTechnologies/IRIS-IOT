@@ -10,6 +10,7 @@ import {
   X,
   Camera,
   Save,
+  ChevronRight,
 } from "lucide-react";
 
 import organizationStore from "../../core/settings/organizationStore";
@@ -720,6 +721,7 @@ export default function SettingsPage() {
 function SettingsCard({ icon, title, desc, onClick }) {
   return (
     <div
+    onClick={onClick}
       className="
         bg-black/5
         border
@@ -734,6 +736,8 @@ function SettingsCard({ icon, title, desc, onClick }) {
         hover:-translate-y-1
         transition-all
         duration-300
+        cursor-pointer
+        hover:bg-white
       "
     >
       <div
@@ -762,55 +766,13 @@ function SettingsCard({ icon, title, desc, onClick }) {
           {icon}
         </div>
 
-        <button
-          onClick={onClick}
-          className="
-            group
-            relative
-            cursor-pointer
-            mb-3
-            mr-2
-            p-2
-            rounded-full
-            hover:bg-[#ff5700]/20
-            transition-all
-            duration-300
-          "
-        >
-          <ArrowRightCircle
-            size={30}
+          <ChevronRight
+            size={25}
             className="
               text-gray-500
-              hover:text-[#010c29]
             "
           />
 
-          <span
-            className="
-              absolute
-              -top-10
-              left-[50%]
-              translate-x-[-50%]
-              z-20
-              origin-bottom
-              scale-0
-              px-3
-              rounded-lg
-              border
-              border-gray-300
-              bg-white
-              py-2
-              text-sm
-              font-bold
-              shadow-md
-              transition-all
-              duration-300
-              group-hover:scale-100
-            "
-          >
-            Edit
-          </span>
-        </button>
       </div>
 
       <h3
