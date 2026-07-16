@@ -22,7 +22,7 @@ class BillingStore {
 
       autoRenewal: true,
 
-      validTill: "1 Year",
+      validFrom: "12 Aug 2026",
 
       lastPayment: 4970,
 

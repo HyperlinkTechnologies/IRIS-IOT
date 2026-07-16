@@ -19,29 +19,28 @@ export default function PricingCard({
   return (
 
     <div
-      className={`
-        relative
+  className={`
+    relative
 
-        rounded-3xl
+    w-full
 
-        border
+    rounded-3xl
+    border
 
-        overflow-hidden
+    overflow-hidden
 
-        transition-all
-        duration-300
+    transition-all
+    duration-300
 
-        hover:scale-[1.02]
+    hover:scale-[1.02]
 
-        ${
-          highlighted
-
-            ? "border-[#ff5700] shadow-xl"
-
-            : "border-black/10 shadow-md"
-        }
-      `}
-    >
+    ${
+      highlighted
+        ? "border-[#ff5700] shadow-xl"
+        : "border-black/10 shadow-md"
+    }
+  `}
+>
 
       {/* Current Plan Badge */}
 
@@ -53,13 +52,12 @@ export default function PricingCard({
             top-4
             right-4
 
-            bg-green-500
+           bg-orange-100
+text-[#ff5700]
 
-            text-white
+            text-[10px]
 
-            text-xs
-
-            px-3
+            px-2.5
             py-1
 
             rounded-full
@@ -82,13 +80,13 @@ export default function PricingCard({
 
           text-white
 
-          py-6
+          py-4
 
           text-center
         "
       >
 
-        <h3 className="text-3xl font-bold">
+        <h3 className="text-xl font-bold">
 
           {title}
 
@@ -98,11 +96,11 @@ export default function PricingCard({
 
       {/* Body */}
 
-      <div className="p-6">
+      <div className="p-5">
 
         <h2
           className="
-            text-5xl
+            text-3xl
 
             font-bold
 
@@ -128,13 +126,13 @@ export default function PricingCard({
 
         </p>
 
-        <ul className="space-y-3">
+        <ul className="space-y-2">
 
           {features.map((feature, index) => (
 
             <li
               key={index}
-              className="flex gap-3"
+              className="flex gap-3 text-sm"
             >
 
               <span className="text-[#ff5700]">
@@ -153,29 +151,22 @@ export default function PricingCard({
 
         <button
           className={`
-            mt-8
+  mt-8
+  w-full
+  py-2.5
+  rounded-xl
+  font-medium
+  transition-all
 
-            w-full
-
-            py-3
-
-            rounded-xl
-
-            font-medium
-
-            text-white
-
-            ${
-              current
-
-                ? "bg-green-500"
-
-                : "bg-[#ff5700]"
-            }
-          `}
+  ${
+    current
+      ? "bg-gray-200 text-gray-600 cursor-default"
+      : "bg-[#ff5700] hover:bg-[#e64d00] text-white"
+  }
+`}
         >
 
-          {buttonText}
+          {current ? "Current Plan" : buttonText}
 
         </button>
 

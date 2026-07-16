@@ -1,19 +1,19 @@
-import {
-  FileText,
-  Download,
-  BookOpen
-} from "lucide-react";
+import { FileText, Download, BookOpen } from "lucide-react";
+
+import { useState, useEffect } from "react";
+
+import DocumentationCard from "../../components/Dashboard/DocumentationCard";
+import { documentationSections } from "../../core/documentation/documentaionData";
+import DocumentationModal from "../../components/Dashboard/DocumentationModal";
 
 export default function DocumentationPage() {
+  const [selectedDoc, setSelectedDoc] = useState(null);
 
   return (
-
     <div className="w-full">
-
       {/* ================= HEADER ================= */}
 
       <div className="mb-8">
-
         <h2
           className="
             text-2xl
@@ -22,7 +22,7 @@ export default function DocumentationPage() {
             text-[#010c29]
           "
         >
-          Documentation
+          Documentation Library
         </h2>
 
         <p
@@ -33,9 +33,8 @@ export default function DocumentationPage() {
             sm:text-base
           "
         >
-          Access setup guides and technical resources
+          Browse platform guides, developer references and integration manuals.
         </p>
-
       </div>
 
       {/* ================= MAIN DOCUMENTATION CARD ================= */}
@@ -53,7 +52,7 @@ export default function DocumentationPage() {
 
           p-5
           sm:p-6
-          lg:p-10
+          lg:p-8
 
           hover:shadow-lg
 
@@ -61,7 +60,6 @@ export default function DocumentationPage() {
           duration-300
         "
       >
-
         <div
           className="
             flex
@@ -71,10 +69,9 @@ export default function DocumentationPage() {
             lg:items-center
             lg:justify-between
 
-            gap-8
+            gap-6
           "
         >
-
           {/* ================= LEFT CONTENT ================= */}
 
           <div
@@ -88,10 +85,10 @@ export default function DocumentationPage() {
               gap-5
             "
           >
-
-            {/* Icon */}
-            <div
-              className="
+            <div className="flex items-center gap-3">
+              {/* Icon */}
+              <div
+                className="
                 w-16
                 h-16
 
@@ -110,54 +107,51 @@ export default function DocumentationPage() {
                 border
                 border-orange-500/10
               "
-            >
+              >
+                <BookOpen size={28} />
+              </div>
 
-              <BookOpen size={28} />
-
-            </div>
-
-            {/* Text */}
-            <div>
-
-              <h3
-                className="
-                  text-2xl
-                  sm:text-3xl
+              {/* Text */}
+              <div>
+                <h3
+                  className="
+                  text-xl
+                  sm:text-2xl
 
                   font-bold
 
-                  mb-3
-
                   text-[#010c29]
                 "
-              >
-                IRIS Documentation
-              </h3>
+                >
+                  IRIS Documentation
+                </h3>
 
-              <p
-                className="
+                <p
+                  className="
                   text-gray-400
 
-                  text-sm
-                  sm:text-base
+                  text-s
+                  sm:text-sm
 
                   leading-relaxed
 
-                  max-w-2xl
+                  max-w-xl
                 "
-              >
-                Download the complete technical documentation,
-                installation guide, API reference and setup
-                manual for the IRIS Industrial IoT Platform.
-              </p>
-
+                >
+                  Download the complete technical documentation, installation
+                  guide, API reference and setup manual for the IRIS Industrial
+                  IoT Platform.
+                </p>
+              </div>
             </div>
-
           </div>
 
           {/* ================= DOWNLOAD BUTTON ================= */}
 
-          <button
+          <a
+            href="/docs/IRIS_User_Manual.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
             className="
               w-full
               sm:w-auto
@@ -189,68 +183,51 @@ export default function DocumentationPage() {
 
               text-white
 
-              cursor-pointer
-
               shadow-lg
-            "
+  "
           >
-
             <Download size={20} />
-
             Download PDF
-
-          </button>
-
+          </a>
         </div>
-
       </div>
 
-      {/* ================= ADDITIONAL DOCS ================= */}
+      {/* ================= DOCUMENTATION LIBRARY ================= */}
 
-      <div
-        className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          xl:grid-cols-3
+      <div className="mt-10">
 
-          gap-4
-          sm:gap-6
 
-          mt-8
-        "
-      >
-
-        <DocCard
-          title="API Reference"
-          icon={<FileText />}
-        />
-
-        <DocCard
-          title="MQTT Integration"
-          icon={<FileText />}
-        />
-
-        <DocCard
-          title="Device Setup Guide"
-          icon={<FileText />}
-        />
-
+        <div
+          className="
+      grid
+      grid-cols-1
+      md:grid-cols-2
+      xl:grid-cols-4
+      gap-6
+    "
+        >
+          {documentationSections.map((section) => (
+            <DocumentationCard
+              key={section.id}
+              section={section}
+              onClick={() => setSelectedDoc(section.id)}
+            />
+          ))}
+        </div>
       </div>
 
+      <DocumentationModal
+        docId={selectedDoc}
+        onClose={() => setSelectedDoc(null)}
+      />
     </div>
   );
 }
 
 /* ================= DOC CARD ================= */
 
-function DocCard({
-  title,
-  icon
-}) {
-
+function DocCard({ title, icon }) {
   return (
-
     <div
       className="
         bg-black/5
@@ -275,7 +252,6 @@ function DocCard({
         cursor-pointer
       "
     >
-
       {/* Icon */}
       <div
         className="
@@ -314,7 +290,6 @@ function DocCard({
       >
         {title}
       </h3>
-
     </div>
   );
 }

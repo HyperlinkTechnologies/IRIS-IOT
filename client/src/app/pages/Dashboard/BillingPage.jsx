@@ -14,7 +14,12 @@ import { useEffect, useState } from "react";
 import billingStore from "../../core/billing/billingStore";
 import BillingActionCard from "../../components/Dashboard/BillingActionCard";
 import { plans, billingActions } from "../../core/billing/billingData";
-import { SubscriptionModal, UsageModal, PlansModal } from "../../components/Dashboard/billingModals";
+import {
+  UsageModal,
+  PlansModal,
+  BillingHistoryModal,
+  PaymentMethodsModal,
+} from "../../components/Dashboard/billingModals";
 
 export default function BillingPage() {
   const [billing, setBilling] = useState(billingStore.get());
@@ -30,8 +35,6 @@ export default function BillingPage() {
 
     return () => window.removeEventListener("billingUpdated", updateBilling);
   }, []);
-
-  
 
   return (
     <div className="w-full">
@@ -61,140 +64,181 @@ export default function BillingPage() {
         </p>
       </div>
 
-      {/* ================= CARDS ================= */}
+      {/* ================= CURRENT SUBSCRIPTION ================= */}
 
       <div
         className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          xl:grid-cols-4
-          gap-4
-          sm:gap-6
-        "
+    mt-8
+    rounded-3xl
+    border
+    border-black/10
+    bg-white
+    shadow-sm
+    p-8
+  "
       >
-        <BillingCard
-          icon={<Wallet />}
-          title="Current Plan"
-          value={billing.currentPlan}
-        />
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+          {/* Left */}
 
-        <BillingCard
-          icon={<CreditCard />}
-          title="Last Payment"
-          value={`${billing.currency}${billing.lastPayment}`}
-        />
+          <div>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
 
-        <BillingCard
-          icon={<Calendar />}
-          title="Next Due"
-          value={billing.nextRenewal}
-        />
+              <span className="font-semibold text-green-600">
+                Active Subscription
+              </span>
+            </div>
 
-        <BillingCard
-          icon={<BadgeCheck />}
-          title="Valid Till"
-          value={billing.validTill}
-        />
+            <h3 className="text-3xl font-bold text-[#010c29]">
+              {billing.currentPlan}
+            </h3>
+
+            <p className="text-gray-500 mt-2">
+              Manage your current subscription and billing.
+            </p>
+
+            <div className="grid grid-cols-2 gap-x-10 gap-y-5 mt-8">
+              <div>
+                <p className="text-sm text-gray-400">Billing Cycle</p>
+                <p className="font-semibold">Monthly</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-400">Renewal Date</p>
+                <p className="font-semibold">{billing.nextRenewal}</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-400">Price</p>
+                <p className="font-semibold">
+                  {billing.currency}
+                  {billing.lastPayment}
+                  /month
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-400">Valid From</p>
+                <p className="font-semibold">{billing.validFrom}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right */}
+
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={() => setActiveModal("plans")}
+              className="
+          bg-[#ff5700]
+          hover:bg-[#e64d00]
+          text-white
+          px-8
+          py-3
+          rounded-xl
+          font-semibold
+          transition
+          cursor-pointer
+        "
+            >
+              Upgrade Plan
+            </button>
+
+            <button
+              className="
+          border
+          border-red-200
+          text-red-500
+          hover:bg-red-50
+          px-8
+          py-3
+          rounded-xl
+          font-semibold
+          transition
+          cursor-pointer
+        "
+            >
+              Cancel Subscription
+            </button>
+          </div>
+        </div>
       </div>
-
-      
 
       {/* ================= MANAGE BILLING ================= */}
 
-<div className="mt-10">
-
-  <h3
-    className="
+      <div className="mt-10">
+        <h3
+          className="
       text-2xl
       sm:text-3xl
       font-bold
       text-[#010c29]
       mb-2
     "
-  >
-    Billing Services
-  </h3>
+        >
+          Billing Services
+        </h3>
 
-  <p
-    className="
+        <p
+          className="
       text-gray-500
       mb-8
     "
-  >
-    Manage your subscription, billing history and payment information.
-  </p>
+        >
+          Manage your subscription, billing history and payment information.
+        </p>
 
-  <div
-    className="
-      grid
-      grid-cols-1
-      md:grid-cols-2
-      gap-6
-    "
-  >
+        <div
+          className="
+          grid
+          grid-cols-1
+          md:grid-cols-2
+          gap-6
+          "
+        >
+          {billingActions.map((action) => (
+            <BillingActionCard
+              key={action.id}
+              action={action}
+              onClick={() => setActiveModal(action.id)}
+            />
+          ))}
+        </div>
+      </div>
 
-    {billingActions.map(action => (
+      {/* ================= USAGE & LIMITS ================= */}
 
-  <BillingActionCard
+      <UsageModal
+        billing={billing}
+        open={activeModal === "usage"}
+        onClose={() => setActiveModal(null)}
+      />
 
-    key={action.id}
+      {/* ==========PRICING PLANS=========== */}
 
-    action={action}
+      <PlansModal
+        plans={plans}
+        billing={billing}
+        open={activeModal === "plans"}
+        onClose={() => setActiveModal(null)}
+      />
 
-    onClick={() =>
-      setActiveModal(action.id)
-    }
+      {/* ================= BILLING HISTORY ================= */}
 
-  />
+      <BillingHistoryModal
+        open={activeModal === "history"}
+        onClose={() => setActiveModal(null)}
+      />
 
-))}
+      {/* ================= PAYMENT METHOD ================= */}
 
-  </div>
-
-</div>
-
-{/* ================= CURRENT SUBSCRIPTION ================= */}
-
-<SubscriptionModal
-
-  billing={billing}
-
-  open={activeModal === "subscription"}
-
-  onClose={() => setActiveModal(null)}
-
-/>
-
-{/* ================= USAGE & LIMITS ================= */}
-
-<UsageModal
-
-  billing={billing}
-
-  open={activeModal === "usage"}
-
-  onClose={() => setActiveModal(null)}
-
-/>
-
-<PlansModal
-
-  plans={plans}
-
-  open={activeModal === "plans"}
-
-  onClose={() => setActiveModal(null)}
-
-/>
-
+      <PaymentMethodsModal
+        open={activeModal === "payment"}
+        onClose={() => setActiveModal(null)}
+      />
     </div>
   );
 }
-
-
-
-
 
 /* ================= BILLING CARD ================= */
 

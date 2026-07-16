@@ -1,4 +1,4 @@
-import { BadgeDollarSign, BarChart3, CreditCard, ReceiptText, Wallet } from "lucide-react";
+import { BadgeDollarSign, BarChart3, CreditCard, ReceiptText } from "lucide-react";
 
 export const plans = [
   {
@@ -89,13 +89,6 @@ export const plans = [
 export const billingActions = [
 
   {
-    id: "subscription",
-    title: "Current Subscription",
-    desc: "View your active plan, renewal details and billing cycle.",
-    icon: Wallet,
-  },
-
-  {
     id: "usage",
     title: "Usage & Limits",
     desc: "Monitor current resource usage and subscription limits.",
@@ -104,7 +97,7 @@ export const billingActions = [
 
   {
     id: "plans",
-    title: "Available Plans",
+    title: "Plans & Pricing",
     desc: "Compare plans and upgrade your subscription.",
     icon: BadgeDollarSign,
   },
@@ -119,7 +112,7 @@ export const billingActions = [
   {
     id: "payment",
     title: "Payment Methods",
-    desc: "Manage saved payment methods. (Coming Soon)",
+    desc: "Manage saved payment methods.",
     icon: CreditCard,
   },
 
