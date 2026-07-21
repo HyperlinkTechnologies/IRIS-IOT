@@ -27,11 +27,11 @@ function NavBar() {
       window.location.href = "/Dashboard";
     } catch {
       window.location.href =
-        "https://us-east-1nd1mqho9q.auth.us-east-1.amazoncognito.com/signup" +
-        "?client_id=5d8uo8cktjc6ukhnps699nj68i" +
-        "&response_type=code" +
-        "&scope=openid+email+profile" +
-        "&redirect_uri=https://iris-iot-react.netlify.app/Dashboard";
+  `https://${import.meta.env.VITE_COGNITO_DOMAIN}/signup` +
+  `?client_id=${import.meta.env.VITE_COGNITO_CLIENT_ID}` +
+  `&response_type=code` +
+  `&scope=openid+email+profile` +
+  `&redirect_uri=${encodeURIComponent(import.meta.env.VITE_REDIRECT_SIGN_IN_LOCAL)}`;
     }
   };
   return (

@@ -5,9 +5,15 @@ import { useEffect, useState } from "react";
 import StatusCard from "../../components/Dashboard/statusCard";
 import DeviceDetailsModal from "../../components/Dashboard/deviceDetailsModal";
 import Modal from "../../components/Dashboard/Modal";
-import deviceRegistry from "../../core/devices/deviceRegistry";
 import DeviceCard from "../../components/Dashboard/DeviceCard";
 import telemetryStore from "../../core/telemetry/telemetryStore";
+
+import {
+  getDevices,
+  createDevice,
+  updateDevice,
+  deleteDevice,
+} from "../../services/device.service";
 
 export default function DevicesPage() {
   const [telemetry, setTelemetry] = useState(telemetryStore.getAll());
@@ -43,15 +49,24 @@ export default function DevicesPage() {
 
   /* ================= LOAD DEVICES ================= */
 
-  useEffect(() => {
-    setDevices(deviceRegistry.getAll());
-  }, []);
+const loadDevices = async () => {
+  try {
+    const data = await getDevices();
+    setDevices(data);
+  } catch (error) {
+    console.error("Failed to load devices:", error);
+  }
+};
+
+useEffect(() => {
+  loadDevices();
+}, []);
 
   /* ================= SAVE DEVICES ================= */
 
-  const refreshDevices = () => {
-    setDevices(deviceRegistry.getAll());
-  };
+  const refreshDevices = async () => {
+  await loadDevices();
+};
 
   /* ================= GENERATE IDS ================= */
 
@@ -65,7 +80,7 @@ export default function DevicesPage() {
 
   /* ================= ADD DEVICE ================= */
 
-  const handleAddDevice = () => {
+  const handleAddDevice = async () => {
     /* ================= VALIDATION ================= */
 
     let validationErrors = {};
@@ -85,31 +100,30 @@ export default function DevicesPage() {
     /* ================= CREATE DEVICE ================= */
 
     const newDevice = {
-      id: Date.now(),
+  deviceId: generateDeviceId(),
 
-      deviceId: generateDeviceId(),
+  deviceName: deviceForm.name,
 
-      apiKey: generateApiKey(),
+  gatewayId: "GW-001",
 
-      name: deviceForm.name,
+  firmwareVersion: "1.0.0",
 
-      location: deviceForm.location,
+  apiKey: generateApiKey(),
 
-      description: deviceForm.description,
+  location: deviceForm.location,
 
-      firmware: "v1.0.0",
+  description: deviceForm.description,
 
-      status: "offline",
+  status: "offline",
 
-      telemetry: [],
+  createdAt: new Date().toISOString(),
 
-      lastSeen: "Never",
+  updatedAt: new Date().toISOString(),
+};
 
-      createdAt: new Date().toLocaleString(),
-    };
+await createDevice(newDevice);
 
-    deviceRegistry.add(newDevice);
-    refreshDevices();
+await refreshDevices();
 
     /* ================= RESET ================= */
 
@@ -128,28 +142,46 @@ export default function DevicesPage() {
 
   /* ================= DELETE DEVICE ================= */
 
-  const handleDeleteDevice = (deviceId) => {
-    deviceRegistry.remove(deviceId);
+  const handleDeleteDevice = async (deviceId) => {
+  try {
+    await deleteDevice(deviceId);
 
-    refreshDevices();
-  };
+    await refreshDevices();
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   /* ================= EDIT DEVICE ================= */
 
-  const handleEditDevice = () => {
-    deviceRegistry.update(editingDevice.deviceId, editingDevice);
+ const handleEditDevice = async () => {
+  try {
+    await updateDevice(editingDevice.deviceId, {
+      deviceName: editingDevice.name,
+      location: editingDevice.location,
+      description: editingDevice.description,
+      status: editingDevice.status,
+    });
 
-    refreshDevices();
+    await refreshDevices();
 
     setEditingDevice(null);
-    setEditingDevice(null);
-  };
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   /* ================= FILTER DEVICES ================= */
+  const devicesWithTelemetry = devices.map((device) => ({
+  ...device,
+  ...telemetry[device.deviceId],
+}));
 
-  const filteredDevices = devices.filter((device) =>
-    device.name.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filteredDevices = devicesWithTelemetry.filter((device) =>
+  (device.deviceName || "")
+    .toLowerCase()
+    .includes(search.toLowerCase()),
+);
 
   const onlineCount = devices.filter(
     (device) => telemetry[device.deviceId]?.online,
@@ -263,7 +295,7 @@ export default function DevicesPage() {
       <div className="grid gap-5">
         {filteredDevices.map((device) => (
           <DeviceCard
-            key={device.id}
+            key={device.deviceId}
             device={device}
             onDetails={() => setSelectedDevice(device)}
             onEdit={() => setEditingDevice(device)}

@@ -27,6 +27,7 @@
     "@tailwindcss/postcss": "^4.2.4",
     "amazon-cognito-identity-js": "^6.3.16",
     "aws-amplify": "^6.17.0",
+    "aws-iot-device-sdk-v2": "^1.27.0",
     "aws4fetch": "^1.0.20",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",

@@ -1,9 +1,21 @@
 import useTelemetry from "../../hooks/useTelemetry";
 import Modal from "./Modal";
 import InfoRow from "./InfoRow";
+import { Copy, Check } from "lucide-react";
+import { useState } from "react";
 
 export default function DeviceDetailsModal({ selectedDevice, onClose }) {
   const telemetry = useTelemetry(selectedDevice.deviceId);
+
+  const [copied, setCopied] = useState(false);
+
+  const copyApiKey = async () => {
+  await navigator.clipboard.writeText(selectedDevice.apiKey);
+
+  setCopied(true);
+
+  setTimeout(() => setCopied(false), 2000);
+};
 
   const formatUptime = (seconds = 0) => {
     const h = Math.floor(seconds / 3600);
@@ -81,15 +93,22 @@ export default function DeviceDetailsModal({ selectedDevice, onClose }) {
     <Modal title="Device Details" onClose={onClose}>
       <div className="space-y-4">
         <InfoRow label="Device ID" value={selectedDevice.deviceId} />
-        <InfoRow label="API Key" value={selectedDevice.apiKey} />
+        <InfoRow label="API Key" value={selectedDevice.apiKey} copyable/>
         <InfoRow label="Firmware" value={selectedDevice.firmware} />
-        <InfoRow label="Created At" value={selectedDevice.createdAt} />
+        <InfoRow label="Created At" value={new Date(selectedDevice.createdAt).toLocaleString("en-IN", {
+                                            day: "2-digit",
+                                            month: "short",
+                                            year: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            hour12: true,
+                                          })} />
 
         <h4 className="font-bold mt-6">Device Health</h4>
 
         <InfoRow
           label="Status"
-          value={telemetry?.online ? "🟢 Online" : "🔴 Offline "}
+          value={telemetry?.online ? "🟢 Online" : "🔴 Offline"}
         />
 
         <div className="flex items-center justify-between border-b border-black/5 pb-3">

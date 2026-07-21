@@ -1,26 +1,15 @@
 const amplifyConfig = {
-
   Auth: {
-
     Cognito: {
+      userPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID,
 
-      userPoolId:
-        "us-east-1_nd1mqho9q",
-
-      userPoolClientId:
-        "5d8uo8cktjc6ukhnps699nj68i",
-
-      identityPoolId:
-        "us-east-1:f1165c57-e88d-4010-b774-bda20f0882c6",
+      userPoolClientId: import.meta.env.VITE_COGNITO_CLIENT_ID,
 
       allowGuestAccess: true,
 
       loginWith: {
-
         oauth: {
-
-          domain:
-            "us-east-1nd1mqho9q.auth.us-east-1.amazoncognito.com",
+          domain: import.meta.env.VITE_COGNITO_DOMAIN,
 
           scopes: [
             "openid",
@@ -29,13 +18,13 @@ const amplifyConfig = {
           ],
 
           redirectSignIn: [
-            "http://localhost:5173/Dashboard",
-            "https://iris-iot-react.netlify.app/Dashboard",
+            import.meta.env.VITE_REDIRECT_SIGN_IN_LOCAL,
+            import.meta.env.VITE_REDIRECT_SIGN_IN_PROD,
           ],
 
           redirectSignOut: [
-            "http://localhost:5173",
-            "https://iris-iot-react.netlify.app",
+            import.meta.env.VITE_REDIRECT_SIGN_OUT_LOCAL,
+            import.meta.env.VITE_REDIRECT_SIGN_OUT_PROD,
           ],
 
           responseType: "code",

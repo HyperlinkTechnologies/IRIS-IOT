@@ -30,6 +30,7 @@ export default function DeviceCard({ device, onDetails, onEdit, onDelete }) {
           <p className="text-gray-500 mt-1">{device.deviceId}</p>
 
           <p className="text-sm text-gray-400 mt-2">{device.location}</p>
+
         </div>
 
         <div className="flex gap-3">

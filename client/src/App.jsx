@@ -46,7 +46,7 @@ function AppContent() {
           <Route path="/contact" element={<Contactpage />} />
 
           {/* Dashboard */}
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/Dashboard" element={<DashboardPage />} />
         </Routes>
       </main>
 
