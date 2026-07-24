@@ -301,6 +301,3 @@ export default function CreateDashboardModal({ open, onClose, onCreate, devices,
     </div>
   );
 }
-
-
-// the dashboard look ok,but there are some issues,there is no delete button for the dashboard,also there is no option to add widgets to the dashboard,these features are essential for a dashboard management system.i dont wantthe preset widgets to be added to the dashboard, i want the user to be able to add widgets of their choice,also the delete button should be present on the dashboard card itself for easy access.and also the dashboard was deleted once the tab was switched, this should not happen, the dashboard should persist until the user decides to delete it.

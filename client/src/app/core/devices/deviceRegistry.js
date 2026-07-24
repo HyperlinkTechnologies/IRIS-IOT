@@ -1,30 +1,38 @@
-const STORAGE_KEY = "iris_devices";
-
 class DeviceRegistry {
   constructor() {
     this.listeners = new Set();
+
+    this.devices = [];
+
+    this.loaded = false;
   }
 
   getAll() {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    return this.devices;
   }
 
   get(deviceId) {
-    return this.getAll().find((device) => device.deviceId === deviceId);
+    return this.devices.find(
+      (device) => device.deviceId === deviceId,
+    );
+  }
+
+  setAll(devices) {
+    this.devices = devices;
+
+    this.loaded = true;
+
+    this.notify();
   }
 
   add(device) {
-    const devices = this.getAll();
-
-    devices.push(device);
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(devices));
+    this.devices = [...this.devices, device];
 
     this.notify();
   }
 
   update(deviceId, updates) {
-    const devices = this.getAll().map((device) =>
+    this.devices = this.devices.map((device) =>
       device.deviceId === deviceId
         ? {
             ...device,
@@ -33,23 +41,25 @@ class DeviceRegistry {
         : device,
     );
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(devices));
-
     this.notify();
   }
 
   remove(deviceId) {
-    const devices = this.getAll().filter(
+    this.devices = this.devices.filter(
       (device) => device.deviceId !== deviceId,
     );
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(devices));
 
     this.notify();
   }
 
+  isLoaded() {
+    return this.loaded;
+  }
+
   subscribe(listener) {
     this.listeners.add(listener);
+
+    listener(this.devices);
 
     return () => {
       this.listeners.delete(listener);
@@ -57,7 +67,9 @@ class DeviceRegistry {
   }
 
   notify() {
-    this.listeners.forEach((listener) => listener(this.getAll()));
+    this.listeners.forEach((listener) =>
+      listener(this.devices),
+    );
   }
 }
 

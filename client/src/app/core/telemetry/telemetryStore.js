@@ -10,6 +10,15 @@ class TelemetryStore {
 
     setInterval(() => {
 
+      Object.entries(this.devices).forEach(([deviceId, device]) => {
+  console.log(deviceId, {
+    online: device.online,
+    lastUpdated: device.lastUpdated,
+    uptime: device.telemetry?.uptime,
+    rssi: device.telemetry?.rssi,
+  });
+});
+
   let changed = false;
 
   const now = Date.now();
@@ -42,24 +51,30 @@ class TelemetryStore {
 
   // Update telemetry for a device
   update(deviceId, telemetry) {
+console.log("Store Key:", deviceId);
+
+  const now = Date.now();
 
   this.devices = {
 
-  ...this.devices,
+    ...this.devices,
 
-  [deviceId]: {
+    [deviceId]: {
 
-    ...this.devices[deviceId],
+      ...(this.devices[deviceId] || {}),
 
-    ...telemetry,
+      deviceId,
 
-    lastUpdated: Date.now(),
+      telemetry,
 
-    lastSeen: new Date().toLocaleTimeString(),
+      lastUpdated: now,
 
-    online: true,
+      lastSeen: now,
 
-  },
+      online: true,
+      
+
+    },
 
 };
 

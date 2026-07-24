@@ -7,6 +7,13 @@ import { useState } from "react";
 export default function DeviceDetailsModal({ selectedDevice, onClose }) {
   const telemetry = useTelemetry(selectedDevice.deviceId);
 
+console.log({
+  online: telemetry?.online,
+  lastUpdated: telemetry?.lastUpdated,
+  uptime: telemetry?.telemetry?.uptime,
+  rssi: telemetry?.telemetry?.rssi,
+});
+
   const [copied, setCopied] = useState(false);
 
   const copyApiKey = async () => {
@@ -87,7 +94,7 @@ export default function DeviceDetailsModal({ selectedDevice, onClose }) {
     }
   }
 
-  const signal = getSignal(telemetry?.rssi ?? -100);
+ const signal = getSignal(telemetry?.telemetry?.rssi ?? -100);
 
   return (
     <Modal title="Device Details" onClose={onClose}>
@@ -122,30 +129,23 @@ export default function DeviceDetailsModal({ selectedDevice, onClose }) {
           value={formatLastSeen(telemetry?.lastUpdated)}
         />
 
-        <InfoRow label="Uptime" value={formatUptime(telemetry?.uptime ?? 0)} />
+        <InfoRow
+  label="Uptime"
+  value={formatUptime(telemetry?.telemetry?.uptime ?? 0)}
+/>
 
         <h4 className="font-bold mt-6">Live Telemetry</h4>
 
-        {Object.entries(telemetry || {})
-          .filter(
-            ([key]) =>
-              ![
-                "online",
-                "lastUpdated",
-                "lastSeen",
-                "uptime",
-                "rssi",
-                "deviceId",
-                "battery",
-              ].includes(key),
-          )
-          .map(([key, value]) => (
-            <InfoRow
-              key={key}
-              label={formatLabel(key)}
-              value={formatValue(key, value)}
-            />
-          ))}
+        {Object.entries(telemetry?.telemetry || {})
+  .filter(([key]) => !["deviceId","rssi",
+      "uptime",].includes(key))
+  .map(([key, value]) => (
+    <InfoRow
+      key={key}
+      label={formatLabel(key)}
+      value={formatValue(key, value)}
+    />
+  ))}
       </div>
     </Modal>
   );

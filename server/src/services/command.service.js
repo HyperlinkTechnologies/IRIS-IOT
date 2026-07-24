@@ -6,12 +6,12 @@ export async function publishCommand(
   command,
   payload = {}
 ) {
-  const topic = `${process.env.AWS_IOT_TOPIC_COMMAND}/${deviceId}`;
+  const topic = `${process.env.AWS_IOT_TOPIC_PREFIX}/${deviceId}/command`;
 
   const message = {
     command,
     payload,
-};
+  };
 
   await connection.publish(
     topic,

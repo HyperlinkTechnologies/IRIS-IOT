@@ -7,6 +7,7 @@ import DeviceDetailsModal from "../../components/Dashboard/deviceDetailsModal";
 import Modal from "../../components/Dashboard/Modal";
 import DeviceCard from "../../components/Dashboard/DeviceCard";
 import telemetryStore from "../../core/telemetry/telemetryStore";
+import deviceRegistry from "../../core/devices/deviceRegistry";
 
 import {
   getDevices,
@@ -29,7 +30,9 @@ export default function DevicesPage() {
 
   const [search, setSearch] = useState("");
 
-  const [devices, setDevices] = useState([]);
+  const [devices, setDevices] = useState(
+  deviceRegistry.getAll(),
+);
 
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -51,21 +54,30 @@ export default function DevicesPage() {
 
 const loadDevices = async () => {
   try {
+    if (deviceRegistry.isLoaded()) return;
+
     const data = await getDevices();
-    setDevices(data);
+
+    deviceRegistry.setAll(data);
   } catch (error) {
     console.error("Failed to load devices:", error);
   }
 };
 
 useEffect(() => {
+  const unsubscribe = deviceRegistry.subscribe(setDevices);
+
   loadDevices();
+
+  return unsubscribe;
 }, []);
 
   /* ================= SAVE DEVICES ================= */
 
-  const refreshDevices = async () => {
-  await loadDevices();
+const refreshDevices = async () => {
+  const data = await getDevices();
+
+  deviceRegistry.setAll(data);
 };
 
   /* ================= GENERATE IDS ================= */
