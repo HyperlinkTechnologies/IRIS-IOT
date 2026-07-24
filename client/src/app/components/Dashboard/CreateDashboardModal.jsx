@@ -215,13 +215,11 @@ export default function CreateDashboardModal({ open, onClose, onCreate, devices,
                   devices.map((device) => (
 
                     <option
-                      key={device.id}
-                      value={device.name}
-                    >
-
-                      {device.name}
-
-                    </option>
+  key={device.deviceId}
+  value={device.deviceId}
+>
+  {device.name} ({device.deviceId})
+</option>
                   ))
 
                 ) : (

@@ -273,13 +273,11 @@ export default function EditDashboardModal({
                   (device) => (
 
                     <option
-                      key={device.id}
-                      value={device.name}
-                    >
-
-                      {device.name}
-
-                    </option>
+  key={device.deviceId}
+  value={device.deviceId}
+>
+  {device.name} ({device.deviceId})
+</option>
                   )
                 )}
 

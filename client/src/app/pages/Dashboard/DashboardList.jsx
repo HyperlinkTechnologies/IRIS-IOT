@@ -12,6 +12,7 @@ import CreateDashboardModal from "../../components/Dashboard/CreateDashboardModa
 import EditDashboardModal from "../../components/Dashboard/EditDashboardModal";
 import deviceRegistry from "../../core/devices/deviceRegistry";
 import { getDevices } from "../../services/device.service";
+import telemetryStore from "../../core/telemetry/telemetryStore";
 
 export default function DashboardList({
   dashboards,
@@ -28,11 +29,19 @@ export default function DashboardList({
 
   const [selectedDashboard, setSelectedDashboard] =
     useState(null);
+    
 
     const [devices, setDevices] = useState(deviceRegistry.getAll());
 
+    const [telemetryDevices, setTelemetryDevices] = useState(
+  telemetryStore.getAll()
+);
+
     useEffect(() => {
   const unsubscribe = deviceRegistry.subscribe(setDevices);
+
+  const unsubscribeTelemetry =
+  telemetryStore.subscribe(setTelemetryDevices);
 
   const loadDevices = async () => {
   if (!deviceRegistry.isLoaded()) {
@@ -44,7 +53,10 @@ export default function DashboardList({
 
   loadDevices();
 
-  return unsubscribe;
+  return () => {
+  unsubscribe();
+  unsubscribeTelemetry();
+};
 }, []);
 
   /* ================= CREATE DASHBOARD ================= */
@@ -94,6 +106,19 @@ export default function DashboardList({
         .toLowerCase()
         .includes(search.toLowerCase())
   );
+
+  const getDashboardStatus = (dashboard) => {
+  const telemetry =
+    telemetryDevices[dashboard.device];
+
+  if (!telemetry) {
+    return "Inactive";
+  }
+
+  return telemetry.online
+    ? "Active"
+    : "Inactive";
+};
 
   return (
     <div className="w-full px-3 sm:px-5 lg:px-0">
@@ -321,17 +346,21 @@ export default function DashboardList({
                 </div>
 
                 <span
-                  className="
+                  className={`
                     px-3
                     py-1
                     rounded-full
-                    bg-green-500/10
-                    text-green-600
                     text-xs
                     whitespace-nowrap
-                  "
+
+                    ${
+                      getDashboardStatus(dashboard) === "Active"
+                        ? "bg-green-500/10 text-green-600"
+                        : "bg-gray-200 text-gray-600"
+                    }
+                  `}
                 >
-                  Active
+                  {getDashboardStatus(dashboard)}
                 </span>
               </div>
 
@@ -400,17 +429,21 @@ export default function DashboardList({
                 "
               >
                 <span
-                  className="
-                    px-3
-                    py-1
-                    rounded-full
-                    bg-green-500/10
-                    text-green-600
-                    text-sm
-                  "
-                >
-                  Active
-                </span>
+  className={`
+    px-3
+    py-1
+    rounded-full
+    text-sm
+
+    ${
+      getDashboardStatus(dashboard) === "Active"
+        ? "bg-green-500/10 text-green-600"
+        : "bg-gray-200 text-gray-600"
+    }
+  `}
+>
+  {getDashboardStatus(dashboard)}
+</span>
               </div>
 
               {/* ACTIONS */}
