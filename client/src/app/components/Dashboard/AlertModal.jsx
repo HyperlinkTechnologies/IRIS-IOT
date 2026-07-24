@@ -28,6 +28,8 @@ export default function AlertModal({
 
     threshold: "",
 
+    description: "",
+
     severity: "Warning",
 
     enabled: true,
@@ -179,6 +181,22 @@ export default function AlertModal({
           }
           className="w-full border rounded-xl px-4 py-3"
         />
+
+        <div>
+          
+            <textarea
+              rows={3}
+              value={form.description}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  description: e.target.value,
+                })
+              }
+              placeholder="Description: Boiler temperature exceeded the safe operating limit."
+              className="w-full rounded-lg border px-3 py-2"
+            />
+        </div>
 
         {/* Severity */}
 

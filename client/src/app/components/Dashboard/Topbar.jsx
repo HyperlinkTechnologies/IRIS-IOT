@@ -46,12 +46,23 @@ export default function Topbar({
 
   const [showNotifications, setShowNotifications] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = triggeredAlertStore.subscribe(setNotifications);
+  // useEffect(() => {
+  //   const unsubscribe = triggeredAlertStore.subscribe(setNotifications);
 
-    return unsubscribe;
-  }, []);
+  //   return unsubscribe;
+  // }, []);
+useEffect(() => {
 
+  const unsubscribe = triggeredAlertStore.subscribe((data) => {
+
+
+    setNotifications(data);
+
+  });
+
+  return unsubscribe;
+
+}, []);
   useEffect(() => {
 
   const updateProfile = () => {
@@ -97,11 +108,14 @@ export default function Topbar({
     (notification) => !notification.resolved,
   ).length;
 
-  const getDeviceName = (deviceId) => {
-    const device = deviceRegistry.get(deviceId);
+  const getDeviceDisplay = (deviceId) => {
+  const device = deviceRegistry.get(deviceId);
 
-    return device ? device.name : deviceId;
-  };
+  if (!device) return deviceId;
+
+  return `${device.name} (${device.deviceId})`;
+};
+
 
   const getRelativeTime = (timestamp) => {
     const seconds = Math.floor((Date.now() - timestamp) / 1000);
@@ -275,15 +289,9 @@ export default function Topbar({
     "
   >
 
-    <h3
-      className="
-        text-lg
-        font-semibold
-        text-[#010c29]
-      "
-    >
-      Notifications
-    </h3>
+    <h3 className="text-lg font-semibold text-[#010c29]">
+  Notifications ({notifications.length})
+</h3>
 
     <div
       className="
@@ -341,30 +349,31 @@ export default function Topbar({
 
   {/* Unread Count */}
 
-  <p
-    className="
-      mt-2
-      text-sm
-      text-gray-500
-    "
-  >
-    {unreadCount} Unread
-  </p>
+  <p className="mt-1 text-sm text-gray-500">
+  Latest alerts and events
+</p>
 
 </div>
 
             {/* Empty State */}
 
             {notifications.length === 0 ? (
-              <div
-                className="
-          p-8
-          text-center
-          text-gray-400
-        "
-              >
-                No notifications
-              </div>
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+
+  <Bell
+    size={36}
+    className="text-gray-300 mb-3"
+  />
+
+  <p className="font-medium text-gray-600">
+    No notifications yet
+  </p>
+
+  <p className="text-sm text-gray-400 mt-1">
+    Triggered alerts will appear here.
+  </p>
+
+</div>
             ) : (
               notifications.map((notification, index) => (
                 <div
@@ -442,19 +451,13 @@ export default function Topbar({
                   >
                     <p>
                       <span className="font-medium">Device:</span>{" "}
-                      {getDeviceName(notification.deviceId)}
+                      {getDeviceDisplay(notification.deviceId)}
                     </p>
 
-                    <p>
-                      <span className="font-medium">Current:</span>{" "}
-                      {notification.currentValue}
-                    </p>
-
-                    <p>
-                      <span className="font-medium">Rule:</span>{" "}
-                      {notification.telemetryKey} {notification.condition}{" "}
-                      {notification.threshold}
-                    </p>
+                    <p className="text-gray-600 leading-5 mt-2">
+  {notification.description ||
+    `${notification.telemetryKey} threshold exceeded.`}
+</p>
                   </div>
 
                   <p
@@ -484,7 +487,7 @@ export default function Topbar({
             rounded-full
             px-2
             py-2
-            hover:bg-black/5
+            hover:bg-orange/50
           "
           >
             {/* Name */}

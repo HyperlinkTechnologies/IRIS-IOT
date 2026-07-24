@@ -108,6 +108,7 @@ triggeredAlerts.forEach(alert => {
     ],
 
   threshold: alert.threshold,
+  description: alert.description,
 
   condition: alert.condition,
 

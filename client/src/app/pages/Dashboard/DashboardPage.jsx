@@ -30,6 +30,8 @@ import Sidebar from "../../components/Dashboard/Sidebar";
 
 import Topbar from "../../components/Dashboard/Topbar";
 
+import ToastListener from "../../components/Dashboard/ToastListener";
+
 export default function DashboardPage() {
   /* ================= STATES ================= */
 
@@ -176,6 +178,8 @@ export default function DashboardPage() {
               setShowProfileMenu={setShowProfileMenu}
               setActiveTab={setActiveTab}
             />
+
+            <ToastListener/>
           </div>
         </div>
 
