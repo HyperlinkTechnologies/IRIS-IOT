@@ -63,7 +63,6 @@ const loadDevices = async () => {
     console.error("Failed to load devices:", error);
   }
 };
-
 useEffect(() => {
   const unsubscribe = deviceRegistry.subscribe(setDevices);
 

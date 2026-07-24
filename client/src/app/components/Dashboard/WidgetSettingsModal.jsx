@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { X, Save } from "lucide-react";
 
 import WidgetSpecificSettings from "./WidgetSpecificSettings";
+import deviceRegistry from "../../core/devices/deviceRegistry";
+import { getDevices } from "../../services/device.service";
 
 export default function WidgetSettingsModal({
   open,
@@ -18,6 +20,8 @@ export default function WidgetSettingsModal({
   saveDashboards,
 }) {
   /* ================= STATES ================= */
+
+    const [devices, setDevices] = useState(deviceRegistry.getAll());
 
   const [formData, setFormData] = useState({
     title: "",
@@ -109,6 +113,21 @@ export default function WidgetSettingsModal({
     }
   }, [widget]);
 
+  useEffect(() => {
+  const unsubscribe = deviceRegistry.subscribe(setDevices);
+
+  const loadDevices = async () => {
+    if (!deviceRegistry.isLoaded()) {
+      const data = await getDevices();
+      deviceRegistry.setAll(data);
+    }
+  };
+
+  loadDevices();
+
+  return unsubscribe;
+}, []);
+
   if (!open || !widget) return null;
 
   /* ================= SAVE ================= */
@@ -142,8 +161,6 @@ export default function WidgetSettingsModal({
   };
 
   /* ================= DEVICES ================= */
-
-  const devices = JSON.parse(localStorage.getItem("iris_devices")) || [];
 
   return (
     <div

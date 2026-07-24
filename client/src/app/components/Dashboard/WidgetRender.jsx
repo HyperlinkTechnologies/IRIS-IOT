@@ -21,23 +21,8 @@ export default function WidgetRenderer({ widget }) {
 
   const devices = useTelemetry();
 
-  let selectedDevice = null;
-
-  try {
-    const savedDevices =
-      JSON.parse(localStorage.getItem("iris_devices")) || [];
-
-    selectedDevice = savedDevices.find(
-      (device) => String(device.id) === String(widget.deviceId)
-    );
-  } catch {
-    selectedDevice = null;
-  }
-
-  const telemetryDeviceId =
-    selectedDevice?.deviceId || widget.deviceId;
-
-  const telemetry = devices?.[telemetryDeviceId];
+const telemetry =
+  devices?.[widget.deviceId]?.telemetry;
 
   switch (widget.type) {
 

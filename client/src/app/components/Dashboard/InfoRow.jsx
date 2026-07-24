@@ -28,7 +28,7 @@ export default function InfoRow({
         {copyable && (
           <button
             onClick={handleCopy}
-            title="Copy API Key"
+            title="Copy"
             className="text-gray-400 hover:text-[#ff5700] transition-colors cursor-pointer"
           >
             {copied ? (

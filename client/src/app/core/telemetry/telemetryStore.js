@@ -51,7 +51,6 @@ class TelemetryStore {
 
   // Update telemetry for a device
   update(deviceId, telemetry) {
-console.log("Store Key:", deviceId);
 
   const now = Date.now();
 

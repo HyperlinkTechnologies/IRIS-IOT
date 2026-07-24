@@ -99,7 +99,7 @@ console.log({
   return (
     <Modal title="Device Details" onClose={onClose}>
       <div className="space-y-4">
-        <InfoRow label="Device ID" value={selectedDevice.deviceId} />
+        <InfoRow label="Device ID" value={selectedDevice.deviceId} copyable/>
         <InfoRow label="API Key" value={selectedDevice.apiKey} copyable/>
         <InfoRow label="Firmware" value={selectedDevice.firmware} />
         <InfoRow label="Created At" value={new Date(selectedDevice.createdAt).toLocaleString("en-IN", {

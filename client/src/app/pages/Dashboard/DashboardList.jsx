@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   Plus,
@@ -10,6 +10,8 @@ import {
 
 import CreateDashboardModal from "../../components/Dashboard/CreateDashboardModal";
 import EditDashboardModal from "../../components/Dashboard/EditDashboardModal";
+import deviceRegistry from "../../core/devices/deviceRegistry";
+import { getDevices } from "../../services/device.service";
 
 export default function DashboardList({
   dashboards,
@@ -26,6 +28,24 @@ export default function DashboardList({
 
   const [selectedDashboard, setSelectedDashboard] =
     useState(null);
+
+    const [devices, setDevices] = useState(deviceRegistry.getAll());
+
+    useEffect(() => {
+  const unsubscribe = deviceRegistry.subscribe(setDevices);
+
+  const loadDevices = async () => {
+  if (!deviceRegistry.isLoaded()) {
+    const data = await getDevices();
+
+    deviceRegistry.setAll(data);
+  }
+};
+
+  loadDevices();
+
+  return unsubscribe;
+}, []);
 
   /* ================= CREATE DASHBOARD ================= */
 
@@ -593,13 +613,7 @@ export default function DashboardList({
           setModalOpen(false)
         }
         onCreate={handleCreateDashboard}
-        devices={
-          JSON.parse(
-            localStorage.getItem(
-              "iris_devices"
-            )
-          ) || []
-        }
+        devices={devices}
       />
 
       {/* ================= EDIT MODAL ================= */}
@@ -612,13 +626,7 @@ export default function DashboardList({
         dashboard={selectedDashboard}
         dashboards={dashboards}
         saveDashboards={saveDashboards}
-        devices={
-          JSON.parse(
-            localStorage.getItem(
-              "iris_devices"
-            )
-          ) || []
-        }
+        devices={devices}
       />
     </div>
   );

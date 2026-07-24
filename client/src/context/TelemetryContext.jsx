@@ -18,8 +18,6 @@ export function TelemetryProvider({ children }) {
 
   socket.on("telemetry", (data) => {
 
-  console.log("📡 Live Telemetry:", data);
-
   telemetryStore.update(data.deviceId, data);
 
 });

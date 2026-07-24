@@ -3,27 +3,31 @@ import telemetryStore from "../telemetry/telemetryStore";
 
 class CommandService {
 
-  send(widget, value) {
+ async send(widget, value) {
+  if (!widget.deviceId) return;
 
-    if (!widget.deviceId) return;
+  const response = await fetch(
+    `http://localhost:4000/api/devices/${widget.deviceId}/commands`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        command: widget.telemetryKey,
+        payload: {
+          value,
+        },
+      }),
+    }
+  );
 
-    mqttClient.publish(
-
-      `iris/${widget.deviceId}/command`,
-
-      {
-
-        key: widget.telemetryKey,
-
-        value,
-
-        timestamp: Date.now(),
-
-      }
-
-    );
-
+  if (!response.ok) {
+    throw new Error("Failed to send command");
   }
+
+  return response.json();
+}
 
 }
 
