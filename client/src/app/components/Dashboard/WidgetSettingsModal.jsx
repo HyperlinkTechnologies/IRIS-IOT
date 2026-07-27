@@ -50,10 +50,6 @@ export default function WidgetSettingsModal({
 
     textAlign: "center",
 
-    latitude: 12.9716,
-
-    longitude: 77.5946,
-
     zoom: 13,
 
     mapMode: "single",
@@ -96,10 +92,6 @@ export default function WidgetSettingsModal({
 
         textAlign: widget.textAlign || "center",
 
-        latitude: widget.latitude ?? 12.9716,
-
-        longitude: widget.longitude ?? 77.5946,
-
         zoom: widget.zoom ?? 13,
 
         mapMode: widget.mapMode || "single",
@@ -134,12 +126,12 @@ export default function WidgetSettingsModal({
 
   const handleSave = () => {
     const updatedDashboards = dashboards.map((dashboard) => {
-      if (dashboard.id === dashboardId) {
+      if (dashboard.dashboardId === dashboardId) {
         return {
           ...dashboard,
 
           widgets: dashboard.widgets.map((item) => {
-            if (item.id === widget.id) {
+            if (item.widgetId === widget.widgetId) {
               return {
                 ...item,
 
@@ -463,17 +455,17 @@ export default function WidgetSettingsModal({
 
             {/* MIN/MAX */}
 
-            <div
+            {/* <div
               className="
                 grid
                 grid-cols-1
                 sm:grid-cols-2
                 gap-4
             "
-            >
+            > */}
               {/* MIN */}
 
-              <div>
+              {/* <div>
                 <label
                   className="
                     block
@@ -505,11 +497,11 @@ export default function WidgetSettingsModal({
                     focus:border-[#ff5700]
                 "
                 />
-              </div>
+              </div> */}
 
               {/* MAX */}
 
-              <div>
+              {/* <div>
                 <label
                   className="
                     block
@@ -541,12 +533,12 @@ export default function WidgetSettingsModal({
                     focus:border-[#ff5700]
                 "
                 />
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
 
             {/* THRESHOLD */}
 
-            <div>
+            {/* <div>
               <label
                 className="
                 block
@@ -578,7 +570,7 @@ export default function WidgetSettingsModal({
                 focus:border-[#ff5700]
                 "
               />
-            </div>
+            </div> */}
 
             {/* REFRESH RATE */}
 

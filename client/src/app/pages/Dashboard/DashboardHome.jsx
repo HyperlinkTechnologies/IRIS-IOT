@@ -9,6 +9,13 @@ from "./DashboardList";
 import DashboardWorkspace
 from "./DashboardWorkspace";
 
+import {
+  getDashboards,
+  createDashboard,
+  updateDashboard,
+  deleteDashboard,
+} from "../../services/dashboard.service";
+
 
 export default function DashboardHome() {
 
@@ -26,43 +33,48 @@ export default function DashboardHome() {
   /* ================= LOAD DASHBOARDS ================= */
 
   useEffect(() => {
+  loadDashboards();
+}, []);
 
-    const savedDashboards =
-      JSON.parse(
-
-        localStorage.getItem(
-          "iris_dashboards"
-        )
-
-      ) || [];
-
-    setDashboards(
-      savedDashboards
-    );
-
-  }, []);
+async function loadDashboards() {
+  const data = await getDashboards();
+  setDashboards(data);
+}
 
 
 
   /* ================= SAVE DASHBOARDS ================= */
 
-  const saveDashboards = (
-    updatedDashboards
-  ) => {
-
-    setDashboards(
-      updatedDashboards
+  const saveDashboards = async (updatedDashboards) => {
+  // Delete removed dashboards
+  for (const dashboard of dashboards) {
+    const stillExists = updatedDashboards.find(
+      (d) => d.dashboardId === dashboard.dashboardId
     );
 
-    localStorage.setItem(
+    if (!stillExists) {
+      await deleteDashboard(dashboard.dashboardId);
+    }
+  }
 
-      "iris_dashboards",
-
-      JSON.stringify(
-        updatedDashboards
-      )
+  // Create / Update dashboards
+  for (const dashboard of updatedDashboards) {
+    const exists = dashboards.find(
+      (d) => d.dashboardId === dashboard.dashboardId
     );
-  };
+
+    if (exists) {
+      await updateDashboard(
+        dashboard.dashboardId,
+        dashboard
+      );
+    } else {
+      await createDashboard(dashboard);
+    }
+  }
+
+  await loadDashboards();
+};
 
   return (
 

@@ -18,9 +18,7 @@ import { nanoid } from "nanoid";
 
 export default function AlertsPage() {
 
-  const [alerts, setAlerts] = useState(
-  alertRegistry.getAll()
-);
+ const [alerts, setAlerts] = useState([]);
 
 const [showModal, setShowModal] =
   useState(false);
@@ -280,7 +278,7 @@ const getDeviceName = (deviceId) => {
           {alerts.map(alert => (
 
             <tr
-              key={alert.id}
+              key={alert.alertId}
               className="
                 border-b
                 border-black/5
@@ -470,7 +468,7 @@ const getDeviceName = (deviceId) => {
     ) {
 
       alertRegistry.remove(
-        alert.id
+        alert.alertId
       );
 
     }
@@ -534,7 +532,7 @@ const getDeviceName = (deviceId) => {
 
     alertRegistry.update(
 
-      alert.id,
+      alert.alertId,
 
       {
         enabled: !alert.enabled,
@@ -633,27 +631,20 @@ const getDeviceName = (deviceId) => {
   if (selectedAlert) {
 
     alertRegistry.update(
-
-      selectedAlert.id,
-
+      selectedAlert.alertId,
       form
-
     );
 
   } else {
 
     alertRegistry.add({
-
-      id: nanoid(),
-
+      alertId: nanoid(),
       ...form,
-
     });
 
   }
 
   setShowModal(false);
-
   setSelectedAlert(null);
 
 }}

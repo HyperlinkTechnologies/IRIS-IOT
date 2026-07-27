@@ -56,7 +56,7 @@ class AlertEngine {
     else {
 
       triggeredAlertStore.resolve(
-        alert.id
+        alert.alertId
       );
 
     }

@@ -103,10 +103,18 @@ export default function AddWidgetModal({
               onClick={() => {
 
                 onAddWidget({
-                  id: Date.now(),
-                  type: widget.type,
-                  title: widget.title,
-                });
+  widgetId: Date.now().toString(),
+  type: widget.type,
+  title: widget.title,
+  layout: {
+    x: 0,
+    y: 0,
+    w: 3,
+    h: 6,
+    minW: 2,
+    minH: 5,
+  },
+});
 
                 onClose();
               }}

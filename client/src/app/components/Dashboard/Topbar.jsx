@@ -2,7 +2,7 @@ import { signOut } from "aws-amplify/auth";
 
 import { Settings, User, Bell, X } from "lucide-react";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import triggeredAlertStore from "../../core/alerts/triggeredAlertStore";
 import deviceRegistry from "../../core/devices/deviceRegistry";
@@ -14,6 +14,8 @@ export default function Topbar({
   setActiveTab,
 }) {
   /* ================= USER ================= */
+
+  const notificationRef = useRef(null);
 
   const [user, setUser] = useState(() => {
 
@@ -46,21 +48,16 @@ export default function Topbar({
 
   const [showNotifications, setShowNotifications] = useState(false);
 
-  // useEffect(() => {
-  //   const unsubscribe = triggeredAlertStore.subscribe(setNotifications);
+  useEffect(() => {
 
-  //   return unsubscribe;
-  // }, []);
-useEffect(() => {
+    const unsubscribe =
+        triggeredAlertStore.subscribe((data) => {
 
-  const unsubscribe = triggeredAlertStore.subscribe((data) => {
+            setNotifications([...data]);
 
+        });
 
-    setNotifications(data);
-
-  });
-
-  return unsubscribe;
+    return unsubscribe;
 
 }, []);
   useEffect(() => {
@@ -137,6 +134,25 @@ useEffect(() => {
     return `${days} day ago`;
   };
 
+  useEffect(() => {
+  function handleClickOutside(event) {
+    if (
+      notificationRef.current &&
+      !notificationRef.current.contains(event.target)
+    ) {
+      setShowNotifications(false);
+    }
+  }
+
+  if (showNotifications) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [showNotifications]);
+
   /* ================= LOGOUT ================= */
 
   const handleLogout = async () => {
@@ -205,7 +221,7 @@ useEffect(() => {
   "
       >
         {/* Notification Bell */}
-
+      <div ref={notificationRef} className="relative">
         <button
           onClick={() => {
             setShowNotifications(!showNotifications);
@@ -255,8 +271,8 @@ useEffect(() => {
           <div
             className="
               absolute
-              right-20
-              top-16
+              right-0
+              top-14
               w-104
               max-h-125
               overflow-y-auto
@@ -474,6 +490,7 @@ useEffect(() => {
             )}
           </div>
         )}
+        </div>
 
         <div className="relative">
           <button

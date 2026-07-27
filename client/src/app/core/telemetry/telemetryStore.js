@@ -92,7 +92,7 @@ triggeredAlerts.forEach(alert => {
 
   triggeredAlertStore.add({
 
-  ruleId: alert.id,
+  ruleId: alert.alertId,
 
   ruleName: alert.name,
 

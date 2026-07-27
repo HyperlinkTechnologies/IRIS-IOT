@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import FleetMap from "../../../FleetMap/FleetMap";
+import telemetryHistory from "../../../../core/telemetry/telemetryHistory";
 
 function readGpsCoordinates(telemetry) {
   const latitude =
@@ -57,7 +58,6 @@ export default function MapWidget({
   widget,
   telemetry,
   telemetryDevices = {},
-  telemetryHistory = {},
 }) {
   const device = useMemo(() => {
     try {
@@ -72,20 +72,40 @@ export default function MapWidget({
     }
   }, [widget.deviceId]);
 
-  const liveCoordinates = readGpsCoordinates(telemetry);
-  const lat = liveCoordinates?.lat ?? widget.latitude;
-  const lng = liveCoordinates?.lng ?? widget.longitude;
+  const liveCoordinates =
+  readGpsCoordinates(telemetry?.telemetry);
+  const coordinates = liveCoordinates;
 
   const mappedDevice = {
-    ...(device || {}),
-    ...(telemetry || {}),
-    name: device?.name || widget.title || "Device",
-    deviceId: device?.deviceId || widget.deviceId || "Not selected",
-    status: telemetry ? "online" : device?.status || "unknown",
-    lat,
-    lng,
-    positionSource: liveCoordinates ? "Live GPS" : "Configured fallback",
-  };
+  ...(device || {}),
+  ...(telemetry?.telemetry || {}),
+
+  name:
+    device?.name ||
+    widget.title ||
+    "Device",
+
+  deviceId:
+    device?.deviceId ||
+    widget.deviceId ||
+    "Not selected",
+
+  status:
+    telemetry?.online
+      ? "online"
+      : "offline",
+
+  lastSeen:
+    telemetry?.lastSeen,
+
+  lat: coordinates?.lat,
+lng: coordinates?.lng,
+
+  positionSource:
+    liveCoordinates
+      ? "Live GPS"
+      : "Configured fallback",
+};
   const isFleetMode = widget.mapMode === "fleet";
   const fleetDevices = isFleetMode
     ? Object.values(telemetryDevices).map((item) => {
@@ -106,7 +126,9 @@ export default function MapWidget({
           ...(savedDevice || {}),
           ...item,
           name: savedDevice?.name || item.deviceId || "Device",
-          status: "online",
+          status: item.online ? "online" : "offline",
+
+lastSeen: item.lastSeen,
           lat: coordinates?.lat,
           lng: coordinates?.lng,
           positionSource: "Live GPS",
@@ -117,51 +139,40 @@ export default function MapWidget({
     ? fleetDevices
     : [mappedDevice];
   const routes = widget.showRouteHistory
-    ? routeDevices.map((item) => ({
-        id: item.deviceId,
-        positions: (telemetryHistory[item.deviceId] || []).map((point) => [
-          point.lat,
-          point.lng,
-        ]),
-      }))
-    : [];
-  const geofenceCenter = {
-    lat: Number(widget.latitude),
-    lng: Number(widget.longitude),
-  };
+  ? routeDevices.map((item) => ({
+      id: item.deviceId,
+      positions: telemetryHistory
+        .get(item.deviceId)
+        .map((point) => {
+          const coordinates = readGpsCoordinates(point);
+
+          return coordinates
+            ? [coordinates.lat, coordinates.lng]
+            : null;
+        })
+        .filter(Boolean),
+    }))
+  : [];
   const geofenceRadius = Math.max(25, Number(widget.geofenceRadius) || 500);
-  const hasGeofenceCenter =
-    Number.isFinite(geofenceCenter.lat) &&
-    Number.isFinite(geofenceCenter.lng);
-  const violatingDevices =
-    widget.geofenceEnabled && hasGeofenceCenter
-      ? fleetDevices.filter(
-          (item) =>
-            Number.isFinite(Number(item.lat)) &&
-            Number.isFinite(Number(item.lng)) &&
-            distanceInMeters(geofenceCenter, {
-              lat: Number(item.lat),
-              lng: Number(item.lng),
-            }) > geofenceRadius
-        )
-      : [];
-  const geofences =
-    widget.geofenceEnabled && hasGeofenceCenter
-      ? [
-          {
-            id: "widget-geofence",
-            center: [geofenceCenter.lat, geofenceCenter.lng],
-            radius: geofenceRadius,
-            violated: violatingDevices.length > 0,
-          },
-        ]
-      : [];
+  
+  
+  
 
   return (
     <div className="relative h-full w-full">
+      
+      
       <FleetMap
         devices={fleetDevices}
-        center={isFleetMode ? undefined : [lat, lng]}
+        center={
+  !isFleetMode &&
+  coordinates
+    ? [
+        coordinates.lat,
+        coordinates.lng,
+      ]
+    : undefined
+}
         zoom={widget.zoom}
         className="h-full w-full"
         emptyMessage="Add valid coordinates in widget settings."
@@ -169,15 +180,7 @@ export default function MapWidget({
         showFilters={isFleetMode}
         autoFit={isFleetMode}
         routes={routes}
-        geofences={geofences}
       />
-
-      {violatingDevices.length > 0 && (
-        <div className="absolute bottom-3 left-3 right-3 z-1000 rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white shadow-lg">
-          Geofence alert: {violatingDevices.length} device
-          {violatingDevices.length === 1 ? "" : "s"} outside the zone
-        </div>
-      )}
     </div>
   );
 }

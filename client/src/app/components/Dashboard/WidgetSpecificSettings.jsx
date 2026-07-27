@@ -45,48 +45,6 @@ export default function WidgetSpecificSettings({
           </select>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block mb-2 font-medium">
-              Latitude
-            </label>
-            <input
-              type="number"
-              step="any"
-              min="-90"
-              max="90"
-              value={formData.latitude}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  latitude: Number(e.target.value),
-                })
-              }
-              className={inputClass}
-            />
-          </div>
-
-          <div>
-            <label className="block mb-2 font-medium">
-              Longitude
-            </label>
-            <input
-              type="number"
-              step="any"
-              min="-180"
-              max="180"
-              value={formData.longitude}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  longitude: Number(e.target.value),
-                })
-              }
-              className={inputClass}
-            />
-          </div>
-        </div>
-
         <div>
           <label className="block mb-2 font-medium">
             Default Zoom ({formData.zoom})

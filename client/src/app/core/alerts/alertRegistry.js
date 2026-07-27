@@ -1,95 +1,84 @@
-const STORAGE_KEY = "iris_alerts";
+import {
+  getAlerts,
+  createAlert,
+  updateAlert,
+  deleteAlert,
+} from "../../services/alert.service";
 
 class AlertRegistry {
-
   constructor() {
-
+    this.alerts = [];
     this.listeners = new Set();
+    this.loaded = false;
+  }
 
+  async load() {
+    try {
+      this.alerts = await getAlerts();
+      this.loaded = true;
+      this.notify();
+    } catch (error) {
+      console.error("Failed to load alerts:", error);
+    }
   }
 
   getAll() {
-
-    return JSON.parse(
-      localStorage.getItem(STORAGE_KEY)
-    ) || [];
-
+    return this.alerts;
   }
 
-  add(alert) {
+  async add(alert) {
+    try {
+      await createAlert(alert);
 
-    const alerts = this.getAll();
+      this.alerts = await getAlerts();
 
-    alerts.push(alert);
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(alerts)
-    );
-
-    this.notify();
-
+      this.notify();
+    } catch (error) {
+      console.error("Failed to create alert:", error);
+    }
   }
 
-  update(id, updates) {
+  async update(alertId, updates) {
+    try {
+      await updateAlert(alertId, updates);
 
-    const alerts = this.getAll().map(alert =>
+      this.alerts = await getAlerts();
 
-      alert.id === id
-
-        ? {
-            ...alert,
-            ...updates,
-          }
-
-        : alert
-
-    );
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(alerts)
-    );
-
-    this.notify();
-
+      this.notify();
+    } catch (error) {
+      console.error("Failed to update alert:", error);
+    }
   }
 
-  remove(id) {
+  async remove(alertId) {
+    try {
+      await deleteAlert(alertId);
 
-    const alerts = this.getAll().filter(
-      alert => alert.id !== id
-    );
+      this.alerts = await getAlerts();
 
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(alerts)
-    );
-
-    this.notify();
-
+      this.notify();
+    } catch (error) {
+      console.error("Failed to delete alert:", error);
+    }
   }
 
   subscribe(listener) {
-
     this.listeners.add(listener);
 
+    if (!this.loaded) {
+      this.load();
+    } else {
+      listener(this.alerts);
+    }
+
     return () => {
-
       this.listeners.delete(listener);
-
     };
-
   }
 
   notify() {
-
-    this.listeners.forEach(listener =>
-      listener(this.getAll())
-    );
-
+    this.listeners.forEach((listener) => listener(this.alerts));
   }
-
 }
 
 export default new AlertRegistry();

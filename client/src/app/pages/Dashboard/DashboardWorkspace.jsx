@@ -47,8 +47,8 @@ export default function DashboardWorkspace({
         (item) => {
 
           if (
-            item.id ===
-            dashboard.id
+            item.dashboardId ===
+            dashboard.dashboardId
           ) {
               /* ================= AUTO POSITION ================= */
 
@@ -67,37 +67,26 @@ export default function DashboardWorkspace({
                 ...item.widgets,
 
                 {
+  widgetId:
+    `${widget.type}_${Date.now()}`,
 
-                  id:
-                    Date.now(),
+  type: widget.type,
 
-                  widgetId:
-                    `${widget.type}_${Date.now()}`,
+  title: widget.title,
 
-                  type:
-                    widget.type,
+  value: 0,
 
-                  title:
-                    widget.title,
+  layout: {
+    x:
+      (widgetCount % widgetsPerRow) * widgetWidth,
 
-                  value: 0,
+    y:
+      Math.floor(widgetCount / widgetsPerRow) * 6,
 
-                  layout: {
-
-                    x:
-                    (widgetCount % widgetsPerRow)
-                    * widgetWidth,
-
-                    y:
-                    Math.floor(
-                        widgetCount / widgetsPerRow
-                    ) * 6,
-
-                    w: 3,
-
-                    h: 6,
-                    },
-                },
+    w: 3,
+    h: 6,
+  },
+},
               ],
             };
           }
@@ -122,22 +111,18 @@ export default function DashboardWorkspace({
         (item) => {
 
           if (
-            item.id ===
-            dashboard.id
+            item.dashboardId ===
+            dashboard.dashboardId
           ) {
 
             return {
 
               ...item,
 
-              widgets:
-                item.widgets.filter(
-
-                  (widget) =>
-
-                    widget.id !==
-                    widgetId
-                ),
+              widgets: item.widgets.filter(
+  (widget) =>
+    widget.widgetId !== widgetId
+),
             };
           }
 
@@ -156,8 +141,8 @@ export default function DashboardWorkspace({
     dashboards.find(
 
       (item) =>
-        item.id ===
-        dashboard.id
+        item.dashboardId ===
+        dashboard.dashboardId
     );
 
   return (
@@ -227,7 +212,7 @@ export default function DashboardWorkspace({
             <select
 
                 value={
-                currentDashboard?.id || ""
+                currentDashboard?.dashboardId || ""
                 }
 
                 onChange={(e) => {
@@ -237,7 +222,7 @@ export default function DashboardWorkspace({
 
                     (item) =>
 
-                        item.id.toString() ===
+                        item.dashboardId.toString() ===
                         e.target.value
                     );
 
@@ -266,8 +251,8 @@ export default function DashboardWorkspace({
                 (item) => (
 
                     <option
-                    key={item.id}
-                    value={item.id}
+                    key={item.dashboardId}
+                    value={item.dashboardId}
                     >
 
                     {item.name}
@@ -336,8 +321,7 @@ export default function DashboardWorkspace({
           currentDashboard?.widgets?.map(
             (widget) => ({
 
-              i:
-                widget.id.toString(),
+              i: widget.widgetId.toString(),
 
               ...(widget.layout || {}),
             })
@@ -353,8 +337,8 @@ export default function DashboardWorkspace({
               (item) => {
 
                 if (
-                  item.id ===
-                  dashboard.id
+                  item.dashboardId ===
+                  dashboard.dashboardId
                 ) {
 
                   return {
@@ -370,7 +354,7 @@ export default function DashboardWorkspace({
                               (layoutItem) =>
 
                                 layoutItem.i ===
-                                widget.id.toString()
+widget.widgetId.toString()
                             );
 
                           return {

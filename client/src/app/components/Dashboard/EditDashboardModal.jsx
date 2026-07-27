@@ -66,7 +66,7 @@ export default function EditDashboardModal({
 
           if (
             item.id ===
-            dashboard.id
+            dashboard.dashboardId
           ) {
 
             return {

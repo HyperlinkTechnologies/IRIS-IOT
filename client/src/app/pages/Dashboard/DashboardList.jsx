@@ -92,7 +92,7 @@ export default function DashboardList({
 
   const handleDeleteDashboard = (id) => {
     const updatedDashboards = dashboards.filter(
-      (dashboard) => dashboard.id !== id
+      (dashboard) => dashboard.dashboardId !== id
     );
 
     saveDashboards(updatedDashboards);
@@ -295,7 +295,7 @@ export default function DashboardList({
           .reverse()
           .map((dashboard) => (
             <div
-              key={dashboard.id}
+              key={dashboard.dashboardId}
               className="
                 flex
                 flex-col
@@ -582,7 +582,7 @@ export default function DashboardList({
                 <button
                   onClick={() =>
                     handleDeleteDashboard(
-                      dashboard.id
+                      dashboard.dashboardId
                     )
                   }
                   className="

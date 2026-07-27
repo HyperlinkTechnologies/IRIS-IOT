@@ -41,20 +41,38 @@ export default function DashboardGrid({
 
   /* ================= SAVE LAYOUT ================= */
 
-  const handleLayoutChange = (
-    currentLayout
-  ) => {
-
-    if (
-      typeof setLayouts ===
-      "function"
-    ) {
-
-      setLayouts(
-        currentLayout
-      );
+  const handleLayoutChange = (currentLayout) => {
+  const updatedDashboards = dashboards.map((dashboard) => {
+    if (dashboard.dashboardId !== dashboardId) {
+      return dashboard;
     }
-  };
+
+    return {
+      ...dashboard,
+      widgets: dashboard.widgets.map((widget) => {
+        const layout = currentLayout.find(
+          (item) => item.i === widget.widgetId.toString()
+        );
+
+        if (!layout) return widget;
+
+        return {
+          ...widget,
+          layout: {
+            x: layout.x,
+            y: layout.y,
+            w: layout.w,
+            h: layout.h,
+            minW: layout.minW,
+            minH: layout.minH,
+          },
+        };
+      }),
+    };
+  });
+
+  saveDashboards(updatedDashboards);
+};
 
   const [
 
@@ -138,12 +156,12 @@ export default function DashboardGrid({
 
           <div
 
-            key={widget.id.toString()}
+            key={widget.widgetId.toString()}
 
             data-grid={{
 
             i:
-              widget.id.toString(),
+              widget.widgetId.toString(),
 
             x:
               widget.layout?.x || 0,
@@ -256,7 +274,7 @@ export default function DashboardGrid({
                     e.stopPropagation();
 
                     onDeleteWidget(
-                      widget.id
+                      widget.widgetId
                     );
                   }}
 

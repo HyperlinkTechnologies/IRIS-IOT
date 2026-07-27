@@ -13,7 +13,7 @@ export default function CreateDashboardModal({ open, onClose, onCreate, devices,
     if (!formData.name) return;
 
     onCreate({
-      id: Date.now(),
+      dashboardId: Date.now().toString(),
       ...formData,
       widgets: [],
     });

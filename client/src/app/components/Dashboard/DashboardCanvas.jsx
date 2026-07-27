@@ -99,7 +99,7 @@ export default function DashboardCanvas({
             }
 
             dashboardId={
-              dashboard.id
+              dashboard.dashboardId
             }
 
             saveDashboards={

@@ -10,9 +10,9 @@ class TriggeredAlertStore {
 
   getAll() {
 
-    return this.alerts;
+    return [...this.alerts];
 
-  }
+}
 
   add(alert) {
 
@@ -46,6 +46,7 @@ class TriggeredAlertStore {
   }
 
   resolve(ruleId) {
+
 
     this.alerts = this.alerts.map(alert =>
 
@@ -113,15 +114,17 @@ clear() {
 
   }
 
-  notify() {
+ notify() {
+
+    const snapshot = [...this.alerts];
 
     this.listeners.forEach(listener =>
 
-      listener(this.alerts)
+        listener(snapshot)
 
     );
 
-  }
+}
 
 }
 
