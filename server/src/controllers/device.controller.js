@@ -29,7 +29,16 @@ export async function addDevice(req, res) {
 
 export async function fetchDevices(req, res) {
   try {
-    const devices = await getDevices();
+    const { userId } = req.query;
+
+    if (!userId) {
+  return res.status(400).json({
+    success: false,
+    message: "userId is required.",
+  });
+}
+
+const devices = await getDevices(userId);
 
     res.json({
       success: true,

@@ -6,6 +6,19 @@ import { getCurrentUser, fetchAuthSession } from "aws-amplify/auth";
 
 import { PanelLeftCloseIcon } from "lucide-react";
 
+import { useUser } from "../../../context/UserContext";
+import { getUser, createUser } from "../../services/user.service";
+
+import { signOut } from "aws-amplify/auth";
+
+import { startSessionTimeout } from "../../core/security/sessionTimeout";
+
+import {
+  createSession,
+  deleteSession,
+  updateSessionActivity,
+} from "../../services/session.service";
+
 /* ================= PAGES ================= */
 
 import DashboardHome from "./DashboardHome";
@@ -24,13 +37,19 @@ import DocumentationPage from "./DocumentationPage";
 
 import AnalyticsPage from "./AnalyticsPage";
 
+import PrivacyPolicyPage from "./Legal/PrivacyPolicyPage";
+import TermsConditionsPage from "./Legal/TermsConditionsPage";
+import LicensesPage from "./Legal/LicensesPage";
+
 /* ================= COMPONENTS ================= */
 
-import Sidebar from "../../components/Dashboard/Sidebar";
+import Sidebar from "../../components/Layout/Sidebar";
 
-import Topbar from "../../components/Dashboard/Topbar";
+import Topbar from "../../components/Layout/Topbar";
 
-import ToastListener from "../../components/Dashboard/ToastListener";
+import ToastListener from "../../components/Alerts/ToastListener";
+
+import { sendLoginAlert } from "../../services/loginAlertService";
 
 export default function DashboardPage() {
   /* ================= STATES ================= */
@@ -42,6 +61,8 @@ export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const navigate = useNavigate();
+
+  const { user, setUser } = useUser();
 
   /* ================= AUTH CHECK ================= */
 
@@ -71,8 +92,105 @@ export default function DashboardPage() {
         };
 
         /* Store User */
+        const userId = user.userId;
 
-        localStorage.setItem("iris_user", JSON.stringify(userData));
+        let profile;
+
+        try {
+          profile = await getUser(userId);
+        } catch (error) {
+          if (error.response?.status === 404) {
+            profile = await createUser({
+              userId,
+              username: userData.username,
+              email: userData.email,
+              image: "",
+              fullName: "",
+              jobTitle: "",
+              phone: "",
+            });
+          } else {
+            throw error;
+          }
+        }
+
+        // Store in React Context
+        setUser(profile);
+        const existingSession = sessionStorage.getItem("iris_session_id");
+
+        if (!existingSession) {
+          const ua = navigator.userAgent;
+
+          let deviceName = "Unknown Device";
+          let browser = "Unknown";
+          let browserVersion = "";
+          let os = "Unknown";
+
+          /* ================= OS ================= */
+
+          if (ua.includes("Windows NT 10.0")) {
+            os = "Windows 10/11";
+            deviceName = "Windows PC";
+          } else if (ua.includes("Windows")) {
+            os = "Windows";
+            deviceName = "Windows PC";
+          } else if (ua.includes("Android")) {
+            os = "Android";
+            deviceName = "Android Device";
+          } else if (ua.includes("iPhone")) {
+            os = "iPhone";
+            deviceName = "iPhone";
+          } else if (ua.includes("iPad")) {
+            os = "iPad";
+            deviceName = "iPad";
+          } else if (ua.includes("Mac")) {
+            os = "macOS";
+            deviceName = "Mac";
+          } else if (ua.includes("Linux")) {
+            os = "Linux";
+            deviceName = "Linux PC";
+          }
+
+          /* ================= Browser ================= */
+
+          if (ua.includes("Edg/")) {
+            browser = "Microsoft Edge";
+            browserVersion = ua.match(/Edg\/([\d.]+)/)?.[1] ?? "";
+          } else if (ua.includes("Chrome/")) {
+            browser = "Google Chrome";
+            browserVersion = ua.match(/Chrome\/([\d.]+)/)?.[1] ?? "";
+          } else if (ua.includes("Firefox/")) {
+            browser = "Mozilla Firefox";
+            browserVersion = ua.match(/Firefox\/([\d.]+)/)?.[1] ?? "";
+          } else if (ua.includes("Safari/") && ua.includes("Version/")) {
+            browser = "Safari";
+            browserVersion = ua.match(/Version\/([\d.]+)/)?.[1] ?? "";
+          }
+
+          const session = await createSession({
+            userId,
+            device: deviceName,
+            browser,
+            browserVersion,
+            os,
+            ipAddress: "",
+          });
+
+          sessionStorage.setItem("iris_session_id", session.sessionId);
+        }
+
+        const isFreshLogin =
+          sessionStorage.getItem("iris_fresh_login") === "true";
+
+        if (isFreshLogin && profile.loginAlerts) {
+          try {
+            await sendLoginAlert(profile);
+          } catch (error) {
+            console.error("Login alert failed:", error);
+          }
+
+          sessionStorage.removeItem("iris_fresh_login");
+        }
       } catch (error) {
         console.error("AUTH ERROR:", error);
 
@@ -87,6 +205,66 @@ export default function DashboardPage() {
     };
 
     checkUser();
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const cleanup = startSessionTimeout(
+      user.sessionTimeout ?? 30,
+
+      async () => {
+        try {
+          const sessionId = sessionStorage.getItem("iris_session_id");
+
+          if (sessionId) {
+            await deleteSession(sessionId);
+
+            sessionStorage.removeItem("iris_session_id");
+          }
+
+          await signOut();
+        } catch (error) {
+          console.error(error);
+        }
+
+        setUser(null);
+
+        window.location.href = "/";
+      },
+    );
+
+    return cleanup;
+  }, [user, setUser]);
+
+  useEffect(() => {
+    const sessionId = sessionStorage.getItem("iris_session_id");
+
+    if (!sessionId) return;
+
+    let lastUpdate = 0;
+
+    const update = async () => {
+      const now = Date.now();
+
+      if (now - lastUpdate < 60000) return;
+
+      lastUpdate = now;
+
+      try {
+        await updateSessionActivity(sessionId);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const events = ["mousemove", "keydown", "click", "scroll", "touchstart"];
+
+    events.forEach((event) => window.addEventListener(event, update));
+
+    return () => {
+      events.forEach((event) => window.removeEventListener(event, update));
+    };
   }, []);
 
   return (
@@ -179,7 +357,7 @@ export default function DashboardPage() {
               setActiveTab={setActiveTab}
             />
 
-            <ToastListener/>
+            <ToastListener />
           </div>
         </div>
 
@@ -213,7 +391,9 @@ export default function DashboardPage() {
 
           {/* Settings */}
 
-          {activeTab === "settings" && <SettingsPage />}
+          {activeTab === "settings" && (
+            <SettingsPage setActiveTab={setActiveTab} />
+          )}
 
           {/* Get Started */}
 
@@ -227,6 +407,16 @@ export default function DashboardPage() {
 
           {/* Analytics */}
           {activeTab === "analytics" && <AnalyticsPage />}
+
+          {activeTab === "privacy-policy" && (
+            <PrivacyPolicyPage setActiveTab={setActiveTab} />
+          )}
+          {activeTab === "terms-and-conditions" && (
+            <TermsConditionsPage setActiveTab={setActiveTab} />
+          )}
+          {activeTab === "licenses" && (
+            <LicensesPage setActiveTab={setActiveTab} />
+          )}
         </section>
       </main>
     </div>

@@ -15,6 +15,8 @@ import Contactpage from "./app/pages/LandingPage/Contactpage";
 
 import DashboardPage from "./app/pages/Dashboard/DashboardPage";
 
+import { UserProvider } from "./context/UserContext";
+
 import { ScrollToTop } from "./app/components/Landing page/ScrollTop";
 
 import { Toaster } from "react-hot-toast";
@@ -59,7 +61,9 @@ function AppContent() {
 export default function App() {
   return (
     <Router>
-      <AppContent />
-    </Router>
+      <UserProvider>
+        <AppContent />
+      </UserProvider>
+</Router>
   );
 }

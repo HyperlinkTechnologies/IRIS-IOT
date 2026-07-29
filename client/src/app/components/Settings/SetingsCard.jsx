@@ -1,0 +1,83 @@
+import { ChevronRight } from "lucide-react";
+
+export default function SettingsCard({ icon, title, desc, onClick }) {
+  return (
+    <div
+      onClick={onClick}
+      className="
+        bg-black/5
+        border
+        border-black/10
+        shadow-md
+        rounded-3xl
+        p-5
+        sm:p-5
+        lg:p-6
+        hover:border-[#ff5700]/30
+        hover:shadow-lg
+        hover:-translate-y-1
+        transition-all
+        duration-300
+        cursor-pointer
+        hover:bg-white
+      "
+    >
+      <div
+        className="
+          flex
+          items-center
+          justify-between
+          mb-2
+        "
+      >
+        <div
+          className="
+            w-14
+            h-14
+            rounded-2xl
+            bg-orange-500/10
+            flex
+            items-center
+            justify-center
+            text-[#ff5700]
+            mb-3
+            border
+            border-orange-500/10
+          "
+        >
+          {icon}
+        </div>
+
+        <ChevronRight
+          size={25}
+          className="
+              text-gray-500
+            "
+        />
+      </div>
+
+      <h3
+        className="
+          text-xl
+          sm:text-xl
+          font-bold
+          mb-2
+          text-[#010c29]
+        "
+      >
+        {title}
+      </h3>
+
+      <p
+        className="
+          text-gray-500
+          text-sm
+          sm:text-sm
+          leading-relaxed
+        "
+      >
+        {desc}
+      </p>
+    </div>
+  );
+}

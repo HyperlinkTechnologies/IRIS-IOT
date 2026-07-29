@@ -14,9 +14,9 @@ import {
 } from "lucide-react";
 
 import WidgetRenderer
-from "./WidgetRender";
+from "../Widgets/WidgetRender";
 
-import WidgetSettingsModal from "./WidgetSettingsModal";
+import WidgetSettingsModal from "../Widgets/WidgetSettingsModal";
 
 /* ================= GRID ================= */
 

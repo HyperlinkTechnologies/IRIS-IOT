@@ -1,18 +1,30 @@
 const API_URL = "http://localhost:4000/api/dashboards";
+import { getCurrentUser } from "aws-amplify/auth";
 
 export async function getDashboards() {
-  const response = await fetch(API_URL);
+  const currentUser = await getCurrentUser();
+
+  const response = await fetch(
+    `${API_URL}?userId=${currentUser.userId}`
+  );
+
   const result = await response.json();
+
   return result.data;
 }
 
 export async function createDashboard(dashboard) {
+  const currentUser = await getCurrentUser();
+
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(dashboard),
+    body: JSON.stringify({
+      ...dashboard,
+      userId: currentUser.userId,
+    }),
   });
 
   return response.json();

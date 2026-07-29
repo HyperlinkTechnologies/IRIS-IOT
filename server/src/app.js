@@ -9,6 +9,9 @@ import deviceRoutes from "./routes/device.route.js"
 import commandRoutes from "./routes/command.routes.js"
 import dashboardRoutes from "./routes/dashboard.route.js"
 import alertRoutes from "./routes/alert.route.js";
+import userRoutes from "./routes/user.route.js"
+import imageRoutes from "./routes/image.route.js";
+import sessionRoutes from "./routes/session.route.js";
 
 const app = express();
 
@@ -23,5 +26,8 @@ app.use("/api/devices", deviceRoutes);
 app.use("/api", commandRoutes);
 app.use("/api/dashboards", dashboardRoutes);
 app.use("/api/alerts", alertRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/images", imageRoutes);
+app.use("/api", sessionRoutes);
 
 export default app;

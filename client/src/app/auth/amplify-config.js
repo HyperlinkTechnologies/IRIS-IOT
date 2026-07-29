@@ -15,6 +15,7 @@ const amplifyConfig = {
             "openid",
             "email",
             "profile",
+            "aws.cognito.signin.user.admin",
           ],
 
           redirectSignIn: [

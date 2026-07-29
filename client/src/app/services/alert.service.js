@@ -1,4 +1,5 @@
 const API_URL = "http://localhost:4000/api/alerts";
+import { getCurrentUser } from "aws-amplify/auth";
 
 async function request(url, options = {}) {
   const response = await fetch(url, {
@@ -18,7 +19,11 @@ async function request(url, options = {}) {
 }
 
 export async function getAlerts() {
-  return request(API_URL);
+  const currentUser = await getCurrentUser();
+
+  return request(
+    `${API_URL}?userId=${currentUser.userId}`
+  );
 }
 
 export async function getAlert(alertId) {
@@ -26,9 +31,14 @@ export async function getAlert(alertId) {
 }
 
 export async function createAlert(alert) {
+  const currentUser = await getCurrentUser();
+
   return request(API_URL, {
     method: "POST",
-    body: JSON.stringify(alert),
+    body: JSON.stringify({
+      ...alert,
+      userId: currentUser.userId,
+    }),
   });
 }
 

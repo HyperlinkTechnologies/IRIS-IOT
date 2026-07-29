@@ -2,10 +2,10 @@ import { Plus, Search } from "lucide-react";
 
 import { useEffect, useState } from "react";
 
-import StatusCard from "../../components/Dashboard/statusCard";
-import DeviceDetailsModal from "../../components/Dashboard/deviceDetailsModal";
-import Modal from "../../components/Dashboard/Modal";
-import DeviceCard from "../../components/Dashboard/DeviceCard";
+import StatusCard from "../../components/Devices/statusCard";
+import DeviceDetailsModal from "../../components/Devices/deviceDetailsModal";
+import Modal from "../../components/Common/Modal";
+import DeviceCard from "../../components/Devices/DeviceCard";
 import telemetryStore from "../../core/telemetry/telemetryStore";
 import deviceRegistry from "../../core/devices/deviceRegistry";
 

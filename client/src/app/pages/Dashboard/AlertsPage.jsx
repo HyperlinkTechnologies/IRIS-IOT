@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from "react";
 
 import alertRegistry from "../../core/alerts/alertRegistry";
-import AlertModal from "../../components/Dashboard/AlertModal";
+import AlertModal from "../../components/Alerts/AlertModal";
 import deviceRegistry from "../../core/devices/deviceRegistry";
 
 import { nanoid } from "nanoid";

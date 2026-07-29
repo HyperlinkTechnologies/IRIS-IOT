@@ -2,9 +2,9 @@ import { FileText, Download, BookOpen } from "lucide-react";
 
 import { useState, useEffect } from "react";
 
-import DocumentationCard from "../../components/Dashboard/DocumentationCard";
+import DocumentationCard from "../../components/Documentation/DocumentationCard";
 import { documentationSections } from "../../core/documentation/documentaionData";
-import DocumentationModal from "../../components/Dashboard/DocumentationModal";
+import DocumentationModal from "../../components/Documentation/DocumentationModal";
 
 export default function DocumentationPage() {
   const [selectedDoc, setSelectedDoc] = useState(null);

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import deviceRegistry from "../../core/devices/deviceRegistry";
 import DashboardCard from "../../components/Dashboard/DashboardCard";
 import telemetryHistory from "../../core/telemetry/telemetryHistory";
-import TelemetryChart from "../../components/Dashboard/TelemetryChart";
+import TelemetryChart from "../../components/Analytics/TelemetryChart";
 
 export default function AnalyticsPage() {
   const [devices, setDevices] = useState(deviceRegistry.getAll());

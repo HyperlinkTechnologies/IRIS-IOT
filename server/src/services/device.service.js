@@ -4,6 +4,7 @@ import {
   GetCommand,
   UpdateCommand,
   DeleteCommand,
+  QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
 
 import dynamoDB from "../config/dynamodb.js";
@@ -82,13 +83,15 @@ export async function deleteDevice(deviceId) {
 }
 
 // Get All Devices
-export async function getDevices() {
-    
-const TABLE_NAME = process.env.DYNAMODB_DEVICES_TABLE;
-
+export async function getDevices(userId) {
   const result = await dynamoDB.send(
-    new ScanCommand({
-      TableName: TABLE_NAME,
+    new QueryCommand({
+      TableName: process.env.DYNAMODB_DEVICES_TABLE,
+      IndexName: "userId-index",
+      KeyConditionExpression: "userId = :userId",
+      ExpressionAttributeValues: {
+        ":userId": userId,
+      },
     })
   );
 

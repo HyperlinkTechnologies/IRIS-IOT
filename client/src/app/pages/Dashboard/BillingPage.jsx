@@ -12,14 +12,14 @@ import {
 import { useEffect, useState } from "react";
 
 import billingStore from "../../core/billing/billingStore";
-import BillingActionCard from "../../components/Dashboard/BillingActionCard";
+import BillingActionCard from "../../components/Billing/BillingActionCard";
 import { plans, billingActions } from "../../core/billing/billingData";
 import {
   UsageModal,
   PlansModal,
   BillingHistoryModal,
   PaymentMethodsModal,
-} from "../../components/Dashboard/billingModals";
+} from "../../components/Billing/billingModals";
 
 export default function BillingPage() {
   const [billing, setBilling] = useState(billingStore.get());

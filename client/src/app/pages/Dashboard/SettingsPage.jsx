@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-
+import { useRef } from "react";
+import toast from "react-hot-toast";
+import { useMemo } from "react";
+import { QRCodeSVG } from "qrcode.react";
 import {
   User,
   Bell,
@@ -11,16 +14,171 @@ import {
   Camera,
   Save,
   ChevronRight,
+  Eye,
+  EyeOff,
+  Check,
 } from "lucide-react";
 
+import { getUser, updateUser } from "../../services/user.service";
+
+import {
+  getCurrentUser,
+  updatePassword,
+  resetPassword,
+  confirmResetPassword,
+  setUpTOTP,
+  verifyTOTPSetup,
+  updateMFAPreference,
+  fetchMFAPreference,
+} from "aws-amplify/auth";
+
+import { useUser } from "../../../context/UserContext";
+import { uploadProfileImage } from "../../services/image.service";
 import organizationStore from "../../core/settings/organizationStore";
 import settingsStore from "../../core/settings/settingsStore";
+import TwoFactorModal from "../../components/Settings/TwoFactorModal";
+import ForgotPasswordModal from "../../components/Settings/ForgotPasswordModal";
+import ProfileModal from "../../components/Settings/ProfileModal";
+import OrganizationModal from "../../components/Settings/OrganizationModal";
+import SecurityModal from "../../components/Settings/SecurityModal";
+import SettingsCard from "../../components/Settings/SetingsCard";
+import AboutModal from "../../components/Settings/AboutModal";
 
-export default function SettingsPage() {
+function calculateProfileCompletion(profile) {
+  const fields = [
+    profile.username,
+    profile.fullName,
+    profile.phone,
+    profile.jobTitle,
+    profile.bio,
+    profile.image,
+  ];
+
+  const completed = fields.filter(
+    (field) => field && field.toString().trim() !== "",
+  ).length;
+
+  return Math.round((completed / fields.length) * 100);
+}
+
+function validateProfile(profile) {
+  if (profile.username.trim().length < 3) {
+    return "Username must contain at least 3 characters.";
+  }
+
+  if (!profile.fullName.trim()) {
+    return "Full name is required.";
+  }
+
+  if (profile.phone && !/^[0-9]{10}$/.test(profile.phone)) {
+    return "Phone number must contain exactly 10 digits.";
+  }
+
+  if (profile.bio.length > 300) {
+    return "Bio cannot exceed 300 characters.";
+  }
+
+  if (
+    profile.companyWebsite &&
+    !/^https?:\/\/.+/i.test(profile.companyWebsite)
+  ) {
+    return "Company website must start with http:// or https://";
+  }
+
+  if (
+    profile.companyEmail &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.companyEmail)
+  ) {
+    return "Invalid company email address.";
+  }
+
+  if (profile.companyPhone && !/^[0-9]{10}$/.test(profile.companyPhone)) {
+    return "Company phone must contain exactly 10 digits.";
+  }
+
+  if (profile.companyDescription && profile.companyDescription.length > 500) {
+    return "Company description cannot exceed 500 characters.";
+  }
+
+  return null;
+}
+
+function hasProfileChanged(current, initial) {
+  return JSON.stringify(current) !== JSON.stringify(initial);
+}
+
+function validatePassword(passwordData) {
+  if (!passwordData.currentPassword.trim()) {
+    return "Current password is required.";
+  }
+
+  if (passwordData.newPassword.length < 8) {
+    return "New password must contain at least 8 characters.";
+  }
+
+  if (!/[A-Z]/.test(passwordData.newPassword)) {
+    return "Password must contain at least one uppercase letter.";
+  }
+
+  if (!/[a-z]/.test(passwordData.newPassword)) {
+    return "Password must contain at least one lowercase letter.";
+  }
+
+  if (!/[0-9]/.test(passwordData.newPassword)) {
+    return "Password must contain at least one number.";
+  }
+
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(passwordData.newPassword)) {
+    return "Password must contain at least one special character.";
+  }
+
+  if (passwordData.newPassword !== passwordData.confirmPassword) {
+    return "Passwords do not match.";
+  }
+
+  return null;
+}
+function validateforgotPassword(forgotpasswordData) {
+  if (!forgotpasswordData.currentPassword.trim()) {
+    return "Current password is required.";
+  }
+
+  if (forgotpasswordData.newPassword.length < 8) {
+    return "New password must contain at least 8 characters.";
+  }
+
+  if (!/[A-Z]/.test(forgotpasswordData.newPassword)) {
+    return "Password must contain at least one uppercase letter.";
+  }
+
+  if (!/[a-z]/.test(forgotpasswordData.newPassword)) {
+    return "Password must contain at least one lowercase letter.";
+  }
+
+  if (!/[0-9]/.test(forgotpasswordData.newPassword)) {
+    return "Password must contain at least one number.";
+  }
+
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(forgotpasswordData.newPassword)) {
+    return "Password must contain at least one special character.";
+  }
+
+  if (forgotpasswordData.newPassword !== forgotpasswordData.confirmPassword) {
+    return "Passwords do not match.";
+  }
+
+  return null;
+}
+
+export default function SettingsPage({
+    setActiveTab,
+}) {
   /* ================= ACTIVE MODAL ================= */
 
   const [activeModal, setActiveModal] = useState(null);
 
+  const { user, setUser } = useUser();
+  console.log(user);
   /* ================= PROFILE DATA ================= */
 
   const [profileData, setProfileData] = useState({
@@ -47,68 +205,475 @@ export default function SettingsPage() {
 
   const [settingsData, setSettingsData] = useState(settingsStore.get());
 
+  const [saving, setSaving] = useState(false);
+
+  const [initialProfile, setInitialProfile] = useState(null);
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const [changingPassword, setChangingPassword] = useState(false);
+
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [showForgotNewPassword, setShowForgotNewPassword] = useState(false);
+
+  const [showForgotConfirmPassword, setShowForgotConfirmPassword] =
+    useState(false);
+
+  const otpInputRef = useRef(null);
+
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+
+  const [forgotPasswordData, setForgotPasswordData] = useState({
+    email: user?.email || "",
+    code: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const [sendingCode, setSendingCode] = useState(false);
+  const [resettingPassword, setResettingPassword] = useState(false);
+  const [codeSent, setCodeSent] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState(false);
+  const [resendTimer, setResendTimer] = useState(60);
+
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(
+    user?.twoFactorEnabled ?? false,
+  );
+
+  const [loginAlerts, setLoginAlerts] = useState(user?.loginAlerts ?? false);
+
+  const [sessionTimeout, setSessionTimeout] = useState(
+  user?.sessionTimeout ?? 30
+);
+
+  const [loginAlertsLoading, setLoginAlertsLoading] = useState(false);
+
+  const [twoFactorLoading, setTwoFactorLoading] = useState(false);
+
+  const [showTwoFactorModal, setShowTwoFactorModal] = useState(false);
+
+  const [totpUri, setTotpUri] = useState("");
+
+  const [totpCode, setTotpCode] = useState("");
+
+  const [totpSetupDetails, setTotpSetupDetails] = useState(null);
+
+  const passwordStrength = (() => {
+    const password = passwordData.newPassword;
+
+    let score = 0;
+
+    if (password.length >= 8) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[a-z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
+
+    return score;
+  })();
+
+  const profileCompletion = useMemo(
+    () => calculateProfileCompletion(profileData),
+    [profileData],
+  );
+
   /* ================= LOAD SAVED PROFILE ================= */
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("iris_user"));
-
-    const savedProfile = JSON.parse(
-      localStorage.getItem("iris_profile") || "{}",
-    );
+    if (!user) return;
 
     setProfileData({
-      username: savedProfile.username || user?.username || "",
+      username: user.username || "",
+      email: user.email || "",
+      fullName: user.fullName || "",
+      jobTitle: user.jobTitle || "",
+      phone: user.phone || "",
+      bio: user.bio || "",
+      image: user.image || "",
 
-      email: user?.email || "",
+      companyName: user.companyName || "",
+      companyWebsite: user.companyWebsite || "",
+      companyEmail: user.companyEmail || "",
+      companyPhone: user.companyPhone || "",
+      companyAddress: user.companyAddress || "",
+      companyDescription: user.companyDescription || "",
+    });
 
-      fullName: savedProfile.fullName || "",
+    setInitialProfile({
+      username: user.username || "",
+      email: user.email || "",
+      fullName: user.fullName || "",
+      jobTitle: user.jobTitle || "",
+      phone: user.phone || "",
+      bio: user.bio || "",
+      image: user.image || "",
 
-      jobTitle: savedProfile.jobTitle || "",
-
-      phone: savedProfile.phone || "",
-
-      bio: savedProfile.bio || "",
-
-      image: savedProfile.image || "",
+      companyName: user.companyName || "",
+      companyWebsite: user.companyWebsite || "",
+      companyEmail: user.companyEmail || "",
+      companyPhone: user.companyPhone || "",
+      companyAddress: user.companyAddress || "",
+      companyDescription: user.companyDescription || "",
     });
 
     setOrganizationData(organizationStore.get());
-
     setSettingsData(settingsStore.get());
-  }, []);
+    setLoginAlerts(user?.loginAlerts ?? false);
+    setSessionTimeout(user?.sessionTimeout ?? 30);
+  }, [user]);
+
+  useEffect(() => {
+    if (!codeSent || resendTimer === 0) return;
+
+    const timer = setInterval(() => {
+      setResendTimer((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [codeSent, resendTimer]);
+
+  useEffect(() => {
+    async function loadMFAStatus() {
+      try {
+        const preference = await fetchMFAPreference();
+
+        if (preference?.preferred === "TOTP") {
+          setTwoFactorEnabled(true);
+        } else {
+          setTwoFactorEnabled(false);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    if (user) {
+      loadMFAStatus();
+    }
+  }, [user]);
+
+  async function handleChangePassword() {
+    const error = validatePassword(passwordData);
+
+    if (error) {
+      toast.error(error);
+      return;
+    }
+
+    setChangingPassword(true);
+
+    try {
+      await updatePassword({
+        oldPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
+
+      toast.success("Password updated successfully.");
+
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (error) {
+      console.error(error);
+
+      toast.error(error.message || "Failed to update password.");
+    } finally {
+      setChangingPassword(false);
+    }
+  }
+
+  async function handleSendResetCode() {
+    if (!forgotPasswordData.email.trim()) {
+      toast.error("Email is required.");
+      return;
+    }
+
+    setSendingCode(true);
+    setTimeout(() => {
+      otpInputRef.current?.focus();
+    }, 100);
+    setResendTimer(60);
+
+    try {
+      await resetPassword({
+        username: forgotPasswordData.email,
+      });
+
+      setCodeSent(true);
+
+      toast.success("Verification code sent.");
+    } catch (error) {
+      console.error(error);
+
+      toast.error(error.message || "Failed to send verification code.");
+    } finally {
+      setSendingCode(false);
+    }
+  }
+
+  async function handleResetPassword() {
+    const error = validateforgotPassword({
+      currentPassword: "dummy",
+      newPassword: forgotPasswordData.newPassword,
+      confirmPassword: forgotPasswordData.confirmPassword,
+    });
+
+    if (error && error !== "Current password is required.") {
+      toast.error(error);
+
+      return;
+    }
+
+    setResettingPassword(true);
+
+    try {
+      await confirmResetPassword({
+        username: forgotPasswordData.email,
+        confirmationCode: forgotPasswordData.code,
+        newPassword: forgotPasswordData.newPassword,
+      });
+
+      toast.success("Password reset successfully.");
+
+      setResetSuccess(true);
+
+      setTimeout(() => {
+        setShowForgotPassword(false);
+
+        setCodeSent(false);
+
+        setResetSuccess(false);
+
+        setForgotPasswordData({
+          email: user?.email || "",
+          code: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+
+        setResendTimer(60);
+
+        setShowForgotNewPassword(false);
+
+        setShowForgotConfirmPassword(false);
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+
+      toast.error(error.message || "Password reset failed.");
+    } finally {
+      setResettingPassword(false);
+    }
+  }
+
+  async function handleToggle2FA() {
+    if (twoFactorEnabled) {
+      setTwoFactorLoading(true);
+
+      try {
+        await updateMFAPreference({
+          totp: "PREFERRED",
+          sms: "DISABLED",
+        });
+
+        await updateUser(user.userId, {
+          twoFactorEnabled: false,
+        });
+
+        setTwoFactorEnabled(false);
+
+        toast.success("Two-Factor Authentication disabled.");
+      } catch (error) {
+        console.error(error);
+
+        toast.error(error.message);
+      } finally {
+        setTwoFactorLoading(false);
+      }
+
+      return;
+    }
+
+    setTwoFactorLoading(true);
+
+    try {
+      const details = await setUpTOTP();
+
+      setTotpSetupDetails(details);
+
+      const uri = details.getSetupUri("IRIS IoT Platform");
+
+      setTotpUri(uri);
+
+      setShowTwoFactorModal(true);
+    } catch (error) {
+      console.error(error);
+
+      toast.error(error.message);
+    } finally {
+      setTwoFactorLoading(false);
+    }
+  }
+
+  async function handleVerifyTOTP() {
+    if (!totpCode.trim()) {
+      toast.error("Enter verification code.");
+
+      return;
+    }
+
+    setTwoFactorLoading(true);
+
+    try {
+      await verifyTOTPSetup({
+        code: totpCode,
+      });
+
+      await updateMFAPreference({
+        totp: "PREFERRED",
+        sms: "DISABLED",
+      });
+
+      await updateUser(user.userId, {
+        twoFactorEnabled: false,
+      });
+
+      setTwoFactorEnabled(true);
+
+      setShowTwoFactorModal(false);
+
+      setTotpCode("");
+
+      toast.success("Two-Factor Authentication enabled.");
+    } catch (error) {
+      console.error(error);
+
+      toast.error(error.message);
+    } finally {
+      setTwoFactorLoading(false);
+    }
+  }
+
+  async function handleToggleLoginAlerts() {
+    setLoginAlertsLoading(true);
+
+    try {
+      const enabled = !loginAlerts;
+
+      await updateUser(user.userId, {
+        loginAlerts: enabled,
+      });
+
+      setLoginAlerts(enabled);
+
+      setUser((prev) => ({
+        ...prev,
+        loginAlerts: enabled,
+      }));
+
+      toast.success(
+        enabled ? "Login Alerts enabled." : "Login Alerts disabled.",
+      );
+    } catch (error) {
+      console.error(error);
+
+      toast.error(error.message || "Failed to update Login Alerts.");
+    } finally {
+      setLoginAlertsLoading(false);
+    }
+  }
+
+  async function handleSessionTimeoutChange(value) {
+  try {
+    const timeout = Number(value);
+
+    setSessionTimeout(timeout);
+
+    await updateUser(user.userId, {
+      sessionTimeout: timeout,
+    });
+
+    setUser((prev) => ({
+      ...prev,
+      sessionTimeout: timeout,
+    }));
+
+    toast.success("Session timeout updated.");
+  } catch (error) {
+    console.error(error);
+
+    toast.error(
+      error.message || "Failed to update session timeout."
+    );
+  }
+}
 
   /* ================= SAVE PROFILE ================= */
 
-  const handleSaveProfile = () => {
-    localStorage.setItem(
-      "iris_profile",
+  const handleSaveProfile = async () => {
+    const validationError = validateProfile(profileData);
 
-      JSON.stringify(profileData),
-    );
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+    setSaving(true);
+    try {
+      const currentUser = await getCurrentUser();
 
-    /* REALTIME UPDATE */
+      await updateUser(currentUser.userId, profileData);
 
-    window.dispatchEvent(new Event("profileUpdated"));
+      setUser({
+        ...user,
+        ...profileData,
+      });
+      setInitialProfile(profileData);
 
-    alert("Profile Updated Successfully");
+      toast.success("Profile updated successfully");
 
-    setActiveModal(null);
+      setActiveModal(null);
+      setSaving(false);
+    } catch (error) {
+      console.error(error);
+
+      toast.error("Failed to update profile");
+      setSaving(false);
+    }
   };
 
   /* ================= IMAGE UPLOAD ================= */
 
-  const handleImageUpload = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
 
     if (!file) return;
 
-    const imageUrl = URL.createObjectURL(file);
+    try {
+      const currentUser = await getCurrentUser();
 
-    setProfileData({
-      ...profileData,
+      const result = await uploadProfileImage(
+        currentUser.userId,
+        file,
+        profileData.image,
+      );
 
-      image: imageUrl,
-    });
+      setProfileData((prev) => ({
+        ...prev,
+        image: result.image,
+      }));
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to upload image");
+    }
   };
 
   return (
@@ -158,13 +723,6 @@ export default function SettingsPage() {
         />
 
         <SettingsCard
-          icon={<Bell />}
-          title="Notifications"
-          desc="Configure email alerts, push notifications and system warnings."
-          onClick={() => setActiveModal("notifications")}
-        />
-
-        <SettingsCard
           icon={<Shield />}
           title="Security"
           desc="Manage passwords, authentication and device access permissions."
@@ -188,685 +746,117 @@ export default function SettingsPage() {
 
       {/* ================= PROFILE MODAL ================= */}
 
-      {activeModal === "profile" && (
-        <SettingsModal
-          title="Profile Settings"
-          onClose={() => setActiveModal(null)}
-        >
-          <div className="space-y-6">
-            {/* ================= PROFILE IMAGE ================= */}
+      <ProfileModal
+        open={activeModal === "profile"}
+        onClose={() => {
+          if (
+            hasProfileChanged(profileData, initialProfile) &&
+            !window.confirm("Discard unsaved changes?")
+          ) {
+            return;
+          }
 
-            <div
-              className="
-                flex
-                flex-col
-                sm:flex-row
-                items-center
-                gap-5
-              "
-            >
-              <div
-                className="
-                  w-28
-                  h-28
-                  rounded-full
-                  overflow-hidden
-                  bg-orange-100
-                  flex
-                  items-center
-                  justify-center
-                "
-              >
-                {profileData.image ? (
-                  <img
-                    src={profileData.image}
-                    alt="Profile"
-                    className="
-                      w-full
-                      h-full
-                      object-cover
-                    "
-                  />
-                ) : (
-                  <Camera size={34} className="text-[#ff5700]" />
-                )}
-              </div>
-
-              <div className="flex-1">
-                <label className="font-semibold">Upload Profile Picture</label>
-
-                <input
-                  type="file"
-                  onChange={handleImageUpload}
-                  className="
-                    mt-2
-                    block
-                    w-full
-                    text-sm
-                    text-gray-700
-                    border-gray-300
-                    rounded
-                    file:cursor-pointer
-                    file:bg-white
-                    file:border
-                    file:rounded-2xl
-                    file:border-gray-300
-                    file:px-3
-                    file:py-1.5
-                    file:text-sm
-                    file:text-gray-900
-                    file:font-medium
-                    hover:file:bg-gray-100
-                  "
-                />
-
-                {/* DELETE IMAGE */}
-
-                {profileData.image && (
-                  <button
-                    onClick={() =>
-                      setProfileData({
-                        ...profileData,
-
-                        image: "",
-                      })
-                    }
-                    className="
-                      mt-4
-                      px-4
-                      py-2
-                      rounded-lg
-                      bg-red-500
-                      text-white
-                      text-sm
-                      hover:bg-red-600
-                      cursor-pointer
-                    "
-                  >
-                    Remove Profile Picture
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* ================= USERNAME ================= */}
-
-            <div>
-              <label className="font-semibold">Update Username</label>
-
-              <input
-                type="text"
-                value={profileData.username}
-                onChange={(e) =>
-                  setProfileData({
-                    ...profileData,
-
-                    username: e.target.value,
-                  })
-                }
-                placeholder="Enter username"
-                className="
-                  mt-2
-                  w-full
-                  border
-                  border-black/10
-                  rounded-xl
-                  px-4
-                  py-3
-                  outline-none
-                  focus:border-[#ff5700]
-                "
-              />
-            </div>
-
-            <div>
-              <label className="font-semibold">Full Name</label>
-
-              <input
-                type="text"
-                value={profileData.fullName}
-                onChange={(e) =>
-                  setProfileData({
-                    ...profileData,
-                    fullName: e.target.value,
-                  })
-                }
-                className="
-                  mt-2
-                  w-full
-                  border
-                  border-black/10
-                  rounded-xl
-                  px-4
-                  py-3
-                  outline-none
-                  focus:border-[#ff5700]
-                "
-              />
-            </div>
-
-            <div>
-              <label className="font-semibold">Job Title</label>
-
-              <input
-                type="text"
-                value={profileData.jobTitle}
-                onChange={(e) =>
-                  setProfileData({
-                    ...profileData,
-                    jobTitle: e.target.value,
-                  })
-                }
-                className="
-                  mt-2
-                  w-full
-                  border
-                  border-black/10
-                  rounded-xl
-                  px-4
-                  py-3
-                  outline-none
-                  focus:border-[#ff5700]
-                "
-              />
-            </div>
-
-            <div>
-              <label className="font-semibold">Phone Number</label>
-
-              <input
-                type="tel"
-                value={profileData.phone}
-                onChange={(e) =>
-                  setProfileData({
-                    ...profileData,
-                    phone: e.target.value,
-                  })
-                }
-                className="
-                  mt-2
-                  w-full
-                  border
-                  border-black/10
-                  rounded-xl
-                  px-4
-                  py-3
-                  outline-none
-                  focus:border-[#ff5700]
-                "
-              />
-            </div>
-
-            {/* ================= SAVE BUTTON ================= */}
-
-            <button
-              onClick={handleSaveProfile}
-              className="
-                w-full
-                sm:w-auto
-                px-6
-                py-3
-                rounded-xl
-                bg-[#ff5700]
-                text-white
-                flex
-                items-center
-                justify-center
-                gap-2
-                hover:opacity-90
-                transition-all
-              "
-            >
-              <Save size={18} />
-              Save Changes
-            </button>
-          </div>
-        </SettingsModal>
-      )}
-
-      {/* ================= NOTIFICATIONS MODAL ================= */}
-
-      {activeModal === "notifications" && (
-        <SettingsModal
-          title="Notification Settings"
-          onClose={() => setActiveModal(null)}
-        >
-          <div className="space-y-5">
-            <ToggleSetting
-              title="Email Notifications"
-              value={settingsData.emailNotifications}
-              onChange={(value) =>
-                setSettingsData({
-                  ...settingsData,
-                  emailNotifications: value,
-                })
-              }
-            />
-
-            <ToggleSetting
-              title="Push Notifications"
-              value={settingsData.pushNotifications}
-              onChange={(value) =>
-                setSettingsData({
-                  ...settingsData,
-                  pushNotifications: value,
-                })
-              }
-            />
-
-            <ToggleSetting
-              title="Critical Alerts"
-              value={settingsData.criticalAlerts}
-              onChange={(value) =>
-                setSettingsData({
-                  ...settingsData,
-                  criticalAlerts: value,
-                })
-              }
-            />
-
-            <ToggleSetting
-              title="Device Offline Alerts"
-              value={settingsData.offlineAlerts}
-              onChange={(value) =>
-                setSettingsData({
-                  ...settingsData,
-                  offlineAlerts: value,
-                })
-              }
-            />
-
-            <button
-              onClick={() => {
-                settingsStore.save(settingsData);
-
-                alert("Notification settings saved.");
-
-                setActiveModal(null);
-              }}
-              className="
-                  px-6
-                  py-3
-                  rounded-xl
-                  bg-[#ff5700]
-                  text-white
-                  hover:opacity-90
-                "
-            >
-              Save Settings
-            </button>
-          </div>
-        </SettingsModal>
-      )}
+          setActiveModal(null);
+        }}
+        profileData={profileData}
+        setProfileData={setProfileData}
+        profileCompletion={profileCompletion}
+        handleImageChange={handleImageChange}
+        handleSaveProfile={handleSaveProfile}
+        saving={saving}
+      />
 
       {/* ================= SECURITY MODAL ================= */}
 
-      {activeModal === "security" && (
-        <SettingsModal
-          title="Security Settings"
-          onClose={() => setActiveModal(null)}
-        >
-          <div
-            className="
-    space-y-6
-    text-gray-600
-  "
-          >
-            <div
-              className="
-      rounded-2xl
-      border
-      border-orange-200
-      bg-orange-50
-      p-5
-    "
-            >
-              <h3
-                className="
-        font-semibold
-        text-[#010c29]
-        mb-2
-      "
-              >
-                Password Management
-              </h3>
+      <SecurityModal
+        open={activeModal === "security"}
+        onClose={() => setActiveModal(null)}
+        passwordData={passwordData}
+        setPasswordData={setPasswordData}
+        handleChangePassword={handleChangePassword}
+        changingPassword={changingPassword}
+        showCurrentPassword={showCurrentPassword}
+        setShowCurrentPassword={setShowCurrentPassword}
+        showNewPassword={showNewPassword}
+        setShowNewPassword={setShowNewPassword}
+        showConfirmPassword={showConfirmPassword}
+        setShowConfirmPassword={setShowConfirmPassword}
+        passwordStrength={passwordStrength}
+        setShowForgotPassword={setShowForgotPassword}
+        twoFactorEnabled={twoFactorEnabled}
+        handleToggle2FA={handleToggle2FA}
+        twoFactorLoading={twoFactorLoading}
+        loginAlerts={loginAlerts}
+        handleToggleLoginAlerts={handleToggleLoginAlerts}
+        loginAlertsLoading={loginAlertsLoading}
 
-              <p
-                className="
-        text-sm
-        leading-relaxed
-      "
-              >
-                IRIS uses <strong>AWS Cognito</strong> for secure
-                authentication. Password changes will be managed directly
-                through AWS Cognito in a future update.
-              </p>
-            </div>
-          </div>
-        </SettingsModal>
-      )}
+        sessionTimeout={sessionTimeout}
+        handleSessionTimeoutChange={handleSessionTimeoutChange}
+      />
+
+      {/* FORGOT PASSWORD MODAL */}
+      <ForgotPasswordModal
+        open={showForgotPassword}
+        onClose={() => {
+          setShowForgotPassword(false);
+          setCodeSent(false);
+        }}
+        forgotPasswordData={forgotPasswordData}
+        setForgotPasswordData={setForgotPasswordData}
+        handleSendResetCode={handleSendResetCode}
+        handleResetPassword={handleResetPassword}
+        sendingCode={sendingCode}
+        resettingPassword={resettingPassword}
+        codeSent={codeSent}
+        resetSuccess={resetSuccess}
+        resendTimer={resendTimer}
+        otpInputRef={otpInputRef}
+        showForgotNewPassword={showForgotNewPassword}
+        setShowForgotNewPassword={setShowForgotNewPassword}
+        showForgotConfirmPassword={showForgotConfirmPassword}
+        setShowForgotConfirmPassword={setShowForgotConfirmPassword}
+        passwordStrength={passwordStrength}
+        user={user}
+      />
+
+      {/* ===================TWO FACTOR MODAL======================= */}
+      <TwoFactorModal
+        open={showTwoFactorModal}
+        onClose={() => setShowTwoFactorModal(false)}
+        totpUri={totpUri}
+        totpCode={totpCode}
+        setTotpCode={setTotpCode}
+        handleVerifyTOTP={handleVerifyTOTP}
+        twoFactorLoading={twoFactorLoading}
+      />
 
       {/* ==============ABOUT MODAL=================== */}
 
-      {activeModal === "about" && (
-        <SettingsModal title="About IRIS" onClose={() => setActiveModal(null)}>
-          <div className="space-y-6">
-            <InfoRow label="Platform" value="IRIS IoT Platform" />
-
-            <InfoRow label="Version" value={__APP_VERSION__} />
-
-            <InfoRow label="Build Date" value={__BUILD_DATE__} />
-
-            <InfoRow
-              label="Application Mode"
-              value={
-                import.meta.env.MODE === "development"
-                  ? "Development"
-                  : "Production"
-              }
-            />
-
-            <InfoRow label="Developed By" value="Hyperlink Technologies" />
-          </div>
-        </SettingsModal>
-      )}
+      <AboutModal
+    open={activeModal === "about"}
+    onClose={() => setActiveModal(null)}
+    setActiveTab={setActiveTab}
+/>
 
       {/* ================= ORGANIZATION MODAL ================= */}
 
-      {activeModal === "organization" && (
-        <SettingsModal
-          title="Organization Settings"
-          onClose={() => setActiveModal(null)}
-        >
-          <div>
-            <label className="font-semibold">Organization Name</label>
+      <OrganizationModal
+        open={activeModal === "organization"}
+        onClose={() => {
+          if (
+            hasProfileChanged(profileData, initialProfile) &&
+            !window.confirm("Discard unsaved changes?")
+          ) {
+            return;
+          }
 
-            <input
-              type="text"
-              value={organizationData.organizationName}
-              onChange={(e) =>
-                setOrganizationData({
-                  ...organizationData,
-
-                  organizationName: e.target.value,
-                })
-              }
-              className="
-      mt-2
-      w-full
-      border
-      border-black/10
-      rounded-xl
-      px-4
-      py-3
-    "
-            />
-          </div>
-
-          <div>
-            <label className="font-semibold">Industry</label>
-
-            <select
-              className="
-      mt-2
-      w-full
-      border
-      border-black/10
-      rounded-xl
-      px-4
-      py-3
-    "
-              value={organizationData.industry}
-              onChange={(e) =>
-                setOrganizationData({
-                  ...organizationData,
-
-                  industry: e.target.value,
-                })
-              }
-            >
-              <option>Manufacturing</option>
-              <option>Energy</option>
-              <option>Agriculture</option>
-              <option>Healthcare</option>
-              <option>Smart Home</option>
-              <option>Education</option>
-              <option>Other</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="font-semibold">Timezone</label>
-
-            <select
-              className="
-                  mt-2
-                  w-full
-                  border
-                  border-black/10
-                  rounded-xl
-                  px-4
-                  py-3
-                "
-              value={organizationData.timezone}
-              onChange={(e) =>
-                setOrganizationData({
-                  ...organizationData,
-
-                  timezone: e.target.value,
-                })
-              }
-            >
-              <option>Asia/Kolkata</option>
-
-              <option>UTC</option>
-
-              <option>America/New_York</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="font-semibold">Country</label>
-
-            <input
-              type="text"
-              value={organizationData.country}
-              onChange={(e) =>
-                setOrganizationData({
-                  ...organizationData,
-
-                  country: e.target.value,
-                })
-              }
-              className="
-      mt-2
-      w-full
-      border
-      border-black/10
-      rounded-xl
-      px-4
-      py-3
-    "
-            />
-          </div>
-
-          <button
-            onClick={() => {
-              organizationStore.save(organizationData);
-
-              alert("Organization updated successfully");
-
-              setActiveModal(null);
-            }}
-            className="
-    mt-6
-    px-6
-    py-3
-    rounded-xl
-    bg-[#ff5700]
-    text-white
-    hover:opacity-90
-  "
-          >
-            Save Organization
-          </button>
-        </SettingsModal>
-      )}
-    </div>
-  );
-}
-
-/* ================= SETTINGS CARD ================= */
-
-function SettingsCard({ icon, title, desc, onClick }) {
-  return (
-    <div
-    onClick={onClick}
-      className="
-        bg-black/5
-        border
-        border-black/10
-        shadow-md
-        rounded-3xl
-        p-5
-        sm:p-5
-        lg:p-6
-        hover:border-[#ff5700]/30
-        hover:shadow-lg
-        hover:-translate-y-1
-        transition-all
-        duration-300
-        cursor-pointer
-        hover:bg-white
-      "
-    >
-      <div
-        className="
-          flex
-          items-center
-          justify-between
-          mb-2
-        "
-      >
-        <div
-          className="
-            w-14
-            h-14
-            rounded-2xl
-            bg-orange-500/10
-            flex
-            items-center
-            justify-center
-            text-[#ff5700]
-            mb-3
-            border
-            border-orange-500/10
-          "
-        >
-          {icon}
-        </div>
-
-          <ChevronRight
-            size={25}
-            className="
-              text-gray-500
-            "
-          />
-
-      </div>
-
-      <h3
-        className="
-          text-xl
-          sm:text-xl
-          font-bold
-          mb-2
-          text-[#010c29]
-        "
-      >
-        {title}
-      </h3>
-
-      <p
-        className="
-          text-gray-500
-          text-sm
-          sm:text-sm
-          leading-relaxed
-        "
-      >
-        {desc}
-      </p>
-    </div>
-  );
-}
-
-/* ================= MODAL ================= */
-
-function SettingsModal({ title, children, onClose }) {
-  return (
-    <div
-      className="
-        fixed
-        inset-0
-        z-50
-        bg-black/40
-        backdrop-blur-sm
-        flex
-        items-center
-        justify-center
-        p-4
-      "
-    >
-      <div
-        className="
-          bg-white
-          w-full
-          max-w-2xl
-          rounded-3xl
-          shadow-2xl
-          max-h-[90vh]
-          overflow-y-auto
-        "
-      >
-        {/* ================= HEADER ================= */}
-
-        <div
-          className="
-            flex
-            items-center
-            justify-between
-            px-6
-            py-5
-            border-b
-          "
-        >
-          <h2
-            className="
-              text-2xl
-              font-bold
-            "
-          >
-            {title}
-          </h2>
-
-          <button
-            onClick={onClose}
-            className="
-              p-2
-              rounded-full
-              hover:bg-gray-100
-              cursor-pointer
-            "
-          >
-            <X size={24} />
-          </button>
-        </div>
-
-        {/* ================= BODY ================= */}
-
-        <div className="p-6">{children}</div>
-      </div>
+          setActiveModal(null);
+        }}
+        profileData={profileData}
+        setProfileData={setProfileData}
+        handleSaveProfile={handleSaveProfile}
+        saving={saving}
+      />
     </div>
   );
 }
@@ -913,41 +903,6 @@ function ToggleSetting({ title, value, onChange }) {
           `}
         />
       </button>
-    </div>
-  );
-}
-
-function InfoRow({ label, value }) {
-  return (
-    <div
-      className="
-        flex
-        justify-between
-        items-center
-        border
-        border-black/10
-        rounded-2xl
-        px-5
-        py-4
-      "
-    >
-      <span
-        className="
-          font-medium
-          text-gray-500
-        "
-      >
-        {label}
-      </span>
-
-      <span
-        className="
-          font-semibold
-          text-[#010c29]
-        "
-      >
-        {value}
-      </span>
     </div>
   );
 }

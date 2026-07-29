@@ -16,14 +16,16 @@ function NavBar() {
       window.location.href = "/Dashboard";
     } catch {
       // not logged in
-      await signInWithRedirect();
+      sessionStorage.setItem("iris_fresh_login", "true");
+
+await signInWithRedirect();
     }
   };
 
   const handleSignup = async () => {
     try {
       await getCurrentUser();
-
+      sessionStorage.setItem("iris_fresh_login", "true");
       window.location.href = "/Dashboard";
     } catch {
       window.location.href =

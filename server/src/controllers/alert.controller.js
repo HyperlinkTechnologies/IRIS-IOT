@@ -24,7 +24,16 @@ export async function addAlert(req, res) {
 
 export async function fetchAlerts(req, res) {
   try {
-    const result = await getAlerts();
+    const { userId } = req.query;
+
+if (!userId) {
+  return res.status(400).json({
+    success: false,
+    message: "userId is required.",
+  });
+}
+
+const result = await getAlerts(userId);
 
     res.json({
       success: true,

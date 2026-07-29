@@ -11,7 +11,7 @@ import DashboardCanvas
 from "../../components/Dashboard/DashboardCanvas";
 
 import AddWidgetModal
-from "../../components/Dashboard/AddWidgetModal";
+from "../../components/Widgets/AddWidgetModal";
 
 export default function DashboardWorkspace({
 

@@ -29,7 +29,16 @@ export async function addDashboard(req, res) {
 
 export async function fetchDashboards(req, res) {
   try {
-    const dashboards = await getDashboards();
+    const { userId } = req.query;
+
+if (!userId) {
+  return res.status(400).json({
+    success: false,
+    message: "userId is required.",
+  });
+}
+
+const dashboards = await getDashboards(userId);
 
     res.json({
       success: true,

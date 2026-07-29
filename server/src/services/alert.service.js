@@ -4,6 +4,7 @@ import {
   GetCommand,
   UpdateCommand,
   DeleteCommand,
+  QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
 
 import dynamoDB from "../config/dynamodb.js";
@@ -25,10 +26,15 @@ export async function createAlert(alert) {
 
 /* ================= GET ALL ================= */
 
-export async function getAlerts() {
+export async function getAlerts(userId) {
   const result = await dynamoDB.send(
-    new ScanCommand({
+    new QueryCommand({
       TableName: TABLE_NAME,
+      IndexName: "userId-index",
+      KeyConditionExpression: "userId = :userId",
+      ExpressionAttributeValues: {
+        ":userId": userId,
+      },
     })
   );
 
