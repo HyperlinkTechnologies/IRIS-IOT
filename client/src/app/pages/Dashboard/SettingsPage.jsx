@@ -34,8 +34,7 @@ import {
 
 import { useUser } from "../../../context/UserContext";
 import { uploadProfileImage } from "../../services/image.service";
-import organizationStore from "../../core/settings/organizationStore";
-import settingsStore from "../../core/settings/settingsStore";
+// import settingsStore from "../../core/settings/settingsStore";
 import TwoFactorModal from "../../components/Settings/TwoFactorModal";
 import ForgotPasswordModal from "../../components/Settings/ForgotPasswordModal";
 import ProfileModal from "../../components/Settings/ProfileModal";
@@ -199,12 +198,6 @@ export default function SettingsPage({
     image: "",
   });
 
-  const [organizationData, setOrganizationData] = useState(
-    organizationStore.get(),
-  );
-
-  const [settingsData, setSettingsData] = useState(settingsStore.get());
-
   const [saving, setSaving] = useState(false);
 
   const [initialProfile, setInitialProfile] = useState(null);
@@ -323,8 +316,8 @@ export default function SettingsPage({
       companyDescription: user.companyDescription || "",
     });
 
-    setOrganizationData(organizationStore.get());
-    setSettingsData(settingsStore.get());
+    // setOrganizationData(organizationStore.get());
+    // setSettingsData(settingsStore.get());
     setLoginAlerts(user?.loginAlerts ?? false);
     setSessionTimeout(user?.sessionTimeout ?? 30);
   }, [user]);

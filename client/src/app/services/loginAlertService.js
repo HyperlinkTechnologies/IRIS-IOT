@@ -1,15 +1,17 @@
-import emailjs from "@emailjs/browser";
+const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
-export async function sendLoginAlert(user) {
-  return emailjs.send(
-    import.meta.env.VITE_EMAILJS_SERVICE_ID,
-    import.meta.env.VITE_EMAILJS_LOGIN_ALERT_TEMPLATE_ID,
-    {
-      to_name: user.fullName || user.username,
-      to_email: user.email,
-      login_time: new Date().toLocaleString(),
-      device: navigator.userAgent,
+export async function sendLoginAlert(data) {
+  const response = await fetch(`${API}/email/login-alert`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-    import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-  );
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to send login alert");
+  }
+
+  return response.json();
 }

@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { User, Phone, Mail, MapPin,  Wrench, Calendar, Clock, MessageSquare, Headset, File, Building, Pen } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
-import emailjs from '@emailjs/browser';
 
+const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 export default function Contactpage() {
 
@@ -32,19 +32,24 @@ const navigate = useNavigate();
   }
 
   try {
-    await emailjs.send(
-      'service_dqu250w',       
-      'template_vym64ks',      
-      {
-        from_name: formData.fullName,
-        mobile: formData.mobile,
-        email: formData.email,
-        CompanyName: formData.CompanyName,
-        productRequired: formData.productRequired,
-        message: formData.message || 'No message',
-      },
-      'GVVUjJ1llIYUGrqQH'        
-    );
+    const response = await fetch(`${API}/email/contact`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    fullName: formData.fullName,
+    mobile: formData.mobile,
+    email: formData.email,
+    companyName: formData.CompanyName,
+    productRequired: formData.productRequired,
+    message: formData.message || "No message",
+  }),
+});
+
+if (!response.ok) {
+  throw new Error("Failed to send contact request");
+}
 
     toast.success('Request submitted successfully! Our team will contact you soon.');
     setFormData({
@@ -57,7 +62,6 @@ const navigate = useNavigate();
     });
 
   } catch (error) {
-    console.error('EmailJS error:', error);
     toast.error('Failed to send. Please try again.');
   }
 };

@@ -2,6 +2,7 @@ import "dotenv/config";
 import path from "path";
 import { fileURLToPath } from "url";
 import { getIO } from "./socket.js";
+import { addTelemetry } from "../services/telemetryBuffer.js";
 
 import { io, iot, mqtt } from "aws-iot-device-sdk-v2";
 
@@ -65,6 +66,7 @@ console.log("📥 Topic:", topic);
 console.log("📦 Payload:", telemetry);
 console.log("================================");
 
+addTelemetry(telemetry);
 getIO().emit("telemetry", telemetry);
       }
     );

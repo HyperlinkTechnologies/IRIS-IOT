@@ -118,13 +118,14 @@ export default function DashboardPage() {
         setUser(profile);
         const existingSession = sessionStorage.getItem("iris_session_id");
 
-        if (!existingSession) {
-          const ua = navigator.userAgent;
+const ua = navigator.userAgent;
 
-          let deviceName = "Unknown Device";
-          let browser = "Unknown";
-          let browserVersion = "";
-          let os = "Unknown";
+let deviceName = "Unknown Device";
+let browser = "Unknown";
+let browserVersion = "";
+let os = "Unknown";
+
+if (!existingSession) {
 
           /* ================= OS ================= */
 
@@ -184,7 +185,18 @@ export default function DashboardPage() {
 
         if (isFreshLogin && profile.loginAlerts) {
           try {
-            await sendLoginAlert(profile);
+            await sendLoginAlert({
+  email: profile.email,
+  name:
+  profile.fullName ||
+  profile.username ||
+  profile.email.split("@")[0],
+  loginTime: new Date().toLocaleString(),
+  device: deviceName,
+  browser,
+  browserVersion,
+  os,
+});
           } catch (error) {
             console.error("Login alert failed:", error);
           }

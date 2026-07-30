@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 
 import deviceRegistry from "../../core/devices/deviceRegistry";
 import DashboardCard from "../../components/Dashboard/DashboardCard";
-import telemetryHistory from "../../core/telemetry/telemetryHistory";
+import { getTelemetryHistory } from "../../services/history.service";
 import TelemetryChart from "../../components/Analytics/TelemetryChart";
+import { exportTelemetry } from "../../services/history.service";
+import { DownloadIcon } from "lucide-react";
 
 export default function AnalyticsPage() {
   const [devices, setDevices] = useState(deviceRegistry.getAll());
@@ -33,52 +35,52 @@ export default function AnalyticsPage() {
   }, []);
 
   useEffect(() => {
-    if (!selectedDevice || !telemetryKey) {
-      setChartData([]);
+    async function loadHistory() {
+      if (!selectedDevice || !telemetryKey) {
+        setChartData([]);
+        return;
+      }
 
-      return;
+      try {
+        const history = await getTelemetryHistory(selectedDevice, timeRange);
+
+        const filtered = history
+          .filter((item) => item[telemetryKey] !== undefined)
+          .map((item) => ({
+            time: item.timestamp,
+            value: Number(item[telemetryKey]),
+          }));
+
+        setChartData(filtered);
+        if (!filtered.length) {
+          setStats({
+            latest: "--",
+            min: "--",
+            max: "--",
+            average: "--",
+          });
+          return;
+        }
+
+        if (filtered.length) {
+          const values = filtered.map((item) => item.value);
+
+          setStats({
+            latest: values.at(-1),
+            min: Math.min(...values),
+            max: Math.max(...values),
+            average: (
+              values.reduce((a, b) => a + b, 0) / values.length
+            ).toFixed(2),
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
 
-    const interval = setInterval(() => {
-      const series = telemetryHistory.getSeries(selectedDevice, telemetryKey,timeRange);
-
-      const formatted = series.map((item) => ({
-        time: new Date(item.timestamp).toLocaleTimeString(),
-
-        value: item.value,
-      }));
-
-      setChartData(formatted);
-
-      if (formatted.length > 0) {
-        const values = formatted.map((item) => Number(item.value));
-
-        setStats({
-          latest: values[values.length - 1],
-
-          min: Math.min(...values),
-
-          max: Math.max(...values),
-
-          average: (values.reduce((a, b) => a + b, 0) / values.length).toFixed(
-            2,
-          ),
-        });
-      } else {
-        setStats({
-          latest: "--",
-
-          min: "--",
-
-          max: "--",
-
-          average: "--",
-        });
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [selectedDevice, telemetryKey,timeRange]);
+    loadHistory();
+  }, [selectedDevice, telemetryKey, timeRange]);
 
   return (
     <div className="w-full">
@@ -218,6 +220,9 @@ export default function AnalyticsPage() {
               <option value="1h">Last Hour</option>
 
               <option value="24h">Last 24 Hours</option>
+
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
             </select>
           </div>
         </div>
@@ -233,24 +238,34 @@ export default function AnalyticsPage() {
     mb-8
   "
       >
-        <div className="mb-4">
-          <h3
-            className="
+        <div className="flex justify-between">
+          <div className="mb-4">
+            <h3
+              className="
         text-xl
         font-bold
       "
-          >
-            Historical Telemetry
-          </h3>
+            >
+              Historical Telemetry
+            </h3>
 
-          <p
-            className="
+            <p
+              className="
         text-gray-500
         mt-1
       "
-          >
-            Historical visualization of the selected telemetry.
-          </p>
+            >
+              Historical visualization of the selected telemetry.
+            </p>
+          </div>
+          <div className="">
+            <button
+              onClick={() => exportTelemetry(selectedDevice, timeRange)}
+              className="px-4  py-3 bg-orange-500 text-white rounded-xl hover:text-orange-500 hover:bg-white hover:border-orange-400 border-2 transition-all cursor-pointer flex gap-2.5" 
+            >
+              <DownloadIcon/> Export CSV
+            </button>
+          </div>
         </div>
 
         <div
