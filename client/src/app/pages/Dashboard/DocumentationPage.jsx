@@ -5,192 +5,69 @@ import { useState, useEffect } from "react";
 import DocumentationCard from "../../components/Documentation/DocumentationCard";
 import { documentationSections } from "../../core/documentation/documentaionData";
 import DocumentationModal from "../../components/Documentation/DocumentationModal";
+import { generateDocumentationPdf } from "../../../utils/generateDocumentationPdf";
 
 export default function DocumentationPage() {
   const [selectedDoc, setSelectedDoc] = useState(null);
 
+  const handleDownloadManual = () => {
+  generateDocumentationPdf();
+};
+
   return (
     <div className="w-full">
-      {/* ================= HEADER ================= */}
-
-      <div className="mb-8">
-        <h2
-          className="
-            text-2xl
-            sm:text-3xl
-            font-bold
-            text-[#010c29]
-          "
-        >
-          Documentation Library
-        </h2>
-
-        <p
-          className="
-            text-gray-400
-            mt-2
-            text-sm
-            sm:text-base
-          "
-        >
-          Browse platform guides, developer references and integration manuals.
-        </p>
-      </div>
 
       {/* ================= MAIN DOCUMENTATION CARD ================= */}
 
-      <div
-        className="
-          bg-black/5
+      <div className="mb-8">
+  <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-2xl border border-orange-200 bg-linear-to-r from-orange-50 to-white p-6">
+    <div>
+      <h2 className="text-xl font-semibold text-gray-900">
+    Welcome to the IRIS IoT Platform Documentation
+  </h2>
 
-          border
-          border-black/10
+      <p className="mt-2 max-w-3xl text-gray-600">
+         This documentation provides everything you need to deploy, configure,
+    and operate the IRIS IoT Platform. Browse the guides below to learn
+    about device setup, dashboards, analytics, alerts, MQTT communication,
+    firmware development, and platform administration.
+      </p>
+    </div>
 
-          shadow-md
-
-          rounded-3xl
-
-          p-5
-          sm:p-6
-          lg:p-8
-
-          hover:shadow-lg
-
-          transition-all
-          duration-300
-        "
+    <div className="flex flex-wrap gap-3">
+      <button
+        onClick={handleDownloadManual}
+        className="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 cursor-pointer"
       >
-        <div
-          className="
-            flex
-            flex-col
-            lg:flex-row
+        <Download size={18} />
+        Download User Manual
+      </button>
+    </div>
+  </div>
+</div>
 
-            lg:items-center
-            lg:justify-between
+<div className="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 lg:grid-cols-3">
+  <div className="rounded-xl border bg-white p-5">
+    <div className="text-2xl font-bold">10</div>
+    <div className="text-sm text-gray-500">
+      Documentation Guides
+    </div>
+  </div>
 
-            gap-6
-          "
-        >
-          {/* ================= LEFT CONTENT ================= */}
+  <div className="rounded-xl border bg-white p-5">
+    <div className="text-2xl font-bold">30+</div>
+    <div className="text-sm text-gray-500">
+      Topics Covered
+    </div>
+  </div>
 
-          <div
-            className="
-              flex
-              flex-col
-              sm:flex-row
-
-              items-start
-
-              gap-5
-            "
-          >
-            <div className="flex items-center gap-3">
-              {/* Icon */}
-              <div
-                className="
-                w-16
-                h-16
-
-                rounded-2xl
-
-                bg-orange-500/10
-
-                flex
-                items-center
-                justify-center
-
-                text-[#ff5700]
-
-                shrink-0
-
-                border
-                border-orange-500/10
-              "
-              >
-                <BookOpen size={28} />
-              </div>
-
-              {/* Text */}
-              <div>
-                <h3
-                  className="
-                  text-xl
-                  sm:text-2xl
-
-                  font-bold
-
-                  text-[#010c29]
-                "
-                >
-                  IRIS Documentation
-                </h3>
-
-                <p
-                  className="
-                  text-gray-400
-
-                  text-s
-                  sm:text-sm
-
-                  leading-relaxed
-
-                  max-w-xl
-                "
-                >
-                  Download the complete technical documentation, installation
-                  guide, API reference and setup manual for the IRIS Industrial
-                  IoT Platform.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* ================= DOWNLOAD BUTTON ================= */}
-
-          <a
-            href="/docs/IRIS_User_Manual.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="
-              w-full
-              sm:w-auto
-
-              flex
-              items-center
-              justify-center
-              gap-3
-
-              px-6
-              sm:px-8
-
-              py-3
-              sm:py-4
-
-              rounded-2xl
-
-              bg-linear-to-r
-              from-[#d84800]
-              to-[#ff5700]
-
-              hover:opacity-90
-              hover:scale-[1.02]
-
-              transition-all
-              duration-300
-
-              font-medium
-
-              text-white
-
-              shadow-lg
-  "
-          >
-            <Download size={20} />
-            Download PDF
-          </a>
-        </div>
-      </div>
+  <div className="rounded-xl border bg-white p-5">
+    <div className="text-2xl font-bold">{`v${__APP_VERSION__}`}</div>
+    <div className="text-sm text-gray-500">
+      Current Version
+    </div>
+  </div>
+</div>
 
       {/* ================= DOCUMENTATION LIBRARY ================= */}
 
