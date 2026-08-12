@@ -17,7 +17,7 @@ import {
 } from "../../services/dashboard.service";
 
 import { useBilling } from "../../../context/BillingContext";
-import SubscriptionLimitDialog from "../../components/Common/SubscriptionLimitDialog";
+import SubscriptionLimitDialog from "../../components/Common/subscriptionLimitDialog";
 
 
 export default function DashboardHome() {
