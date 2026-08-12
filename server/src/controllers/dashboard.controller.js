@@ -8,9 +8,12 @@ import {
 
 export async function addDashboard(req, res) {
   try {
-    const dashboard = req.body;
+    const dashboard = {
+  ...req.body,
+  userId: req.user.sub,
+};
 
-    await createDashboard(dashboard);
+await createDashboard(dashboard);
 
     res.status(201).json({
       success: true,
@@ -18,25 +21,20 @@ export async function addDashboard(req, res) {
       data: dashboard,
     });
   } catch (error) {
-    console.error(error);
+  console.error(error);
 
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
+  res.status(error.statusCode || 500).json({
+    success: false,
+    message: error.message,
+    code: error.code,
+    details: error.details,
+  });
+}
 }
 
 export async function fetchDashboards(req, res) {
   try {
-    const { userId } = req.query;
-
-if (!userId) {
-  return res.status(400).json({
-    success: false,
-    message: "userId is required.",
-  });
-}
+    const userId = req.user.sub;
 
 const dashboards = await getDashboards(userId);
 

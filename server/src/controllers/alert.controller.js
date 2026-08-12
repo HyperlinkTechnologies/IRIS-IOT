@@ -8,7 +8,10 @@ import {
 
 export async function addAlert(req, res) {
   try {
-    const result = await createAlert(req.body);
+    const result = await createAlert({
+  ...req.body,
+  userId: req.user.sub,
+});
 
     res.status(201).json({
       success: true,
@@ -24,16 +27,7 @@ export async function addAlert(req, res) {
 
 export async function fetchAlerts(req, res) {
   try {
-    const { userId } = req.query;
-
-if (!userId) {
-  return res.status(400).json({
-    success: false,
-    message: "userId is required.",
-  });
-}
-
-const result = await getAlerts(userId);
+    const result = await getAlerts(req.user.sub);
 
     res.json({
       success: true,

@@ -1,4 +1,4 @@
-import commandService from "../core/commands/commandService";
+import commandService from "../services/commandService";
 
 export default function useCommand(widget) {
 

@@ -1,13 +1,8 @@
 import request from "./api";
-import { getCurrentUser } from "aws-amplify/auth";
 
 // Get All Devices
 export async function getDevices() {
-  const currentUser = await getCurrentUser();
-
-  const response = await request(
-    `/devices?userId=${currentUser.userId}`
-  );
+  const response = await request("/devices");
 
   return response.data.map((device) => ({
     id: device.deviceId,
@@ -26,14 +21,9 @@ export async function getDevices() {
 
 // Create Device
 export async function createDevice(device) {
-  const currentUser = await getCurrentUser();
-
   const response = await request("/devices", {
     method: "POST",
-    body: JSON.stringify({
-      ...device,
-      userId: currentUser.userId,
-    }),
+    body: JSON.stringify(device),
   });
 
   return response.data;

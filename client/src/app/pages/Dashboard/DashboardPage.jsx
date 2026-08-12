@@ -10,7 +10,7 @@ import { useUser } from "../../../context/UserContext";
 import { getUser, createUser } from "../../services/user.service";
 
 import { signOut } from "aws-amplify/auth";
-
+import { BillingProvider } from "../../../context/BillingContext";
 import { startSessionTimeout } from "../../core/security/sessionTimeout";
 
 import {
@@ -298,7 +298,7 @@ if (!existingSession) {
       />
 
       {/* ================= MAIN ================= */}
-
+      <BillingProvider>
       <main
         className={`
           flex-1
@@ -431,6 +431,7 @@ if (!existingSession) {
           )}
         </section>
       </main>
+      </BillingProvider>
     </div>
   );
 }

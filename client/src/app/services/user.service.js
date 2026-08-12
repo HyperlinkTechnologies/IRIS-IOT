@@ -1,23 +1,27 @@
-import axios from "axios";
+import request from "./api";
 
-const API_URL = "http://localhost:4000/api/users";
+const API_URL = "/users";
 
-export async function getUser(userId) {
-  const response = await axios.get(`${API_URL}/${userId}`);
-  return response.data;
+export async function getUser() {
+  return request(API_URL);
 }
 
 export async function createUser(user) {
-  const response = await axios.post(API_URL, user);
-  return response.data;
+  return request(API_URL, {
+    method: "POST",
+    body: JSON.stringify(user),
+  });
 }
 
-export async function updateUser(userId, data) {
-  const response = await axios.put(`${API_URL}/${userId}`, data);
-  return response.data;
+export async function updateUser(data) {
+  return request(API_URL, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
 }
 
-export async function deleteUser(userId) {
-  const response = await axios.delete(`${API_URL}/${userId}`);
-  return response.data;
+export async function deleteUser() {
+  return request(API_URL, {
+    method: "DELETE",
+  });
 }

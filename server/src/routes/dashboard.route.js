@@ -1,5 +1,5 @@
 import express from "express";
-
+import { authenticate } from "../middleware/auth.middleware.js";
 import {
   addDashboard,
   fetchDashboards,
@@ -10,14 +10,14 @@ import {
 
 const router = express.Router();
 
-router.post("/", addDashboard);
+router.post("/", authenticate, addDashboard);
 
-router.get("/", fetchDashboards);
+router.get("/", authenticate, fetchDashboards);
 
-router.get("/:dashboardId", fetchDashboardById);
+router.get("/:dashboardId", authenticate, fetchDashboardById);
 
-router.put("/:dashboardId", editDashboard);
+router.put("/:dashboardId", authenticate, editDashboard);
 
-router.delete("/:dashboardId", removeDashboard);
+router.delete("/:dashboardId", authenticate, removeDashboard);
 
 export default router;

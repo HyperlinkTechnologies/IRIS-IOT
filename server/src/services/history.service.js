@@ -1,71 +1,112 @@
-import { ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
-import { s3 } from "../config/s3.js";
+import * as historyRepository from "../repositories/history.repository.js";
 
-const BUCKET = process.env.AWS_S3_BUCKET;
-
-async function streamToString(stream) {
-  return await new Promise((resolve, reject) => {
-    const chunks = [];
-
-    stream.on("data", (chunk) => chunks.push(chunk));
-    stream.on("error", reject);
-    stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
-  });
-}
-
-export async function getTelemetryHistory(deviceId, range = "30m") {
-  const prefix = `${deviceId}/`;
-
-  const list = await s3.send(
-    new ListObjectsV2Command({
-      Bucket: BUCKET,
-      Prefix: prefix,
-    })
-  );
-
-  if (!list.Contents?.length) {
-    return [];
-  }
-
-  const history = [];
-
-  for (const file of list.Contents) {
-    const object = await s3.send(
-      new GetObjectCommand({
-        Bucket: BUCKET,
-        Key: file.Key,
-      })
-    );
-
-    const json = await streamToString(object.Body);
-
-    const records = JSON.parse(json);
-
-if (Array.isArray(records)) {
-  history.push(...records);
-}
-  }
-
-  history.sort(
-    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-  );
+export async function getTelemetryHistory(
+  deviceId,
+  range = "30m"
+) {
+  const history =
+    await historyRepository.getHistory(deviceId);
 
   const now = Date.now();
 
 const limits = {
-    "5m": 5 * 60 * 1000,
-    "30m": 30 * 60 * 1000,
-    "1h": 60 * 60 * 1000,
-    "24h": 24 * 60 * 60 * 1000,
-    "7d": 7 * 24 * 60 * 60 * 1000,
-    "30d": 30 * 24 * 60 * 60 * 1000,
+  "5m": 5 * 60 * 1000,
+  "30m": 30 * 60 * 1000,
+  "1h": 60 * 60 * 1000,
+  "24h": 24 * 60 * 60 * 1000,
+  "7d": 7 * 24 * 60 * 60 * 1000,
+  "30d": 30 * 24 * 60 * 60 * 1000,
 };
 
-const duration = limits[range] || limits["30m"];
+const duration = limits[range];
 
-return history.filter(item =>
-    now - new Date(item.timestamp).getTime() <= duration
+if (!duration) {
+  return [];
+}
+
+const startTime = now - duration;
+
+const filteredHistory = history.filter((item) => {
+  const timestamp = new Date(item.timestamp).getTime();
+
+  return timestamp >= startTime && timestamp <= now;
+});
+
+if (range !== "7d" && range !== "30d") {
+  return filteredHistory;
+}
+
+const bucketSize =
+  range === "7d"
+    ? 60 * 60 * 1000
+    : 24 * 60 * 60 * 1000;
+
+const buckets = new Map();
+
+for (const record of filteredHistory) {
+  const timestamp = new Date(record.timestamp).getTime();
+
+  const bucketStart =
+    Math.floor(timestamp / bucketSize) * bucketSize;
+
+  if (!buckets.has(bucketStart)) {
+    buckets.set(bucketStart, []);
+  }
+
+  buckets.get(bucketStart).push(record);
+}
+
+const aggregated = [];
+
+for (const [bucketStart, records] of buckets) {
+  const result = {
+    timestamp: new Date(bucketStart).toISOString(),
+    deviceId: records[0]?.deviceId,
+  };
+
+  const numericKeys = new Set();
+
+  for (const record of records) {
+    for (const [key, value] of Object.entries(record)) {
+      if (
+        key !== "timestamp" &&
+        key !== "deviceId" &&
+        key !== "rssi" &&
+        key !== "uptime" &&
+        typeof value === "number" &&
+        Number.isFinite(value)
+      ) {
+        numericKeys.add(key);
+      }
+    }
+  }
+
+  for (const key of numericKeys) {
+    const values = records
+      .map((record) => record[key])
+      .filter(
+        (value) =>
+          typeof value === "number" &&
+          Number.isFinite(value)
+      );
+
+    if (values.length) {
+      result[key] =
+        values.reduce(
+          (sum, value) => sum + value,
+          0
+        ) / values.length;
+    }
+  }
+
+  aggregated.push(result);
+}
+
+aggregated.sort(
+  (a, b) =>
+    new Date(a.timestamp) -
+    new Date(b.timestamp)
 );
 
-  return history;
+return aggregated;
 }

@@ -15,19 +15,24 @@ import { TelemetryProvider } from "./context/TelemetryContext.jsx";
 import amplifyConfig from "./app/auth/amplify-config.js";
 
 import { Toaster } from "react-hot-toast";
+import { SubscriptionWarningProvider } from "./context/SubscriptionWarningContext.jsx";
+import { AnalyticsProvider } from "./context/AnalyticsContext.jsx";
 
-
-console.log(import.meta.env.VITE_COGNITO_DOMAIN);
-console.log(amplifyConfig);
 Amplify.configure(amplifyConfig);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <TelemetryProvider>
-    <App />
-    <Toaster
-  position="top-right"
-  reverseOrder={false}
-  gutter={8}
-/>
-  </TelemetryProvider>,
+  
+  <SubscriptionWarningProvider>
+    <AnalyticsProvider>
+      <TelemetryProvider>
+      <App />
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        gutter={8}
+      />
+    </TelemetryProvider>
+    </AnalyticsProvider>
+  </SubscriptionWarningProvider>
+  
 );

@@ -1,5 +1,5 @@
 import express from "express";
-
+import { authenticate } from "../middleware/auth.middleware.js";
 import {
   createProfile,
   getProfile,
@@ -9,16 +9,12 @@ import {
 
 const router = express.Router();
 
-// Create Profile
-router.post("/", createProfile);
+router.post("/", authenticate, createProfile);
 
-// Get Profile
-router.get("/:userId", getProfile);
+router.get("/", authenticate, getProfile);
 
-// Update Profile
-router.put("/:userId", updateProfile);
+router.put("/", authenticate, updateProfile);
 
-// Delete Profile
-router.delete("/:userId", deleteProfile);
+router.delete("/", authenticate, deleteProfile);
 
 export default router;

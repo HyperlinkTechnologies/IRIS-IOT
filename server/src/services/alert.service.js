@@ -1,108 +1,21 @@
-import {
-  PutCommand,
-  ScanCommand,
-  GetCommand,
-  UpdateCommand,
-  DeleteCommand,
-  QueryCommand,
-} from "@aws-sdk/lib-dynamodb";
-
-import dynamoDB from "../config/dynamodb.js";
-console.log("Alert Table:", process.env.DYNAMODB_ALERT_TABLE);
-const TABLE_NAME = process.env.DYNAMODB_ALERT_TABLE;
-
-/* ================= CREATE ================= */
+import * as alertRepository from "../repositories/alert.repository.js";
 
 export async function createAlert(alert) {
-  await dynamoDB.send(
-    new PutCommand({
-      TableName: TABLE_NAME,
-      Item: alert,
-    })
-  );
-
-  return alert;
+  return alertRepository.createAlert(alert);
 }
-
-/* ================= GET ALL ================= */
 
 export async function getAlerts(userId) {
-  const result = await dynamoDB.send(
-    new QueryCommand({
-      TableName: TABLE_NAME,
-      IndexName: "userId-index",
-      KeyConditionExpression: "userId = :userId",
-      ExpressionAttributeValues: {
-        ":userId": userId,
-      },
-    })
-  );
-
-  return result.Items || [];
+  return alertRepository.getAlerts(userId);
 }
-
-/* ================= GET BY ID ================= */
 
 export async function getAlertById(alertId) {
-  const result = await dynamoDB.send(
-    new GetCommand({
-      TableName: TABLE_NAME,
-      Key: {
-        alertId,
-      },
-    })
-  );
-
-  return result.Item;
+  return alertRepository.getAlertById(alertId);
 }
-
-/* ================= UPDATE ================= */
 
 export async function updateAlert(alertId, updates) {
-
-  const { alertId: _, ...fieldsToUpdate } = updates;
-
-  const keys = Object.keys(fieldsToUpdate);
-
-  const UpdateExpression =
-    "SET " +
-    keys.map((key, index) => `#k${index} = :v${index}`).join(", ");
-
-  const ExpressionAttributeNames = {};
-  const ExpressionAttributeValues = {};
-
-  keys.forEach((key, index) => {
-    ExpressionAttributeNames[`#k${index}`] = key;
-    ExpressionAttributeValues[`:v${index}`] = fieldsToUpdate[key];
-  });
-
-  const result = await dynamoDB.send(
-    new UpdateCommand({
-      TableName: TABLE_NAME,
-      Key: { alertId },
-      UpdateExpression,
-      ExpressionAttributeNames,
-      ExpressionAttributeValues,
-      ReturnValues: "ALL_NEW",
-    })
-  );
-
-  return result.Attributes;
+  return alertRepository.updateAlert(alertId, updates);
 }
 
-/* ================= DELETE ================= */
-
 export async function deleteAlert(alertId) {
-  await dynamoDB.send(
-    new DeleteCommand({
-      TableName: TABLE_NAME,
-      Key: {
-        alertId,
-      },
-    })
-  );
-
-  return {
-    success: true,
-  };
+  return alertRepository.deleteAlert(alertId);
 }

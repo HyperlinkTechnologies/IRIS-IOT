@@ -1,14 +1,17 @@
 import { Plus, Search } from "lucide-react";
 
 import { useEffect, useState } from "react";
-
+import { useRef } from "react";
 import StatusCard from "../../components/Devices/statusCard";
 import DeviceDetailsModal from "../../components/Devices/deviceDetailsModal";
 import Modal from "../../components/Common/Modal";
 import DeviceCard from "../../components/Devices/DeviceCard";
 import telemetryStore from "../../core/telemetry/telemetryStore";
 import deviceRegistry from "../../core/devices/deviceRegistry";
-
+import SubscriptionLimitDialog from "../../components/Common/subscriptionLimitDialog";
+import { useBilling } from "../../../context/BillingContext";
+import SubscriptionWarningCard from "../../components/Common/SubscriptionWarningCard";
+import { useSubscriptionWarning } from "../../../context/SubscriptionWarningContext";
 import {
   getDevices,
   createDevice,
@@ -18,6 +21,12 @@ import {
 
 export default function DevicesPage() {
   const [telemetry, setTelemetry] = useState(telemetryStore.getAll());
+  const { openPlansModal } = useBilling();
+  const {
+  warning,
+  clearWarning,
+} = useSubscriptionWarning();
+  const warningShown = useRef(false);
 
   useEffect(() => {
     const unsubscribe = telemetryStore.subscribe((snapshot) => {
@@ -26,6 +35,24 @@ export default function DevicesPage() {
 
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+
+  if (!warning || warningShown.current) {
+    return;
+  }
+
+  warningShown.current = true;
+
+  setLimitInfo({
+    feature: warning.feature,
+    currentPlan: warning.currentPlan,
+    currentLimit: warning.currentLimit,
+  });
+
+  setShowLimitDialog(true);
+
+}, [warning]);
   /* ================= STATES ================= */
 
   const [search, setSearch] = useState("");
@@ -33,6 +60,14 @@ export default function DevicesPage() {
   const [devices, setDevices] = useState(
   deviceRegistry.getAll(),
 );
+
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+const [billingOpen, setBillingOpen] = useState(false);
+
+const [limitInfo, setLimitInfo] = useState(null);
+
+const [showLimitDialog, setShowLimitDialog] = useState(false);
 
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -49,6 +84,8 @@ export default function DevicesPage() {
 
     description: "",
   });
+
+  const [creatingDevice, setCreatingDevice] = useState(false);
 
   /* ================= LOAD DEVICES ================= */
 
@@ -92,51 +129,41 @@ const refreshDevices = async () => {
   /* ================= ADD DEVICE ================= */
 
   const handleAddDevice = async () => {
-    /* ================= VALIDATION ================= */
+    if (creatingDevice) return;
 
-    let validationErrors = {};
+setCreatingDevice(true);
 
-    if (!deviceForm.name.trim()) {
-      validationErrors.name = "Device name is required";
-    }
+  let validationErrors = {};
 
-    setErrors(validationErrors);
+  if (!deviceForm.name.trim()) {
+    validationErrors.name = "Device name is required";
+  }
 
-    /* ================= STOP IF ERROR ================= */
+  setErrors(validationErrors);
 
-    if (Object.keys(validationErrors).length > 0) {
-      return;
-    }
+  if (Object.keys(validationErrors).length > 0) {
+    setCreatingDevice(false);
+    return;
+}
 
-    /* ================= CREATE DEVICE ================= */
+  const newDevice = {
+    deviceId: generateDeviceId(),
+    deviceName: deviceForm.name,
+    gatewayId: "GW-001",
+    firmwareVersion: "1.0.0",
+    apiKey: generateApiKey(),
+    location: deviceForm.location,
+    description: deviceForm.description,
+    status: "offline",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
 
-    const newDevice = {
-  deviceId: generateDeviceId(),
+  try {
 
-  deviceName: deviceForm.name,
+    await createDevice(newDevice);
 
-  gatewayId: "GW-001",
-
-  firmwareVersion: "1.0.0",
-
-  apiKey: generateApiKey(),
-
-  location: deviceForm.location,
-
-  description: deviceForm.description,
-
-  status: "offline",
-
-  createdAt: new Date().toISOString(),
-
-  updatedAt: new Date().toISOString(),
-};
-
-await createDevice(newDevice);
-
-await refreshDevices();
-
-    /* ================= RESET ================= */
+    await refreshDevices();
 
     setShowAddModal(false);
 
@@ -144,12 +171,31 @@ await refreshDevices();
 
     setDeviceForm({
       name: "",
-
       location: "",
-
       description: "",
     });
-  };
+    setCreatingDevice(false);
+
+  } catch (error) {
+
+    if (error.code === "DEVICE_LIMIT_REACHED") {
+
+        setLimitInfo(error.details);
+
+        setShowLimitDialog(true);
+
+        setCreatingDevice(false);
+
+        return;
+
+    }
+
+    console.error(error);
+    setCreatingDevice(false);
+
+}
+
+};
 
   /* ================= DELETE DEVICE ================= */
 
@@ -301,6 +347,19 @@ await refreshDevices();
         </button>
       </div>
 
+      <SubscriptionWarningCard
+        warning={warning}
+        onClick={() => {
+          setLimitInfo({
+            feature: warning.feature,
+            currentPlan: warning.currentPlan,
+            currentLimit: warning.currentLimit,
+          });
+
+          setShowLimitDialog(true);
+        }}
+      />
+
       {/* ================= DEVICE LIST ================= */}
 
       <div className="grid gap-5">
@@ -421,16 +480,21 @@ await refreshDevices();
 
             <button
               onClick={handleAddDevice}
-              className="
-                w-full
-                py-3
-                rounded-xl
-                bg-[#ff5700]
-                text-white
-                cursor-pointer
-              "
+              disabled={creatingDevice}
+              className={`
+                  w-full
+                  py-3
+                  rounded-xl
+                  text-white
+                  transition-all
+                  ${
+                    creatingDevice
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-[#ff5700] hover:bg-[#e74f00] cursor-pointer"
+                  }
+              `}
             >
-              Create Device
+              {creatingDevice ? "Creating..." : "Create Device"}
             </button>
           </div>
         </Modal>
@@ -522,6 +586,18 @@ await refreshDevices();
           </div>
         </Modal>
       )}
+
+      {/* UPGRADE MODAL */}
+      <SubscriptionLimitDialog
+        open={showLimitDialog}
+        limitInfo={limitInfo}
+        onClose={() => setShowLimitDialog(false)}
+        onUpgrade={() => {
+          setShowLimitDialog(false);
+
+          openPlansModal();
+        }}
+      />
     </div>
   );
 }

@@ -3,9 +3,8 @@ import { createSession } from "../services/session.service.js";
 
 export async function getUserSessions(req, res) {
   try {
-    const { userId } = req.params;
-
-    const sessions = await sessionService.getUserSessions(userId);
+    const sessions =
+  await sessionService.getUserSessions(req.user.sub);
 
     res.json({
       success: true,
@@ -61,7 +60,11 @@ export async function deleteSession(req, res) {
 
 export async function createSessionRecord(req, res) {
   try {
-    const session = await createSession(req.body);
+    const session =
+  await createSession({
+    ...req.body,
+    userId: req.user.sub,
+  });
 
     res.status(201).json({
       success: true,
@@ -79,12 +82,12 @@ export async function createSessionRecord(req, res) {
 
 export async function deleteOtherSessions(req, res) {
   try {
-    const { userId, currentSessionId } = req.body;
+    const { currentSessionId } = req.body;
 
-    await sessionService.deleteAllOtherSessions(
-      userId,
-      currentSessionId
-    );
+await sessionService.deleteAllOtherSessions(
+  req.user.sub,
+  currentSessionId
+);
 
     res.json({
       success: true,

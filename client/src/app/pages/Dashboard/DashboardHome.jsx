@@ -16,19 +16,22 @@ import {
   deleteDashboard,
 } from "../../services/dashboard.service";
 
+import { useBilling } from "../../../context/BillingContext";
+import SubscriptionLimitDialog from "../../components/Common/SubscriptionLimitDialog";
+
 
 export default function DashboardHome() {
 
   /* ================= STATES ================= */
-  const [
-    dashboards,
-    setDashboards,
-  ] = useState([]);
+  const [dashboards, setDashboards] = useState([]);
 
-  const [
-    selectedDashboard,
-    setSelectedDashboard,
-  ] = useState(null);
+  const [selectedDashboard, setSelectedDashboard] = useState(null);
+
+  const [limitInfo, setLimitInfo] = useState(null);
+
+const [showLimitDialog, setShowLimitDialog] = useState(false);
+
+const { openPlansModal } = useBilling();
 
   /* ================= LOAD DASHBOARDS ================= */
 
@@ -69,8 +72,26 @@ async function loadDashboards() {
         dashboard
       );
     } else {
-      await createDashboard(dashboard);
+  try {
+
+    await createDashboard(dashboard);
+
+  } catch (error) {
+
+    if (error.code === "DASHBOARD_LIMIT_REACHED") {
+
+      setLimitInfo(error.details);
+
+      setShowLimitDialog(true);
+
+      return;
+
     }
+
+    throw error;
+
+  }
+}
   }
 
   await loadDashboards();
@@ -129,6 +150,16 @@ async function loadDashboards() {
         />
 
       )}
+
+      <SubscriptionLimitDialog
+  open={showLimitDialog}
+  limitInfo={limitInfo}
+  onClose={() => setShowLimitDialog(false)}
+  onUpgrade={() => {
+    setShowLimitDialog(false);
+    openPlansModal();
+  }}
+/>
 
     </div>
   );

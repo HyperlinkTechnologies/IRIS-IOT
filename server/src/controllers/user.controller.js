@@ -8,9 +8,7 @@ import {
 // GET Profile
 export async function getProfile(req, res) {
   try {
-    const { userId } = req.params;
-
-    const user = await getUserById(userId);
+    const user = await getUserById(req.user.sub);
 
     if (!user) {
       return res.status(404).json({
@@ -31,7 +29,10 @@ export async function getProfile(req, res) {
 // CREATE Profile
 export async function createProfile(req, res) {
   try {
-    const user = await createUser(req.body);
+    const user = await createUser({
+  ...req.body,
+  userId: req.user.sub,
+});
 
     res.status(201).json(user);
   } catch (error) {
@@ -46,9 +47,7 @@ export async function createProfile(req, res) {
 // UPDATE Profile
 export async function updateProfile(req, res) {
   try {
-    const { userId } = req.params;
-
-    await updateUser(userId, req.body);
+    await updateUser(req.user.sub, req.body);
 
     res.json({
       message: "Profile updated successfully",
@@ -65,9 +64,7 @@ export async function updateProfile(req, res) {
 // DELETE Profile
 export async function deleteProfile(req, res) {
   try {
-    const { userId } = req.params;
-
-    await deleteUser(userId);
+    await deleteUser(req.user.sub);
 
     res.json({
       message: "Profile deleted successfully",

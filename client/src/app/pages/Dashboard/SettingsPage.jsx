@@ -478,9 +478,9 @@ export default function SettingsPage({
           sms: "DISABLED",
         });
 
-        await updateUser(user.userId, {
-          twoFactorEnabled: false,
-        });
+        await updateUser({
+  twoFactorEnabled: false,
+});
 
         setTwoFactorEnabled(false);
 
@@ -536,9 +536,9 @@ export default function SettingsPage({
         sms: "DISABLED",
       });
 
-      await updateUser(user.userId, {
-        twoFactorEnabled: false,
-      });
+      await updateUser({
+  twoFactorEnabled: true,
+});
 
       setTwoFactorEnabled(true);
 
@@ -562,9 +562,9 @@ export default function SettingsPage({
     try {
       const enabled = !loginAlerts;
 
-      await updateUser(user.userId, {
-        loginAlerts: enabled,
-      });
+      await updateUser({
+  loginAlerts: enabled,
+});
 
       setLoginAlerts(enabled);
 
@@ -591,9 +591,9 @@ export default function SettingsPage({
 
     setSessionTimeout(timeout);
 
-    await updateUser(user.userId, {
-      sessionTimeout: timeout,
-    });
+    await updateUser({
+  sessionTimeout: timeout,
+});
 
     setUser((prev) => ({
       ...prev,
@@ -623,7 +623,7 @@ export default function SettingsPage({
     try {
       const currentUser = await getCurrentUser();
 
-      await updateUser(currentUser.userId, profileData);
+      await updateUser(profileData);
 
       setUser({
         ...user,

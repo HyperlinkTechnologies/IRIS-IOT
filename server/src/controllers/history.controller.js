@@ -4,6 +4,10 @@ export async function history(req, res) {
   try {
     const { deviceId, range } = req.query;
 
+// TODO:
+// Later we'll verify that this device belongs to req.user.sub
+// before returning telemetry history.
+
     if (!deviceId) {
       return res.status(400).json({
         error: "deviceId is required",

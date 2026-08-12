@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import commandService from "../../../../core/commands/commandService";
+import commandService from "../../../../services/commandService";
 import { getTelemetryValue } from "../../../../core/telemetry/telemetryResolver";
 import useCommand from "../../../../hooks/useCommand";
 

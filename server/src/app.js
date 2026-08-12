@@ -15,6 +15,8 @@ import sessionRoutes from "./routes/session.route.js";
 import historyRoutes from "./routes/history.route.js";
 import exportRoutes from "./routes/export.route.js";
 import emailRoutes from "./routes/email.route.js";
+import billingRoutes from "./routes/billing.route.js";
+import paymentRoutes from "./routes/payment.route.js";
 
 const app = express();
 
@@ -35,5 +37,7 @@ app.use("/api", sessionRoutes);
 app.use("/api", historyRoutes);
 app.use("/api", exportRoutes);
 app.use("/api/email", emailRoutes);
+app.use("/api/billing", billingRoutes);
+app.use("/api/payments", paymentRoutes);
 
 export default app;

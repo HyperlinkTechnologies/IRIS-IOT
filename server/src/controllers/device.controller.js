@@ -8,7 +8,10 @@ import {
 
 export async function addDevice(req, res) {
   try {
-    const device = req.body;
+    const device = {
+      ...req.body,
+      userId: req.user.sub,
+    };
 
     await createDevice(device);
 
@@ -17,37 +20,34 @@ export async function addDevice(req, res) {
       message: "Device created successfully.",
       data: device,
     });
+
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(error.statusCode || 500).json({
+  success: false,
+  message: error.message,
+  code: error.code,
+  details: error.details,
+});
   }
 }
 
 export async function fetchDevices(req, res) {
   try {
-    const { userId } = req.query;
+    const userId = req.user.sub;
 
-    if (!userId) {
-  return res.status(400).json({
-    success: false,
-    message: "userId is required.",
-  });
-}
-
-const devices = await getDevices(userId);
+    const devices = await getDevices(userId);
 
     res.json({
       success: true,
       data: devices,
     });
+
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message,
     });
@@ -71,10 +71,11 @@ export async function fetchDeviceById(req, res) {
       success: true,
       data: device,
     });
+
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message,
     });
@@ -91,10 +92,11 @@ export async function editDevice(req, res) {
       success: true,
       message: "Device updated successfully.",
     });
+
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message,
     });
@@ -111,10 +113,11 @@ export async function removeDevice(req, res) {
       success: true,
       message: "Device deleted successfully.",
     });
+
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: error.message,
     });

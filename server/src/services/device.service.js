@@ -1,99 +1,80 @@
-import {
-  PutCommand,
-  ScanCommand,
-  GetCommand,
-  UpdateCommand,
-  DeleteCommand,
-  QueryCommand,
-} from "@aws-sdk/lib-dynamodb";
-
-import dynamoDB from "../config/dynamodb.js";
-
-
-
+import * as deviceRepository from "../repositories/device.repository.js";
+import * as limitService from "./subscriptionLimit.service.js";
+import * as billingRepository from "../repositories/billing.repository.js";
 
 // Create Device
 export async function createDevice(device) {
-    console.log("TABLE NAME:", process.env.DYNAMODB_DEVICES_TABLE);
-    
-const TABLE_NAME = process.env.DYNAMODB_DEVICES_TABLE;
 
-  await dynamoDB.send(
-    new PutCommand({
-      TableName: TABLE_NAME,
-      Item: device,
-    })
-  );
+  let validation;
 
-  return device;
+try {
+
+  validation =
+    await limitService.reserveDeviceSlot(device.userId);
+
+} catch (err) {
+
+  if (err.name === "ConditionalCheckFailedException") {
+
+    const error = new Error("Device limit reached.");
+
+    error.statusCode = 403;
+
+    error.code = "DEVICE_LIMIT_REACHED";
+
+    error.details = {
+      feature: "Devices",
+      currentPlan: err.plan,
+      currentLimit: err.limit,
+    };
+
+    throw error;
+  }
+
+  throw err;
 }
 
-// Get Device
-export async function getDeviceById(deviceId) {
-  const result = await dynamoDB.send(
-    new GetCommand({
-      TableName: process.env.DYNAMODB_DEVICES_TABLE,
-      Key: {
-        deviceId,
-      },
-    })
-  );
+  const createdDevice =
+  await deviceRepository.createDevice(device);
 
-  return result.Item;
-}
+const devices =
+  await deviceRepository.getDevices(device.userId);
 
-//Update device
-export async function updateDevice(deviceId, data) {
-  await dynamoDB.send(
-    new UpdateCommand({
-      TableName: process.env.DYNAMODB_DEVICES_TABLE,
+await billingRepository.updateUsage(device.userId, {
+  devices: devices.length,
+});
 
-      Key: {
-        deviceId,
-      },
-
-      UpdateExpression:
-        "SET deviceName = :name, #status = :status",
-
-      ExpressionAttributeNames: {
-        "#status": "status",
-      },
-
-      ExpressionAttributeValues: {
-        ":name": data.deviceName,
-        ":status": data.status,
-      },
-
-      ReturnValues: "ALL_NEW",
-    })
-  );
-}
-
-//Delete device
-export async function deleteDevice(deviceId) {
-  await dynamoDB.send(
-    new DeleteCommand({
-      TableName: process.env.DYNAMODB_DEVICES_TABLE,
-
-      Key: {
-        deviceId,
-      },
-    })
-  );
+return createdDevice;
 }
 
 // Get All Devices
 export async function getDevices(userId) {
-  const result = await dynamoDB.send(
-    new QueryCommand({
-      TableName: process.env.DYNAMODB_DEVICES_TABLE,
-      IndexName: "userId-index",
-      KeyConditionExpression: "userId = :userId",
-      ExpressionAttributeValues: {
-        ":userId": userId,
-      },
-    })
-  );
+  return deviceRepository.getDevices(userId);
+}
 
-  return result.Items || [];
+// Get Device By ID
+export async function getDeviceById(deviceId) {
+  return deviceRepository.getDeviceById(deviceId);
+}
+
+// Update Device
+export async function updateDevice(deviceId, data) {
+  return deviceRepository.updateDevice(deviceId, data);
+}
+
+// Delete Device
+export async function deleteDevice(deviceId) {
+  const device =
+  await deviceRepository.getDeviceById(deviceId);
+
+await deviceRepository.deleteDevice(deviceId);
+
+const devices =
+  await deviceRepository.getDevices(device.userId);
+
+await billingRepository.updateUsage(device.userId, {
+  devices: devices.length,
+});
+
+return;
 }

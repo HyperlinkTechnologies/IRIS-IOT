@@ -1,8 +1,18 @@
 import BillingModal from "./BillingModal";
 import UsageProgress from "./UsageProgress";
 import PricingCard from "./PricingCard";
-
+import { useEffect, useState } from "react";
 import { Download, CreditCard, Landmark, ShieldCheck } from "lucide-react";
+import { useUser } from "../../../context/UserContext";
+import { generateInvoicePdf } from "../../../utils/generateInvoicePdf";
+import loadRazorpay from "../../../utils/loadRazorpay";
+import billingService from "../../services/billingService";
+import { startRazorpayPayment } from "../../services/razorpay.service";
+
+import {
+  createOrder,
+  verifyPayment,
+} from "../../services/payment.service";
 
 // ===========================USAGE PROGRESS=========================
 export function UsageModal({
@@ -13,6 +23,7 @@ export function UsageModal({
   onClose,
 }) {
   if (!open) return null;
+  
 
   return (
     <BillingModal title="Usage & Limits" onClose={onClose}>
@@ -23,19 +34,21 @@ export function UsageModal({
       />
 
       <UsageProgress
+        title="Dashboards"
+        value={billing.usage.dashboards}
+        max={billing.usage.maxDashboards}
+      />
+
+      <UsageProgress
         title="Messages"
         value={billing.usage.messages}
         max={billing.usage.maxMessages}
       />
 
-      <UsageProgress
-        title="Storage"
-        value={billing.usage.storage}
-        max={billing.usage.maxStorage}
-        suffix=" GB"
+      <InfoRow
+        label="Data Retention"
+        value={`${billing.usage.retention} days`}
       />
-
-      <InfoRow label="Data Retention" value={billing.usage.retention} />
     </BillingModal>
   );
 }
@@ -51,6 +64,63 @@ export function PlansModal({
 }) {
   if (!open) return null;
 
+  const handleUpgrade = async (plan) => {
+
+  const loaded = await loadRazorpay();
+
+  if (!loaded) {
+    alert("Unable to load Razorpay.");
+    return;
+  }
+
+  const response = await createOrder(plan);
+
+  const options = {
+
+    key: response.key,
+
+    amount: response.order.amount,
+
+    currency: response.order.currency,
+
+    name: "IRIS IoT Platform",
+
+    description: plan.name,
+
+    order_id: response.order.id,
+
+    handler: async function (payment) {
+
+      await verifyPayment({
+
+        ...payment,
+
+        planId: plan.id,
+
+        amount: response.order.amount,
+
+      });
+
+      alert("Payment Successful");
+
+      onClose();
+
+      window.location.reload();
+
+    },
+
+    theme: {
+      color: "#ff5700",
+    },
+
+  };
+
+  const razorpay = new window.Razorpay(options);
+
+  razorpay.open();
+
+};
+
   return (
     <BillingModal title="Plans & Pricing" onClose={onClose}>
       <div
@@ -62,12 +132,20 @@ export function PlansModal({
   "
       >
         {plans.map((plan) => (
-          <PricingCard
-            key={plan.title}
-            {...plan}
-            current={plan.title === billing.currentPlan}
-          />
-        ))}
+  <PricingCard
+    key={plan.id}
+    {...plan}
+    current={billing?.planId === plan.id}
+    onUpgrade={async () => {
+      try {
+        await startRazorpayPayment(plan);
+        window.location.reload();
+      } catch (error) {
+        console.error("Payment failed:", error);
+      }
+    }}
+  />
+))}
       </div>
     </BillingModal>
   );
@@ -76,36 +154,48 @@ export function PlansModal({
 // ========BILLING HISTORY MODAL==========
 export function BillingHistoryModal({
   open,
-
   onClose,
 }) {
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { user } = useUser();
+
+  useEffect(() => {
+    if (!open) return;
+
+    async function loadBillingHistory() {
+      try {
+        setLoading(true);
+
+        const payments = await billingService.getBillingHistory();
+
+        const sortedPayments = [...payments].sort(
+  (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+);
+
+setInvoices(sortedPayments);
+      } catch (error) {
+        console.error("Failed to load billing history:", error);
+        setInvoices([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadBillingHistory();
+  }, [open]);
+
   if (!open) return null;
 
-  const invoices = [
-    {
-      id: "INV-1008",
-      date: "15 Jul 2026",
-      plan: "Industrial",
-      amount: "₹4,970",
-      status: "Paid",
-    },
+  const handleDownloadInvoice = async (invoice) => {
+  if (invoice.status !== "CAPTURED") return;
 
-    {
-      id: "INV-1007",
-      date: "15 Jun 2026",
-      plan: "Industrial",
-      amount: "₹4,970",
-      status: "Paid",
-    },
-
-    {
-      id: "INV-1006",
-      date: "15 May 2026",
-      plan: "Industrial",
-      amount: "₹4,970",
-      status: "Paid",
-    },
-  ];
+  await generateInvoicePdf(invoice, {
+    name: user?.fullName,
+    email: user?.email,
+    id: user?.userId,
+  });
+};
 
   return (
     <BillingModal title="Billing History" onClose={onClose}>
@@ -133,7 +223,7 @@ export function BillingHistoryModal({
         <div
           className="
       grid
-      grid-cols-6
+      grid-cols-[1.5fr_1fr_1.2fr_1fr_1fr_1fr]
 
       bg-gray-50
 
@@ -145,7 +235,7 @@ export function BillingHistoryModal({
       text-gray-500
     "
         >
-          <div>Invoice</div>
+          <div>Order ID</div>
 
           <div>Date</div>
 
@@ -158,12 +248,21 @@ export function BillingHistoryModal({
           <div className="flex justify-end px-3">Download</div>
         </div>
 
-        {invoices.map((invoice) => (
+        {loading ? (
+  <div className="px-6 py-8 text-center text-gray-500">
+    Loading billing history...
+  </div>
+) : invoices.length === 0 ? (
+  <div className="px-6 py-8 text-center text-gray-500">
+    No billing history available.
+  </div>
+) : (
+  invoices.map((invoice) => (
           <div
-            key={invoice.id}
+            key={invoice.paymentId}
             className="
         grid
-        grid-cols-6
+        grid-cols-[1.5fr_1fr_1.2fr_1fr_1fr_1fr]
 
         items-center
 
@@ -178,231 +277,84 @@ export function BillingHistoryModal({
         transition
       "
           >
-            <div className="font-semibold">{invoice.id}</div>
+            <div
+  className="font-semibold text-sm truncate"
+  title={invoice.irisOrderId}
+>
+  {invoice.irisOrderId}
+</div>
 
-            <div>{invoice.date}</div>
+<div>
+  {new Date(invoice.createdAt).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })}
+</div>
 
-            <div>{invoice.plan}</div>
+<div>
+  {invoice.planId === "starter"
+    ? "Get Started"
+    : invoice.planId === "prototype"
+      ? "Prototype/POC"
+      : invoice.planId === "industrial"
+        ? "Industrial"
+        : invoice.planId}
+</div>
 
-            <div className="font-semibold">{invoice.amount}</div>
+<div className="font-semibold">
+  ₹{(invoice.amount / 100).toLocaleString("en-IN")}
+</div>
 
             <div>
               <span
-                className="
-            px-3
-            py-1
-
-            rounded-full
-
-            bg-green-100
-
-            text-green-700
-
-            text-xs
-
-            font-medium
-          "
-              >
-                {invoice.status}
-              </span>
+  className={`
+    px-3
+    py-1
+    rounded-full
+    text-xs
+    font-medium
+    ${
+      invoice.status === "CAPTURED"
+  ? "bg-green-100 text-green-700"
+  : "bg-red-100 text-red-700"
+    }
+  `}
+>
+ {invoice.status === "CAPTURED" ? "Paid" : "Failed"}
+</span>
             </div>
 
             <div className="flex justify-end">
-              <button
-                className="
-            flex
-            items-center
-            gap-2
-
-            px-3
-            py-2
-
-            rounded-full
-
-            text-[#ff5700]
-
-            hover:bg-orange-100
-
-            transition
-            cursor-pointer
-          "
-              >
-                <Download size={18} />
-
-                <span className="font-medium">Invoice</span>
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </BillingModal>
-  );
-}
-
-// ==================PAYMENT METHODS MODAL====================
-export function PaymentMethodsModal({
-  open,
-
-  onClose,
-}) {
-  if (!open) return null;
-
-  return (
-    <BillingModal title="Payment Methods" onClose={onClose}>
-      <div className="max-w-2xl mx-auto">
-        {/* Empty State */}
-
-        <div className="text-center">
-          <div
-            className="
-        w-24
-        h-24
-
-        mx-auto
-
+  {invoice.status === "CAPTURED" && (
+    <button
+    onClick={() => handleDownloadInvoice(invoice)}
+      className="
+        flex
+        items-center
+        gap-2
+        px-3
+        py-2
         rounded-full
-
-        bg-orange-100
-
-        flex
-        items-center
-        justify-center
-
-        mb-6
+        text-[#ff5700]
+        hover:bg-orange-100
+        transition
+        cursor-pointer
       "
-          >
-            <CreditCard size={42} className="text-[#ff5700]" />
+    >
+      <Download size={18} />
+      <span className="font-medium">Invoice</span>
+    </button>
+  )}
+</div>
           </div>
-
-          <h3
-            className="
-        text-3xl
-        font-bold
-        text-[#010c29]
-      "
-          >
-            No Saved Payment Methods
-          </h3>
-
-          <p
-            className="
-        text-gray-500
-
-        mt-4
-        mb-10
-      "
-          >
-            Add a payment method to enable automatic subscription renewals and
-            faster checkout.
-          </p>
-        </div>
-
-        {/* Button */}
-
-        <button
-          disabled
-          className="
-      w-full
-
-      py-4
-      mb-4
-      rounded-xl
-
-      bg-gray-200
-
-      text-gray-500
-
-      font-semibold
-
-      cursor-not-allowed
-    "
-        >
-          Add Payment Method
-          <span className="ml-2">(Coming Soon)</span>
-        </button>
-
-        {/* Supported Methods */}
-
-        <div
-          className="
-      border
-      border-black/10
-      rounded-2xl
-      p-6
-      mb-6
-    "
-        >
-          <h4
-            className="
-        font-semibold
-        text-lg
-        mb-5
-      "
-          >
-            Supported Payment Methods
-          </h4>
-
-          <div className="grid grid-cols-2 gap-4">
-            <MethodCard label="Visa" />
-
-            <MethodCard label="MasterCard" />
-
-            <MethodCard label="RuPay" />
-
-            <MethodCard label="UPI" bank />
-          </div>
-        </div>
-
-        {/* Auto Renewal */}
-
-        <div
-          className="
-      border
-      border-black/10
-      rounded-2xl
-      p-6
-      mb-8
-    "
-        >
-          <div
-            className="
-        flex
-        justify-between
-        items-center
-      "
-          >
-            <div>
-              <h4 className="font-semibold">Automatic Renewal</h4>
-
-              <p
-                className="
-            text-gray-500
-            text-sm
-            mt-1
-          "
-              >
-                Available after adding a payment method.
-              </p>
-            </div>
-
-            <div
-              className="
-          flex
-          items-center
-          gap-2
-
-          text-gray-400
-        "
-            >
-              <ShieldCheck size={18} />
-              Disabled
-            </div>
-          </div>
-        </div>
+                ))
+      )}
       </div>
     </BillingModal>
   );
 }
+
 // ======================================
 
 function InfoRow({ label, value }) {

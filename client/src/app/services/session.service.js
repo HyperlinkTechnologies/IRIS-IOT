@@ -1,47 +1,38 @@
-import axios from "axios";
+import request from "./api";
 
-const API = "http://localhost:4000/api";
+const API = "/sessions";
 
 export async function createSession(data) {
-  const response = await axios.post(
-    `${API}/sessions`,
-    data
-  );
-   return response.data.session;
+  const response = await request(API, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+
+  return response.session;
 }
 
 export async function deleteSession(sessionId) {
-  await axios.delete(
-    `${API}/sessions/${sessionId}`
-  );
+  await request(`${API}/${sessionId}`, {
+    method: "DELETE",
+  });
 }
 
-export async function getUserSessions(userId) {
-  const response = await axios.get(
-    `${API}/sessions/${userId}`
-  );
-
-  return response.data.sessions;
+export async function getUserSessions() {
+  const response = await request("/sessions");
+  return response.sessions;
 }
 
-export async function deleteOtherSessions(
-  userId,
-  currentSessionId
-) {
-  await axios.delete(
-    `${API}/sessions/others`,
-    {
-      data: {
-        userId,
-        currentSessionId,
-      },
-    }
-  );
+export async function deleteOtherSessions(currentSessionId) {
+  await request(`${API}/others`, {
+    method: "DELETE",
+    body: JSON.stringify({
+      currentSessionId,
+    }),
+  });
 }
 
 export async function updateSessionActivity(sessionId) {
-  await axios.put(
-    `${API}/sessions/${sessionId}/activity`
-  );
+  await request(`${API}/${sessionId}/activity`, {
+    method: "PUT",
+  });
 }
- 

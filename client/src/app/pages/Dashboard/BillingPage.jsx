@@ -11,30 +11,53 @@ import {
 
 import { useEffect, useState } from "react";
 
-import billingStore from "../../core/billing/billingStore";
 import BillingActionCard from "../../components/Billing/BillingActionCard";
-import { plans, billingActions } from "../../core/billing/billingData";
+import { billingActions } from "../../core/billing/billingData";
+import billingService from "../../services/billingService";
+import { useBilling } from "../../../context/BillingContext";
 import {
   UsageModal,
-  PlansModal,
   BillingHistoryModal,
-  PaymentMethodsModal,
 } from "../../components/Billing/billingModals";
 
+function formatRenewalDate(date) {
+  if (!date) return "-";
+
+  return new Date(date).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export default function BillingPage() {
-  const [billing, setBilling] = useState(billingStore.get());
-
   const [activeModal, setActiveModal] = useState(null);
+const [showCancelModal, setShowCancelModal] = useState(false);
+const [cancelling, setCancelling] = useState(false);
+  const { billing, plans, loading, openPlansModal } = useBilling();
 
-  useEffect(() => {
-    const updateBilling = () => {
-      setBilling(billingStore.get());
-    };
+  const handleCancelSubscription = async () => {
+  try {
+    setCancelling(true);
 
-    window.addEventListener("billingUpdated", updateBilling);
+    await billingService.cancelSubscription();
 
-    return () => window.removeEventListener("billingUpdated", updateBilling);
-  }, []);
+    setShowCancelModal(false);
+  } catch (error) {
+    console.error("Failed to cancel subscription:", error);
+    alert("Failed to cancel subscription. Please try again.");
+  } finally {
+    setCancelling(false);
+  }
+};
+
+if (loading) {
+  return (
+    <div className="p-8 text-gray-500">
+      Loading billing...
+    </div>
+  );
+}
 
   return (
     <div className="w-full">
@@ -99,36 +122,40 @@ export default function BillingPage() {
 
             <div className="grid grid-cols-2 gap-x-10 gap-y-5 mt-8">
               <div>
-                <p className="text-sm text-gray-400">Billing Cycle</p>
-                <p className="font-semibold">Monthly</p>
-              </div>
+    <p className="text-sm text-gray-400">Current Plan</p>
+    <p className="font-semibold">
+      {plans.find((plan) => plan.id === billing.planId)?.name || "Get Started"}
+    </p>
+  </div>
 
-              <div>
-                <p className="text-sm text-gray-400">Renewal Date</p>
-                <p className="font-semibold">{billing.nextRenewal}</p>
-              </div>
+  <div>
+    <p className="text-sm text-gray-400">Renewal Date</p>
+    <p className="font-semibold">
+      {formatRenewalDate(billing.nextRenewal)}
+    </p>
+  </div>
 
-              <div>
-                <p className="text-sm text-gray-400">Price</p>
-                <p className="font-semibold">
-                  {billing.currency}
-                  {billing.lastPayment}
-                  /month
-                </p>
-              </div>
+  <div>
+    <p className="text-sm text-gray-400">Price</p>
+    <p className="font-semibold">
+      ₹{Number(billing.price || 0).toLocaleString("en-IN")}/month
+    </p>
+  </div>
 
-              <div>
-                <p className="text-sm text-gray-400">Valid From</p>
-                <p className="font-semibold">{billing.validFrom}</p>
-              </div>
-            </div>
+  <div>
+    <p className="text-sm text-gray-400">Billing Cycle</p>
+    <p className="font-semibold">
+      {billing.billingCycle === "MONTHLY" ? "Monthly" : billing.billingCycle}
+    </p>
+  </div>
+</div>
           </div>
 
           {/* Right */}
 
           <div className="flex flex-col gap-4">
             <button
-              onClick={() => setActiveModal("plans")}
+              onClick={openPlansModal}
               className="
           bg-[#ff5700]
           hover:bg-[#e64d00]
@@ -145,6 +172,7 @@ export default function BillingPage() {
             </button>
 
             <button
+            onClick={() => setShowCancelModal(true)}
               className="
           border
           border-red-200
@@ -192,7 +220,7 @@ export default function BillingPage() {
           className="
           grid
           grid-cols-1
-          md:grid-cols-2
+          md:grid-cols-3
           gap-6
           "
         >
@@ -200,7 +228,14 @@ export default function BillingPage() {
             <BillingActionCard
               key={action.id}
               action={action}
-              onClick={() => setActiveModal(action.id)}
+              onClick={() => {
+  if (action.id === "plans") {
+    openPlansModal();
+    return;
+  }
+
+  setActiveModal(action.id);
+}}
             />
           ))}
         </div>
@@ -214,15 +249,6 @@ export default function BillingPage() {
         onClose={() => setActiveModal(null)}
       />
 
-      {/* ==========PRICING PLANS=========== */}
-
-      <PlansModal
-        plans={plans}
-        billing={billing}
-        open={activeModal === "plans"}
-        onClose={() => setActiveModal(null)}
-      />
-
       {/* ================= BILLING HISTORY ================= */}
 
       <BillingHistoryModal
@@ -230,12 +256,41 @@ export default function BillingPage() {
         onClose={() => setActiveModal(null)}
       />
 
-      {/* ================= PAYMENT METHOD ================= */}
+      {showCancelModal && (
+  <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+      <h3 className="text-xl font-bold text-[#010c29]">
+        Cancel Subscription?
+      </h3>
 
-      <PaymentMethodsModal
-        open={activeModal === "payment"}
-        onClose={() => setActiveModal(null)}
-      />
+      <p className="mt-3 text-sm leading-6 text-gray-500">
+        Your subscription will be switched to the Starter plan.
+        Your Starter plan limits will apply immediately.
+      </p>
+
+      <div className="mt-6 flex justify-center gap-3">
+        <button
+          type="button"
+          onClick={() => setShowCancelModal(false)}
+          disabled={cancelling}
+          className="w-full rounded-xl border border-gray-200 px-5 py-2.5 font-semibold text-gray-600 hover:bg-gray-100 disabled:opacity-50 cursor-pointer"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          onClick={handleCancelSubscription}
+          disabled={cancelling}
+          className="w-full rounded-xl bg-red-500 px-5 py-2.5 font-semibold text-white hover:bg-red-600 disabled:opacity-50 cursor-pointer"
+        >
+          {cancelling ? "Cancelling..." : "Confirm"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

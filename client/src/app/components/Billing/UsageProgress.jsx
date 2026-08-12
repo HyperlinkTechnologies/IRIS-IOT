@@ -1,76 +1,49 @@
 export default function UsageProgress({
-
   title,
-
   value,
-
   max,
-
   suffix = "",
-
 }) {
+  const safeValue = value ?? 0;
+  const safeMax = max ?? 0;
 
-  const percentage = (value / max) * 100;
+  const isUnlimited = safeMax === -1;
+
+  const percentage = isUnlimited
+    ? 100
+    : safeMax > 0
+      ? Math.min((safeValue / safeMax) * 100, 100)
+      : 0;
 
   let progressColor = "";
 
-  if (percentage >= 85) {
-
-    progressColor = "bg-red-500";
-
-  }
-
-  else if (percentage >= 60) {
-
-    progressColor = "bg-yellow-500";
-
-  }
-
-  else {
-
+  if (isUnlimited) {
     progressColor = "bg-green-500";
-
+  } else if (percentage >= 85) {
+    progressColor = "bg-red-500";
+  } else if (percentage >= 60) {
+    progressColor = "bg-yellow-500";
+  } else {
+    progressColor = "bg-green-500";
   }
 
   return (
-
     <div className="space-y-3 mb-6">
-
       <div className="flex justify-between">
-
-        <span className="font-medium">
-
-          {title}
-
-        </span>
+        <span className="font-medium">{title}</span>
 
         <div className="text-right">
-
           <div className="text-gray-500">
-
-            {value.toLocaleString()}
+            {safeValue.toLocaleString()}
             {suffix}
-
             {" / "}
-
-            {max.toLocaleString()}
-            {suffix}
-
+            {isUnlimited ? "Unlimited" : `${safeMax.toLocaleString()}${suffix}`}
           </div>
 
-          <div
-            className="
-              text-xs
-              text-gray-400
-            "
-          >
-
-            {percentage.toFixed(1)}%
-
+          <div className="text-xs font-semibold text-gray-600">
+            {isUnlimited ? "Unlimited" : `${Math.round(percentage)}%`}
           </div>
-
         </div>
-
       </div>
 
       <div
@@ -82,15 +55,10 @@ export default function UsageProgress({
           overflow-hidden
         "
       >
-
         <div
-
           style={{
-
-            width: `${percentage}%`
-
+            width: `${percentage}%`,
           }}
-
           className={`
             h-full
             rounded-full
@@ -99,11 +67,7 @@ export default function UsageProgress({
             ${progressColor}
           `}
         />
-
       </div>
-
     </div>
-
   );
-
 }

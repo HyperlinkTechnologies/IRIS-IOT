@@ -34,7 +34,52 @@ function CustomTooltip({ active, payload, label }) {
   );
 }
 
-export default function TelemetryChart({ data }) {
+export default function TelemetryChart({
+    data,
+    timeRange,
+}) {
+
+ const formatXAxis = (value) => {
+
+    const date = new Date(value);
+
+    if (timeRange === "7d" || timeRange === "30d") {
+
+        return date.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+        });
+
+    }
+
+    return date.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+
+};
+
+const getTicks = () => {
+  if (timeRange !== "7d" && timeRange !== "30d") {
+    return undefined;
+  }
+
+  const days = timeRange === "7d" ? 7 : 30;
+  const ticks = [];
+
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - (days - 1));
+
+  for (let i = 0; i < days; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+
+    ticks.push(d.getTime());
+  }
+
+  return ticks;
+};
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart
@@ -53,12 +98,20 @@ export default function TelemetryChart({ data }) {
         />
 
         <XAxis
-          dataKey="time"
-          tickFormatter={formatXAxis}
-          tick={{ fontSize: 12 }}
-          minTickGap={40}
-          tickMargin={10}
-        />
+  dataKey="time"
+  type="number"
+  scale="time"
+  domain={
+    timeRange === "7d" || timeRange === "30d"
+      ? [getTicks()[0], getTicks().at(-1)]
+      : ["dataMin", "dataMax"]
+  }
+  ticks={getTicks()}
+  tickFormatter={formatXAxis}
+  tick={{ fontSize: 12 }}
+  minTickGap={40}
+  tickMargin={10}
+/>
 
         <YAxis
           domain={["auto", "auto"]}

@@ -1,5 +1,5 @@
 import express from "express";
-
+import { authenticate } from "../middleware/auth.middleware.js";
 import {
   addAlert,
   fetchAlerts,
@@ -10,14 +10,14 @@ import {
 
 const router = express.Router();
 
-router.post("/", addAlert);
+router.post("/", authenticate, addAlert);
 
-router.get("/", fetchAlerts);
+router.get("/", authenticate, fetchAlerts);
 
-router.get("/:alertId", fetchAlertById);
+router.get("/:alertId", authenticate, fetchAlertById);
 
-router.put("/:alertId", editAlert);
+router.put("/:alertId", authenticate, editAlert);
 
-router.delete("/:alertId", removeAlert);
+router.delete("/:alertId", authenticate, removeAlert);
 
 export default router;

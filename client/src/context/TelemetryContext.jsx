@@ -1,11 +1,15 @@
 import { createContext, useContext, useEffect, useState } from "react";
-
+import { useSubscriptionWarning } from "./SubscriptionWarningContext";
 import telemetryStore from "../app/core/telemetry/telemetryStore";
 import { io } from "socket.io-client";
 const TelemetryContext = createContext();
 
 export function TelemetryProvider({ children }) {
   const [telemetry, setTelemetry] = useState(telemetryStore.getAll());
+  const {
+  setWarning,
+  clearWarning,
+} = useSubscriptionWarning();
 
   useEffect(() => {
   const unsubscribe = telemetryStore.subscribe(setTelemetry);
@@ -19,6 +23,16 @@ export function TelemetryProvider({ children }) {
   socket.on("telemetry", (data) => {
 
   telemetryStore.update(data.deviceId, data);
+
+});
+socket.on("subscription-limit", (data) => {
+
+  setWarning(data);
+
+});
+socket.on("subscription-restored", () => {
+
+  clearWarning();
 
 });
 

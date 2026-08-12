@@ -1,21 +1,37 @@
-const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
+import request from "./api";
 
 export async function getTelemetryHistory(deviceId, range) {
-    console.log(deviceId);
-  const response = await fetch(
-    `${API}/telemetry/history?deviceId=${deviceId}&range=${range}`
+  return request(
+    `/telemetry/history?deviceId=${deviceId}&range=${range}`
   );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch telemetry history");
-  }
-
-  return response.json();
 }
 
-export function exportTelemetry(deviceId, range) {
-  window.open(
-    `${API}/telemetry/export?deviceId=${deviceId}&range=${range}`,
-    "_blank"
+export async function exportTelemetry(deviceId, range) {
+  const response = await request(
+    `/telemetry/export?deviceId=${deviceId}&range=${range}`,
+    {
+      headers: {
+        Accept: "text/csv",
+      },
+    }
   );
+
+  const blob = new Blob([response], {
+    type: "text/csv",
+  });
+
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download = `${deviceId}-${range}.csv`;
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  a.remove();
+
+  window.URL.revokeObjectURL(url);
 }

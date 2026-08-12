@@ -5,6 +5,8 @@ import { getIO } from "./socket.js";
 import { addTelemetry } from "../services/telemetryBuffer.js";
 
 import { io, iot, mqtt } from "aws-iot-device-sdk-v2";
+import * as deviceRepository from "../repositories/device.repository.js";
+import * as limitService from "../services/subscriptionLimit.service.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,17 +58,73 @@ export async function connectIoT() {
     await connection.subscribe(
       process.env.AWS_IOT_TOPIC_TELEMETRY,
       mqtt.QoS.AtLeastOnce,
-      (topic, payload) => {
+      async (topic, payload) => {
        const message = new TextDecoder().decode(payload);
 
 const telemetry = JSON.parse(message);
+
+const userId =
+  await deviceRepository.getDeviceOwner(
+    telemetry.deviceId
+  );
+
+if (!userId) {
+
+  console.log(
+    "Unknown device:",
+    telemetry.deviceId
+  );
+
+  return;
+
+}
+
+try {
+
+  await limitService.reserveMessage(userId);
+
+  getIO().emit(
+    "subscription-restored",
+    {
+      feature: "Messages",
+    }
+  );
+
+} catch (err) {
+
+  if (err.name === "ConditionalCheckFailedException") {
+
+    console.log(
+      `Message limit reached for ${userId}`
+    );
+
+    getIO().emit("subscription-limit", {
+
+      feature: "Messages",
+
+      currentPlan: err.plan,
+
+      currentLimit: err.limit,
+
+    });
+
+    return;
+
+  }
+
+  throw err;
+
+}
 
 console.log("================================");
 console.log("📥 Topic:", topic);
 console.log("📦 Payload:", telemetry);
 console.log("================================");
 
-addTelemetry(telemetry);
+addTelemetry({
+  ...telemetry,
+  userId,
+});
 getIO().emit("telemetry", telemetry);
       }
     );

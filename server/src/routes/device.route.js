@@ -1,5 +1,5 @@
 import express from "express";
-
+import { authenticate } from "../middleware/auth.middleware.js";
 import {
   addDevice,
   fetchDevices,
@@ -10,19 +10,14 @@ import {
 
 const router = express.Router();
 
-// Create Device
-router.post("/", addDevice);
+router.post("/", authenticate, addDevice);
 
-// Get All Devices
-router.get("/", fetchDevices);
+router.get("/", authenticate, fetchDevices);
 
-// Get Device By ID
-router.get("/:deviceId", fetchDeviceById);
+router.get("/:deviceId", authenticate, fetchDeviceById);
 
-// Update Device
-router.put("/:deviceId", editDevice);
+router.put("/:deviceId", authenticate, editDevice);
 
-// Delete Device
-router.delete("/:deviceId", removeDevice);
+router.delete("/:deviceId", authenticate, removeDevice);
 
 export default router;

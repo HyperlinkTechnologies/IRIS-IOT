@@ -108,12 +108,4 @@ export const billingActions = [
     desc: "View invoices and payment history.",
     icon: ReceiptText,
   },
-
-  {
-    id: "payment",
-    title: "Payment Methods",
-    desc: "Manage saved payment methods.",
-    icon: CreditCard,
-  },
-
 ];

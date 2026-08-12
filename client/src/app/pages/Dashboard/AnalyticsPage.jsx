@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import deviceRegistry from "../../core/devices/deviceRegistry";
 import DashboardCard from "../../components/Dashboard/DashboardCard";
@@ -6,27 +6,33 @@ import { getTelemetryHistory } from "../../services/history.service";
 import TelemetryChart from "../../components/Analytics/TelemetryChart";
 import { exportTelemetry } from "../../services/history.service";
 import { DownloadIcon } from "lucide-react";
+import { useAnalytics } from "../../../context/AnalyticsContext";
 
 export default function AnalyticsPage() {
   const [devices, setDevices] = useState(deviceRegistry.getAll());
 
-  const [selectedDevice, setSelectedDevice] = useState("");
+  const {
+    selectedDevice,
+    setSelectedDevice,
 
-  const [telemetryKey, setTelemetryKey] = useState("");
+    telemetryKey,
+    setTelemetryKey,
 
-  const [timeRange, setTimeRange] = useState("30m");
+    timeRange,
+    setTimeRange,
 
-  const [chartData, setChartData] = useState([]);
+    chartData,
+    setChartData,
 
-  const [stats, setStats] = useState({
-    latest: "--",
+    stats,
+    setStats,
 
-    min: "--",
+    loading,
+    setLoading,
 
-    max: "--",
-
-    average: "--",
-  });
+    error,
+    setError,
+  } = useAnalytics();
 
   useEffect(() => {
     const unsubscribe = deviceRegistry.subscribe(setDevices);
@@ -34,49 +40,84 @@ export default function AnalyticsPage() {
     return unsubscribe;
   }, []);
 
+  
+
   useEffect(() => {
     async function loadHistory() {
-      if (!selectedDevice || !telemetryKey) {
+      if (!selectedDevice || !telemetryKey || !timeRange) {
         setChartData([]);
         return;
       }
 
-      try {
-        const history = await getTelemetryHistory(selectedDevice, timeRange);
+      setLoading(true);
+setError("");
 
-        const filtered = history
-          .filter((item) => item[telemetryKey] !== undefined)
-          .map((item) => ({
-            time: item.timestamp,
-            value: Number(item[telemetryKey]),
-          }));
+try {
+    const history = await getTelemetryHistory(selectedDevice, timeRange);
 
-        setChartData(filtered);
-        if (!filtered.length) {
-          setStats({
+    let filtered = history
+    .filter(item => item[telemetryKey] !== undefined)
+    .map(item => ({
+        time: new Date(item.timestamp).getTime(),
+        value: Number(item[telemetryKey]),
+    }));
+
+if (timeRange === "7d" || timeRange === "30d") {
+
+    const days = timeRange === "7d" ? 7 : 30;
+
+    const start = new Date();
+    start.setDate(start.getDate() - (days - 1));
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+
+    filtered = filtered.filter(item => {
+        const t = new Date(item.time);
+        return t >= start && t <= end;
+    });
+
+}
+
+filtered.sort(
+    (a, b) => a.time - b.time
+);
+    setChartData(filtered);
+
+    if (!filtered.length) {
+        setStats({
             latest: "--",
             min: "--",
             max: "--",
             average: "--",
-          });
-          return;
-        }
+        });
 
-        if (filtered.length) {
-          const values = filtered.map((item) => item.value);
+        return;
+    }
 
-          setStats({
-            latest: values.at(-1),
-            min: Math.min(...values),
-            max: Math.max(...values),
-            average: (
-              values.reduce((a, b) => a + b, 0) / values.length
-            ).toFixed(2),
-          });
-        }
-      } catch (err) {
-        console.error(err);
-      }
+    const values = filtered
+    .filter(item => item.value !== null)
+    .map(item => item.value);
+
+      setStats({
+        latest: values.length ? values.at(-1) : "--",
+        min: values.length ? Math.min(...values) : "--",
+
+        max: values.length ? Math.max(...values) : "--",
+
+        average: values.length
+          ? (values.reduce((a, b) => a + b, 0) / values.length).toFixed(2) : "--",
+      });
+
+}
+catch (err) {
+    console.error(err);
+    setError("Failed to load telemetry.");
+}
+finally {
+    setLoading(false);
+}
     }
 
     loadHistory();
@@ -213,6 +254,7 @@ export default function AnalyticsPage() {
           py-3
         "
             >
+              <option value="">Select Time Range</option>
               <option value="5m">Last 5 Minutes</option>
 
               <option value="30m">Last 30 Minutes</option>
@@ -281,7 +323,46 @@ export default function AnalyticsPage() {
             text-gray-400
             "
         >
-          <TelemetryChart data={chartData} />
+          {loading ? (
+  <div className="flex flex-col items-center justify-center h-full text-gray-500">
+    <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+    <p>Loading telemetry...</p>
+  </div>
+) : error ? (
+  <div className="flex flex-col items-center justify-center h-full text-red-500">
+    <p>{error}</p>
+  </div>
+) : chartData.length === 0 ? (
+  <div className="flex flex-col items-center justify-center h-full text-gray-500">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="w-14 h-14 mb-4 text-gray-400"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M3 17l6-6 4 4 8-8"
+      />
+    </svg>
+
+    <h3 className="text-lg font-semibold">
+      No telemetry available
+    </h3>
+
+    <p className="text-sm text-gray-400 mt-2">
+      No telemetry was available for the selected input.
+    </p>
+  </div>
+) : (
+  <TelemetryChart
+    data={chartData}
+    timeRange={timeRange}
+/>
+)}
         </div>
       </div>
 

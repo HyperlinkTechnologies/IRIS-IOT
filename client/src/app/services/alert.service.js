@@ -1,56 +1,39 @@
-const API_URL = "http://localhost:4000/api/alerts";
-import { getCurrentUser } from "aws-amplify/auth";
+import request from "./api";
 
-async function request(url, options = {}) {
-  const response = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    ...options,
+const API_URL = "/alerts";
+
+export async function getAlerts() {
+  const result = await request(API_URL);
+  return result.data;
+}
+
+export async function getAlert(alertId) {
+  const result = await request(`${API_URL}/${alertId}`);
+  return result.data;
+}
+
+export async function createAlert(alert) {
+  const result = await request(API_URL, {
+    method: "POST",
+    body: JSON.stringify(alert),
   });
-
-  const result = await response.json();
-
-  if (!response.ok) {
-    throw new Error(result.message || "Request failed");
-  }
 
   return result.data;
 }
 
-export async function getAlerts() {
-  const currentUser = await getCurrentUser();
-
-  return request(
-    `${API_URL}?userId=${currentUser.userId}`
-  );
-}
-
-export async function getAlert(alertId) {
-  return request(`${API_URL}/${alertId}`);
-}
-
-export async function createAlert(alert) {
-  const currentUser = await getCurrentUser();
-
-  return request(API_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      ...alert,
-      userId: currentUser.userId,
-    }),
-  });
-}
-
 export async function updateAlert(alertId, updates) {
-  return request(`${API_URL}/${alertId}`, {
+  const result = await request(`${API_URL}/${alertId}`, {
     method: "PUT",
     body: JSON.stringify(updates),
   });
+
+  return result.data;
 }
 
 export async function deleteAlert(alertId) {
-  return request(`${API_URL}/${alertId}`, {
+  const result = await request(`${API_URL}/${alertId}`, {
     method: "DELETE",
   });
+
+  return result.data;
 }

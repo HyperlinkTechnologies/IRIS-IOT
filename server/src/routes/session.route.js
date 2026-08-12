@@ -1,5 +1,5 @@
 import { Router } from "express";
-
+import { authenticate } from "../middleware/auth.middleware.js";
 import {
   createSessionRecord,
   getUserSessions,
@@ -10,22 +10,25 @@ import {
 
 const router = Router();
 
-router.post("/sessions", createSessionRecord);
+router.post("/sessions", authenticate, createSessionRecord);
 
-router.get("/sessions/:userId", getUserSessions);
+router.get("/sessions", authenticate, getUserSessions);
 
 router.put(
   "/sessions/:sessionId/activity",
+  authenticate,
   updateSessionActivity
 );
 
 router.delete(
   "/sessions/:sessionId",
+  authenticate,
   deleteSession
 );
 
 router.delete(
   "/sessions/others",
+  authenticate,
   deleteOtherSessions
 );
 

@@ -1,12 +1,10 @@
-// src/utils/generateDocumentationPdf.js
-
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 import { documentationContent } from "../app/core/documentation/documentationContent";
 
 import { pdfTheme } from "./pdfTheme";
-import { addCoverPage } from "./pdfCoverPage";
+import { addCoverPage } from "./pdfcoverPage";
 import {
   addHeading,
   addParagraph,
