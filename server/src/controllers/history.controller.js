@@ -3,10 +3,7 @@ import { getTelemetryHistory } from "../services/history.service.js";
 export async function history(req, res) {
   try {
     const { deviceId, range } = req.query;
-
-// TODO:
-// Later we'll verify that this device belongs to req.user.sub
-// before returning telemetry history.
+    const userId = req.user.sub;
 
     if (!deviceId) {
       return res.status(400).json({
@@ -14,7 +11,12 @@ export async function history(req, res) {
       });
     }
 
-    const data = await getTelemetryHistory(deviceId, range);
+    const data = await getTelemetryHistory(
+      userId,
+      deviceId,
+      range
+    );
+
     res.json(data);
   } catch (err) {
     console.error(err);

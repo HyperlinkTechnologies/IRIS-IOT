@@ -19,43 +19,55 @@ async function streamToString(stream) {
   });
 }
 
-export async function getHistory(deviceId) {
+export async function getHistory(userId, deviceId, planId) {
+  const prefix = `${planId}/${userId}/${deviceId}/`;
+
+  console.log("📂 Reading telemetry from S3:");
+  console.log("Bucket:", BUCKET);
+  console.log("Prefix:", prefix);
+
   const list = await s3.send(
     new ListObjectsV2Command({
       Bucket: BUCKET,
-      Prefix: `${deviceId}/`,
+      Prefix: prefix,
     })
   );
 
   if (!list.Contents?.length) {
+    console.log("⚠️ No telemetry objects found in S3");
     return [];
   }
 
-  const results = await Promise.all(
-  list.Contents.map(async (file) => {
+  console.log(
+    `📦 Found ${list.Contents.length} telemetry files`
+  );
+
+  const history = [];
+
+  for (const file of list.Contents) {
     const object = await s3.send(
       new GetObjectCommand({
         Bucket: BUCKET,
         Key: file.Key,
-      })
+      }),
     );
 
     const json = await streamToString(object.Body);
 
-    return JSON.parse(json);
-  })
-);
+    const records = JSON.parse(json);
 
-const history = [];
-
-for (const records of results) {
-  if (Array.isArray(records)) {
-    history.push(...records);
+    if (Array.isArray(records)) {
+      history.push(...records);
+    }
   }
-}
 
   history.sort(
-    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+    (a, b) =>
+      new Date(a.timestamp) - new Date(b.timestamp)
+  );
+
+  console.log(
+    `📊 Loaded ${history.length} telemetry records`
   );
 
   return history;

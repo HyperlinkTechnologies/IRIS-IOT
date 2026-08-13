@@ -14,7 +14,11 @@ export function TelemetryProvider({ children }) {
   useEffect(() => {
   const unsubscribe = telemetryStore.subscribe(setTelemetry);
 
-  const socket = io("http://localhost:4000");
+  const socket = io(
+  new URL(
+    import.meta.env.VITE_API_URL || "http://localhost:4000/api"
+  ).origin
+);
 
   socket.on("connect", () => {
     console.log("✅ Connected to Backend");

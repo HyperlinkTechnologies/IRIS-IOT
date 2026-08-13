@@ -1,11 +1,25 @@
 import * as historyRepository from "../repositories/history.repository.js";
-
+import * as billingRepository from "../repositories/billing.repository.js";
 export async function getTelemetryHistory(
+  userId,
   deviceId,
   range = "30m"
 ) {
-  const history =
-    await historyRepository.getHistory(deviceId);
+  const subscription =
+  await billingRepository.getSubscription(userId);
+
+if (!subscription) {
+  return [];
+}
+
+const planId = subscription.planId;
+
+const history =
+  await historyRepository.getHistory(
+    userId,
+    deviceId,
+    planId
+  );
 
   const now = Date.now();
 
