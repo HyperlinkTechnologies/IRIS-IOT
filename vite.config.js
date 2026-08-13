@@ -4,6 +4,8 @@ import pkg from "./package.json";
 
 export default defineConfig({
 
+  publicDir: "client/public",
+
   plugins: [react()],
 
   define: {
@@ -13,12 +15,10 @@ export default defineConfig({
     ),
 
     __BUILD_DATE__: JSON.stringify(
-
-    new Date().toLocaleDateString(
-      "en-GB"
-    )
-
-  ),
+      new Date().toLocaleDateString(
+        "en-GB"
+      )
+    ),
 
   },
 
