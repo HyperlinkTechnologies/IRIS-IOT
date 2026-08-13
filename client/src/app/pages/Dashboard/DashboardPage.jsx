@@ -99,7 +99,7 @@ export default function DashboardPage() {
         try {
           profile = await getUser(userId);
         } catch (error) {
-          if (error.response?.status === 404) {
+          if (error.status === 404) {
             profile = await createUser({
               userId,
               username: userData.username,
