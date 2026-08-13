@@ -1,4 +1,6 @@
 import "dotenv/config";
+import fs from "fs";
+import os from "os";
 import path from "path";
 import { fileURLToPath } from "url";
 import { getIO } from "./socket.js";
@@ -11,16 +13,67 @@ import * as limitService from "../services/subscriptionLimit.service.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const certsPath = path.join(__dirname, "../../certs");
+const certsPath = path.join(os.tmpdir(), "iris-iot-certs");
+
+fs.mkdirSync(certsPath, { recursive: true });
+
+const deviceCertPath = path.join(
+  certsPath,
+  "device-certificate.pem.crt"
+);
+
+const privateKeyPath = path.join(
+  certsPath,
+  "private.pem.key"
+);
+
+const caPath = path.join(
+  certsPath,
+  "AmazonRootCA1.pem"
+);
+
+if (
+  !process.env.AWS_IOT_DEVICE_CERT ||
+  !process.env.AWS_IOT_PRIVATE_KEY ||
+  !process.env.AWS_IOT_CA
+) {
+  throw new Error(
+    "AWS IoT certificate environment variables are required"
+  );
+}
+
+fs.writeFileSync(
+  deviceCertPath,
+  Buffer.from(
+    process.env.AWS_IOT_DEVICE_CERT,
+    "base64"
+  )
+);
+
+fs.writeFileSync(
+  privateKeyPath,
+  Buffer.from(
+    process.env.AWS_IOT_PRIVATE_KEY,
+    "base64"
+  )
+);
+
+fs.writeFileSync(
+  caPath,
+  Buffer.from(
+    process.env.AWS_IOT_CA,
+    "base64"
+  )
+);
 
 const config = iot.AwsIotMqttConnectionConfigBuilder
   .new_mtls_builder_from_path(
-    path.join(certsPath, "device-certificate.pem.crt"),
-    path.join(certsPath, "private.pem.key")
+    deviceCertPath,
+    privateKeyPath
   )
   .with_certificate_authority_from_path(
     undefined,
-    path.join(certsPath, "AmazonRootCA1.pem")
+    caPath
   )
   .with_clean_session(false)
   .with_client_id(process.env.AWS_IOT_CLIENT_ID)
