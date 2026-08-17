@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useRef } from "react";
 import toast from "react-hot-toast";
 import { useMemo } from "react";
-import { QRCodeSVG } from "qrcode.react";
 import {
   User,
   Bell,
@@ -26,16 +25,10 @@ import {
   updatePassword,
   resetPassword,
   confirmResetPassword,
-  setUpTOTP,
-  verifyTOTPSetup,
-  updateMFAPreference,
-  fetchMFAPreference,
 } from "aws-amplify/auth";
 
 import { useUser } from "../../../context/UserContext";
 import { uploadProfileImage } from "../../services/image.service";
-// import settingsStore from "../../core/settings/settingsStore";
-import TwoFactorModal from "../../components/Settings/TwoFactorModal";
 import ForgotPasswordModal from "../../components/Settings/ForgotPasswordModal";
 import ProfileModal from "../../components/Settings/ProfileModal";
 import OrganizationModal from "../../components/Settings/OrganizationModal";
@@ -169,9 +162,7 @@ function validateforgotPassword(forgotpasswordData) {
   return null;
 }
 
-export default function SettingsPage({
-    setActiveTab,
-}) {
+export default function SettingsPage({ setActiveTab }) {
   /* ================= ACTIVE MODAL ================= */
 
   const [activeModal, setActiveModal] = useState(null);
@@ -236,27 +227,13 @@ export default function SettingsPage({
   const [resetSuccess, setResetSuccess] = useState(false);
   const [resendTimer, setResendTimer] = useState(60);
 
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(
-    user?.twoFactorEnabled ?? false,
-  );
-
   const [loginAlerts, setLoginAlerts] = useState(user?.loginAlerts ?? false);
 
   const [sessionTimeout, setSessionTimeout] = useState(
-  user?.sessionTimeout ?? 30
-);
+    user?.sessionTimeout ?? 30,
+  );
 
   const [loginAlertsLoading, setLoginAlertsLoading] = useState(false);
-
-  const [twoFactorLoading, setTwoFactorLoading] = useState(false);
-
-  const [showTwoFactorModal, setShowTwoFactorModal] = useState(false);
-
-  const [totpUri, setTotpUri] = useState("");
-
-  const [totpCode, setTotpCode] = useState("");
-
-  const [totpSetupDetails, setTotpSetupDetails] = useState(null);
 
   const passwordStrength = (() => {
     const password = passwordData.newPassword;
@@ -315,9 +292,6 @@ export default function SettingsPage({
       companyAddress: user.companyAddress || "",
       companyDescription: user.companyDescription || "",
     });
-
-    // setOrganizationData(organizationStore.get());
-    // setSettingsData(settingsStore.get());
     setLoginAlerts(user?.loginAlerts ?? false);
     setSessionTimeout(user?.sessionTimeout ?? 30);
   }, [user]);
@@ -331,26 +305,6 @@ export default function SettingsPage({
 
     return () => clearInterval(timer);
   }, [codeSent, resendTimer]);
-
-  useEffect(() => {
-    async function loadMFAStatus() {
-      try {
-        const preference = await fetchMFAPreference();
-
-        if (preference?.preferred === "TOTP") {
-          setTwoFactorEnabled(true);
-        } else {
-          setTwoFactorEnabled(false);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    if (user) {
-      loadMFAStatus();
-    }
-  }, [user]);
 
   async function handleChangePassword() {
     const error = validatePassword(passwordData);
@@ -468,94 +422,6 @@ export default function SettingsPage({
     }
   }
 
-  async function handleToggle2FA() {
-    if (twoFactorEnabled) {
-      setTwoFactorLoading(true);
-
-      try {
-        await updateMFAPreference({
-          totp: "PREFERRED",
-          sms: "DISABLED",
-        });
-
-        await updateUser({
-  twoFactorEnabled: false,
-});
-
-        setTwoFactorEnabled(false);
-
-        toast.success("Two-Factor Authentication disabled.");
-      } catch (error) {
-        console.error(error);
-
-        toast.error(error.message);
-      } finally {
-        setTwoFactorLoading(false);
-      }
-
-      return;
-    }
-
-    setTwoFactorLoading(true);
-
-    try {
-      const details = await setUpTOTP();
-
-      setTotpSetupDetails(details);
-
-      const uri = details.getSetupUri("IRIS IoT Platform");
-
-      setTotpUri(uri);
-
-      setShowTwoFactorModal(true);
-    } catch (error) {
-      console.error(error);
-
-      toast.error(error.message);
-    } finally {
-      setTwoFactorLoading(false);
-    }
-  }
-
-  async function handleVerifyTOTP() {
-    if (!totpCode.trim()) {
-      toast.error("Enter verification code.");
-
-      return;
-    }
-
-    setTwoFactorLoading(true);
-
-    try {
-      await verifyTOTPSetup({
-        code: totpCode,
-      });
-
-      await updateMFAPreference({
-        totp: "PREFERRED",
-        sms: "DISABLED",
-      });
-
-      await updateUser({
-  twoFactorEnabled: true,
-});
-
-      setTwoFactorEnabled(true);
-
-      setShowTwoFactorModal(false);
-
-      setTotpCode("");
-
-      toast.success("Two-Factor Authentication enabled.");
-    } catch (error) {
-      console.error(error);
-
-      toast.error(error.message);
-    } finally {
-      setTwoFactorLoading(false);
-    }
-  }
-
   async function handleToggleLoginAlerts() {
     setLoginAlertsLoading(true);
 
@@ -563,8 +429,8 @@ export default function SettingsPage({
       const enabled = !loginAlerts;
 
       await updateUser({
-  loginAlerts: enabled,
-});
+        loginAlerts: enabled,
+      });
 
       setLoginAlerts(enabled);
 
@@ -586,29 +452,27 @@ export default function SettingsPage({
   }
 
   async function handleSessionTimeoutChange(value) {
-  try {
-    const timeout = Number(value);
+    try {
+      const timeout = value === "never" ? "never" : Number(value);
 
-    setSessionTimeout(timeout);
+      setSessionTimeout(timeout);
 
-    await updateUser({
-  sessionTimeout: timeout,
-});
+      await updateUser({
+        sessionTimeout: timeout,
+      });
 
-    setUser((prev) => ({
-      ...prev,
-      sessionTimeout: timeout,
-    }));
+      setUser((prev) => ({
+        ...prev,
+        sessionTimeout: timeout,
+      }));
 
-    toast.success("Session timeout updated.");
-  } catch (error) {
-    console.error(error);
+      toast.success("Session timeout updated.");
+    } catch (error) {
+      console.error(error);
 
-    toast.error(
-      error.message || "Failed to update session timeout."
-    );
+      toast.error(error.message || "Failed to update session timeout.");
+    }
   }
-}
 
   /* ================= SAVE PROFILE ================= */
 
@@ -670,30 +534,17 @@ export default function SettingsPage({
   };
 
   return (
-    <div className="w-full">
+    <div
+      className="w-full border
+      border-black/20 p-4 rounded-xl"
+    >
       {/* ================= HEADER ================= */}
 
       <div className="mb-8">
-        <h2
-          className="
-            text-2xl
-            sm:text-3xl
-            font-bold
-            text-[#010c29]
-          "
-        >
-          Settings
-        </h2>
+        <h1 className="text-3xl font-bold text-[#010c29]">Settings</h1>
 
-        <p
-          className="
-            text-gray-400
-            mt-2
-            text-sm
-            sm:text-base
-          "
-        >
-          Configure platform preferences
+        <p className="mt-1 text-gray-500">
+          Configure your account, organization, and platform preferences.
         </p>
       </div>
 
@@ -776,9 +627,6 @@ export default function SettingsPage({
         setShowConfirmPassword={setShowConfirmPassword}
         passwordStrength={passwordStrength}
         setShowForgotPassword={setShowForgotPassword}
-        twoFactorEnabled={twoFactorEnabled}
-        handleToggle2FA={handleToggle2FA}
-        twoFactorLoading={twoFactorLoading}
         loginAlerts={loginAlerts}
         handleToggleLoginAlerts={handleToggleLoginAlerts}
         loginAlertsLoading={loginAlertsLoading}
@@ -812,24 +660,13 @@ export default function SettingsPage({
         user={user}
       />
 
-      {/* ===================TWO FACTOR MODAL======================= */}
-      <TwoFactorModal
-        open={showTwoFactorModal}
-        onClose={() => setShowTwoFactorModal(false)}
-        totpUri={totpUri}
-        totpCode={totpCode}
-        setTotpCode={setTotpCode}
-        handleVerifyTOTP={handleVerifyTOTP}
-        twoFactorLoading={twoFactorLoading}
-      />
-
       {/* ==============ABOUT MODAL=================== */}
 
       <AboutModal
-    open={activeModal === "about"}
-    onClose={() => setActiveModal(null)}
-    setActiveTab={setActiveTab}
-/>
+        open={activeModal === "about"}
+        onClose={() => setActiveModal(null)}
+        setActiveTab={setActiveTab}
+      />
 
       {/* ================= ORGANIZATION MODAL ================= */}
 

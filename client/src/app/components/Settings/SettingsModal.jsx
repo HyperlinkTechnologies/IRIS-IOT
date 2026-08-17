@@ -16,16 +16,18 @@ export default function SettingsModal({ title, children, onClose }) {
       "
     >
       <div
-        className="
-          bg-white
-          w-full
-          max-w-2xl
-          rounded-3xl
-          shadow-2xl
-          max-h-[90vh]
-          overflow-y-auto
-        "
-      >
+  className="
+    bg-white
+    w-full
+    max-w-2xl
+    rounded-3xl
+    shadow-2xl
+    max-h-[90vh]
+    overflow-hidden
+    flex
+    flex-col
+  "
+>
         {/* ================= HEADER ================= */}
 
         <div
@@ -62,7 +64,9 @@ export default function SettingsModal({ title, children, onClose }) {
 
         {/* ================= BODY ================= */}
 
-        <div className="p-6">{children}</div>
+        <div className="p-6 overflow-y-auto flex-1">
+  {children}
+</div>
       </div>
     </div>
   );

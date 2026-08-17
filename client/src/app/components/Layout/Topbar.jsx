@@ -8,6 +8,8 @@ import triggeredAlertStore from "../../core/alerts/triggeredAlertStore";
 import deviceRegistry from "../../core/devices/deviceRegistry";
 import { useUser } from "../../../context/UserContext";
 import { deleteSession } from "../../services/session.service";
+import IrisLogo from "../../../assets/iris-logo.png";
+import IrisIcon from "../../../assets/IRIS icon.png";
 
 export default function Topbar({
   activeTab,
@@ -89,23 +91,23 @@ export default function Topbar({
   /* ================= LOGOUT ================= */
 
   const handleLogout = async () => {
-  try {
-    const sessionId = sessionStorage.getItem("iris_session_id");
+    try {
+      const sessionId = sessionStorage.getItem("iris_session_id");
 
-    if (sessionId) {
-      await deleteSession(sessionId);
-      sessionStorage.removeItem("iris_session_id");
+      if (sessionId) {
+        await deleteSession(sessionId);
+        sessionStorage.removeItem("iris_session_id");
+      }
+
+      await signOut();
+
+      setUser(null);
+
+      window.location.href = "/";
+    } catch (error) {
+      console.error(error);
     }
-
-    await signOut();
-
-    setUser(null);
-
-    window.location.href = "/";
-  } catch (error) {
-    console.error(error);
-  }
-};
+  };
 
   return (
     <header
@@ -114,47 +116,34 @@ export default function Topbar({
         flex
         items-center
         justify-between
+
       "
     >
       {/* ================= LEFT ================= */}
 
       <div
         className="
-          flex
-          items-center
-          gap-3
-          sm:gap-4
-        "
+    flex
+    items-center
+    gap-2
+  "
       >
-        {/* Title */}
+        <img
+          src={IrisIcon}
+          alt="IRIS Icon"
+          className="w-8 md:w-10 sm:w-10 object-contain"
+        />
 
-        <div>
-          <h2
-            className="
-              text-xl
-              sm:text-2xl
-              lg:text-3xl
-              font-bold
-              capitalize
-              text-[#010c29]
-              leading-tight
+        {/* Logo */}
+        <img
+          src={IrisLogo}
+          alt="IRIS Logo"
+          className="
+              w-32.5
+              sm:w-40
+              object-contain
             "
-          >
-            {activeTab}
-          </h2>
-
-          <p
-            className="
-              text-gray-500
-              text-xs
-              sm:text-sm
-              hidden
-              sm:block
-            "
-          >
-            Welcome back to IRIS Platform
-          </p>
-        </div>
+        />
       </div>
 
       {/* ================= PROFILE ================= */}

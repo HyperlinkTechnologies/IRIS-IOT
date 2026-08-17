@@ -48,7 +48,8 @@ const getDeviceName = (deviceId) => {
 
   return (
 
-    <div className="w-full">
+    <div className="w-full border
+      border-black/20 p-4 rounded-xl">
 
       {/* ================= HEADER ================= */}
 
@@ -67,27 +68,13 @@ const getDeviceName = (deviceId) => {
         {/* Left */}
         <div>
 
-          <h2
-            className="
-              text-2xl
-              sm:text-3xl
-              font-bold
-              text-[#010c29]
-            "
-          >
-            Alerts Management
-          </h2>
+          <h1 className="text-3xl font-bold text-[#010c29]">
+  Alerts Management
+</h1>
 
-          <p
-            className="
-              text-gray-400
-              mt-2
-              text-sm
-              sm:text-base
-            "
-          >
-            Configure and monitor alert rules
-          </p>
+<p className="mt-1 text-gray-500">
+  Configure and monitor alerts for important device events.
+</p>
 
         </div>
 

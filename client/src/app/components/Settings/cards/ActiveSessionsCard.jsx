@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { Monitor, Clock, } from "lucide-react";
+import { Monitor, Clock, Trash2 } from "lucide-react";
 
 import { useUser } from "../../../../context/UserContext";
 
-import { getUserSessions } from "../../../services/session.service";
+import { getUserSessions, deleteSession } from "../../../services/session.service";
 
 function formatLastActivity(date) {
   const diff = Date.now() - new Date(date).getTime();
@@ -53,6 +53,18 @@ export default function ActiveSessionsCard() {
     }
   }
 
+  async function handleDeleteSession(sessionId) {
+  try {
+    await deleteSession(sessionId);
+
+    setSessions((prev) =>
+      prev.filter((session) => session.sessionId !== sessionId)
+    );
+  } catch (error) {
+    console.error("Failed to delete session:", error);
+  }
+}
+
 
 const [, forceUpdate] = useState(0);
 
@@ -96,14 +108,27 @@ const isCurrent =
           >
             <div className="flex items-start justify-between mb-1">
   <div className="font-semibold text-lg text-[#010c29]">
-    {session.device} ({session.browser} )
+    {session.device} ({session.browser})
   </div>
 
-  {isCurrent && (
-  <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
-    Current Session
-  </span>
-)}
+  <div className="flex items-center gap-2">
+    {isCurrent && (
+      <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+        Current Session
+      </span>
+    )}
+
+    {!isCurrent && (
+      <button
+        type="button"
+        onClick={() => handleDeleteSession(session.sessionId)}
+        className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-100 transition cursor-pointer"
+        title="Delete session"
+      >
+        <Trash2 size={15} />
+      </button>
+    )}
+  </div>
 </div>
 
             <div className="text-sm text-gray-500">

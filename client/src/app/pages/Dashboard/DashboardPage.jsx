@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { getCurrentUser, fetchAuthSession } from "aws-amplify/auth";
 
-import { PanelLeftCloseIcon } from "lucide-react";
+import { HamburgerIcon, Menu, PanelLeftCloseIcon } from "lucide-react";
 
 import { useUser } from "../../../context/UserContext";
 import { getUser, createUser } from "../../services/user.service";
@@ -59,6 +59,8 @@ export default function DashboardPage() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const [appLoading, setAppLoading] = useState(true);
 
   const navigate = useNavigate();
 
@@ -118,15 +120,14 @@ export default function DashboardPage() {
         setUser(profile);
         const existingSession = sessionStorage.getItem("iris_session_id");
 
-const ua = navigator.userAgent;
+        const ua = navigator.userAgent;
 
-let deviceName = "Unknown Device";
-let browser = "Unknown";
-let browserVersion = "";
-let os = "Unknown";
+        let deviceName = "Unknown Device";
+        let browser = "Unknown";
+        let browserVersion = "";
+        let os = "Unknown";
 
-if (!existingSession) {
-
+        if (!existingSession) {
           /* ================= OS ================= */
 
           if (ua.includes("Windows NT 10.0")) {
@@ -186,17 +187,17 @@ if (!existingSession) {
         if (isFreshLogin && profile.loginAlerts) {
           try {
             await sendLoginAlert({
-  email: profile.email,
-  name:
-  profile.fullName ||
-  profile.username ||
-  profile.email.split("@")[0],
-  loginTime: new Date().toLocaleString(),
-  device: deviceName,
-  browser,
-  browserVersion,
-  os,
-});
+              email: profile.email,
+              name:
+                profile.fullName ||
+                profile.username ||
+                profile.email.split("@")[0],
+              loginTime: new Date().toLocaleString(),
+              device: deviceName,
+              browser,
+              browserVersion,
+              os,
+            });
           } catch (error) {
             console.error("Login alert failed:", error);
           }
@@ -213,6 +214,8 @@ if (!existingSession) {
         /* Redirect to Home */
 
         navigate("/");
+      } finally {
+        setAppLoading(false);
       }
     };
 
@@ -222,29 +225,27 @@ if (!existingSession) {
   useEffect(() => {
     if (!user) return;
 
-    const cleanup = startSessionTimeout(
-      user.sessionTimeout ?? 30,
+    if (user.sessionTimeout === "never") {
+      return;
+    }
 
-      async () => {
-        try {
-          const sessionId = sessionStorage.getItem("iris_session_id");
+    const cleanup = startSessionTimeout(user.sessionTimeout ?? 30, async () => {
+      try {
+        const sessionId = sessionStorage.getItem("iris_session_id");
 
-          if (sessionId) {
-            await deleteSession(sessionId);
-
-            sessionStorage.removeItem("iris_session_id");
-          }
-
-          await signOut();
-        } catch (error) {
-          console.error(error);
+        if (sessionId) {
+          await deleteSession(sessionId);
+          sessionStorage.removeItem("iris_session_id");
         }
 
-        setUser(null);
+        await signOut();
+      } catch (error) {
+        console.error(error);
+      }
 
-        window.location.href = "/";
-      },
-    );
+      setUser(null);
+      window.location.href = "/";
+    });
 
     return cleanup;
   }, [user, setUser]);
@@ -279,6 +280,15 @@ if (!existingSession) {
     };
   }, []);
 
+  if (appLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+        <div className="w-12 h-12 border-4 border-gray-200 border-t-[#ff5700] rounded-full animate-spin" />
+
+        <p className="mt-4 text-gray-500">Loading IRIS...</p>
+      </div>
+    );
+  }
   return (
     <div
       className="
@@ -299,138 +309,137 @@ if (!existingSession) {
 
       {/* ================= MAIN ================= */}
       <BillingProvider>
-      <main
-        className={`
+        <main
+          className={`
           flex-1
           flex
           flex-col
           overflow-hidden
           transition-all
           duration-300
-          ${sidebarOpen ? "lg:ml-72" : "ml-0"}
+         ${sidebarOpen ? "lg:ml-60" : "lg:ml-20"}
         `}
-      >
-        {/* ================= HEADER ================= */}
-
-        <div
-          className="
-            h-20
-            flex
-            items-center
-            gap-4
-            px-4
-            sm:px-6
-            lg:px-8
-            border-b
-            border-black/5
-            bg-gray-200
-            sticky
-            top-0
-            z-30
-            mx-4
-            sm:mx-6
-            lg:mx-8
-            mt-4
-            mb-6
-            rounded-2xl
-          "
         >
-          {/* ================= SIDEBAR TOGGLE ================= */}
+          {/* ================= FIXED TOPBAR ================= */}
 
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+          <header
             className="
-              w-11
-              h-11
-              min-w-11
-              rounded-lg
-              cursor-pointer
-              border
-              border-black/10
-              flex
-              items-center
-              justify-center
-              bg-white
-              hover:bg-gray-100
-              transition-all
-              shadow-sm
-            "
+    fixed
+    top-0
+    left-0
+    right-0
+    h-20
+    z-50
+    m-2
+    mr-6
+    rounded-xl
+    bg-gray-300
+    flex
+    items-center
+    px-4
+    sm:px-6
+    lg:px-5
+  "
           >
-            <PanelLeftCloseIcon size={24} />
-          </button>
+            {/* ================= SIDEBAR TOGGLE ================= */}
 
-          {/* ================= TOPBAR ================= */}
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="
+      w-11
+      h-11
+      min-w-11
+      rounded-lg
+      cursor-pointer
+      border
+      border-black/10
+      flex
+      items-center
+      justify-center
+      bg-white
+      hover:bg-gray-100
+      transition-all
+      shadow-sm
+      mr-10
+    "
+            >
+              <Menu size={24} />
+            </button>
 
-          <div className="flex-1">
-            <Topbar
-              activeTab={activeTab}
-              showProfileMenu={showProfileMenu}
-              setShowProfileMenu={setShowProfileMenu}
-              setActiveTab={setActiveTab}
-            />
+            {/* ================= TOPBAR ================= */}
 
-            <ToastListener />
-          </div>
-        </div>
+            <div className="flex-1">
+              <Topbar
+                activeTab={activeTab}
+                showProfileMenu={showProfileMenu}
+                setShowProfileMenu={setShowProfileMenu}
+                setActiveTab={setActiveTab}
+              />
 
-        {/* ================= CONTENT ================= */}
+              <ToastListener />
+            </div>
+          </header>
 
-        <section
-          className="
+          {/* ================= CONTENT ================= */}
+
+          <section
+            className="
             flex-1
             overflow-y-auto
-            p-4
+            pt-24
+            p-2
             sm:px-6
-            lg:px-8 
+            lg:px-4
             custom-scrollbar
+
           "
-        >
-          {/* Dashboard */}
+          >
+            {/* Dashboard */}
 
-          {activeTab === "dashboard" && <DashboardHome />}
+            {activeTab === "dashboard" && <DashboardHome />}
 
-          {/* Devices */}
+            {/* Devices */}
 
-          {activeTab === "devices" && <DevicesPage />}
+            {activeTab === "devices" && <DevicesPage />}
 
-          {/* Alerts */}
+            {/* Alerts */}
 
-          {activeTab === "alerts" && <AlertsPage />}
+            {activeTab === "alerts" && <AlertsPage />}
 
-          {/* Billing */}
+            {/* Billing */}
 
-          {activeTab === "billing" && <BillingPage />}
+            {activeTab === "billing" && <BillingPage />}
 
-          {/* Settings */}
+            {/* Settings */}
 
-          {activeTab === "settings" && (
-            <SettingsPage setActiveTab={setActiveTab} />
-          )}
+            {activeTab === "settings" && (
+              <SettingsPage setActiveTab={setActiveTab} />
+            )}
 
-          {/* Get Started */}
+            {/* Get Started */}
 
-          {activeTab === "getstarted" && (
-            <GetStartedPage setActiveTab={setActiveTab} />
-          )}
+            {activeTab === "getstarted" && (
+              <GetStartedPage setActiveTab={setActiveTab} />
+            )}
 
-          {/* Documentation */}
+            {/* Documentation */}
 
-          {activeTab === "documentation" && <DocumentationPage />}
+            {activeTab === "documentation" && <DocumentationPage />}
 
-          {/* Analytics */}
-          {activeTab === "analytics" && <AnalyticsPage />}
+            {/* Analytics */}
+            {activeTab === "analytics" && <AnalyticsPage />}
 
-          {activeTab === "privacy-policy" && (
-            <PrivacyPolicyPage setActiveTab={setActiveTab} />
-          )}
-          {activeTab === "terms-and-conditions" && (
-            <TermsConditionsPage setActiveTab={setActiveTab} />
-          )}
-          {activeTab === "licenses" && (
-            <LicensesPage setActiveTab={setActiveTab} />
-          )}
-        </section>
-      </main>
+            {activeTab === "privacy-policy" && (
+              <PrivacyPolicyPage setActiveTab={setActiveTab} />
+            )}
+            {activeTab === "terms-and-conditions" && (
+              <TermsConditionsPage setActiveTab={setActiveTab} />
+            )}
+            {activeTab === "licenses" && (
+              <LicensesPage setActiveTab={setActiveTab} />
+            )}
+          </section>
+        </main>
       </BillingProvider>
     </div>
   );

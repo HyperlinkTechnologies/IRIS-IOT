@@ -1,7 +1,6 @@
 import SettingsModal from "./SettingsModal";
 
 import ChangePasswordCard from "./cards/ChangePasswordCard";
-import TwoFactorCard from "./cards/TwoFactorCard";
 import LoginAlertsCard from "./cards/LoginAlertsCard";
 import SessionTimeoutCard from "./cards/SessionTimeoutCard";
 import ActiveSessionsCard from "./cards/ActiveSessionsCard";
@@ -22,10 +21,6 @@ export default function SecurityModal({
   setShowConfirmPassword,
   passwordStrength,
   setShowForgotPassword,
-
-  twoFactorEnabled,
-  handleToggle2FA,
-  twoFactorLoading,
 
   loginAlerts,
   handleToggleLoginAlerts,
@@ -59,12 +54,6 @@ handleSignOutAllSessions,
   setShowConfirmPassword={setShowConfirmPassword}
   passwordStrength={passwordStrength}
   setShowForgotPassword={setShowForgotPassword}
-/>
-
-        <TwoFactorCard
-  twoFactorEnabled={twoFactorEnabled}
-  handleToggle2FA={handleToggle2FA}
-  twoFactorLoading={twoFactorLoading}
 />
 
         <LoginAlertsCard

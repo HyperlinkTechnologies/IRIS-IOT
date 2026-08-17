@@ -9,11 +9,6 @@ import {
 import dynamoDB from "../config/dynamodb.js";
 
 const TABLE_NAME = process.env.DYNAMODB_ALERT_TABLE;
-console.log(
-  "Alert Table:",
-  JSON.stringify(TABLE_NAME),
-  TABLE_NAME?.length
-);
 
 export async function createAlert(alert) {
   await dynamoDB.send(

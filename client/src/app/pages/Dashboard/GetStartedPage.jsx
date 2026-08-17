@@ -66,30 +66,16 @@ export default function GetStartedPage({ setActiveTab }) {
   ];
 
   return (
-    <div className="w-full">
+    <div className="w-full border
+      border-black/20 p-4 rounded-xl">
       {/* Header */}
       <div className="mb-8 md:mb-10">
-        <h2
-          className="
-            text-xl
-            sm:text-2xl
-            lg:text-3xl
-            font-bold
-            leading-tight
-          "
-        >
+        <h1 className="text-3xl font-bold text-[#010c29]">
           Get Started with IRIS
-        </h2>
+        </h1>
 
-        <p
-          className="
-            text-gray-500
-            mt-2
-            text-xs
-            sm:text-sm
-          "
-        >
-          Setup and manage your industrial IoT platform efficiently
+        <p className="mt-1 text-gray-400">
+          Set up and manage your industrial IoT platform efficiently.
         </p>
       </div>
 

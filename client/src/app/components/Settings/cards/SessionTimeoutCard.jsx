@@ -36,6 +36,7 @@ export default function SessionTimeoutCard({
               <option value={30}>30 Minutes</option>
               <option value={60}>1 Hour</option>
               <option value={120}>2 Hours</option>
+              <option value="never">Never</option>
             </select>
           </div>
         </div>

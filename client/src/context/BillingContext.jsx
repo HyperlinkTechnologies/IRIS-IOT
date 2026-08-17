@@ -15,7 +15,6 @@ export function BillingProvider({ children }) {
 
   async function loadInitialBilling() {
     try {
-      console.log("BillingProvider loading...");
 
       const [plansData, subscription] = await Promise.all([
         billingService.getPlans(),
@@ -24,9 +23,6 @@ export function BillingProvider({ children }) {
 
       setPlans(plansData);
       setBilling(subscription);
-
-      console.log("Plans:", plansData);
-      console.log("Subscription:", subscription);
 
       // Refresh usage/subscription every 5 seconds
       intervalId = setInterval(async () => {
@@ -66,7 +62,6 @@ export function BillingProvider({ children }) {
     closePlansModal: () => setPlansOpen(false),
   };
 
-  console.log("BillingContext Value:", value);
 
   return (
     <BillingContext.Provider value={value}>

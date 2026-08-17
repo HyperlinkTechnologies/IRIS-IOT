@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 
-import {
-  Plus,
-  Pencil,
-  Trash2,
-  Search,
-  LayoutDashboard,
-} from "lucide-react";
+import { Plus, Pencil, Trash2, Search, LayoutDashboard } from "lucide-react";
 
 import CreateDashboardModal from "../../components/Dashboard/CreateDashboardModal";
 import EditDashboardModal from "../../components/Dashboard/EditDashboardModal";
@@ -18,6 +12,7 @@ export default function DashboardList({
   dashboards,
   saveDashboards,
   onOpenDashboard,
+  loading,
 }) {
   /* ================= STATES ================= */
 
@@ -27,37 +22,34 @@ export default function DashboardList({
 
   const [editModalOpen, setEditModalOpen] = useState(false);
 
-  const [selectedDashboard, setSelectedDashboard] =
-    useState(null);
-    
+  const [selectedDashboard, setSelectedDashboard] = useState(null);
 
-    const [devices, setDevices] = useState(deviceRegistry.getAll());
+  const [devices, setDevices] = useState(deviceRegistry.getAll());
 
-    const [telemetryDevices, setTelemetryDevices] = useState(
-  telemetryStore.getAll()
-);
+  const [telemetryDevices, setTelemetryDevices] = useState(
+    telemetryStore.getAll(),
+  );
 
-    useEffect(() => {
-  const unsubscribe = deviceRegistry.subscribe(setDevices);
+  useEffect(() => {
+    const unsubscribe = deviceRegistry.subscribe(setDevices);
 
-  const unsubscribeTelemetry =
-  telemetryStore.subscribe(setTelemetryDevices);
+    const unsubscribeTelemetry = telemetryStore.subscribe(setTelemetryDevices);
 
-  const loadDevices = async () => {
-  if (!deviceRegistry.isLoaded()) {
-    const data = await getDevices();
+    const loadDevices = async () => {
+      if (!deviceRegistry.isLoaded()) {
+        const data = await getDevices();
 
-    deviceRegistry.setAll(data);
-  }
-};
+        deviceRegistry.setAll(data);
+      }
+    };
 
-  loadDevices();
+    loadDevices();
 
-  return () => {
-  unsubscribe();
-  unsubscribeTelemetry();
-};
-}, []);
+    return () => {
+      unsubscribe();
+      unsubscribeTelemetry();
+    };
+  }, []);
 
   /* ================= CREATE DASHBOARD ================= */
 
@@ -67,23 +59,17 @@ export default function DashboardList({
 
       widgets: [],
 
-      createdAt: new Date().toLocaleString(
-        "en-GB",
-        {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }
-      ),
+      createdAt: new Date().toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }),
     };
 
-    const updatedDashboards = [
-      ...dashboards,
-      newDashboard,
-    ];
+    const updatedDashboards = [...dashboards, newDashboard];
 
     saveDashboards(updatedDashboards);
   };
@@ -92,7 +78,7 @@ export default function DashboardList({
 
   const handleDeleteDashboard = (id) => {
     const updatedDashboards = dashboards.filter(
-      (dashboard) => dashboard.dashboardId !== id
+      (dashboard) => dashboard.dashboardId !== id,
     );
 
     saveDashboards(updatedDashboards);
@@ -100,28 +86,25 @@ export default function DashboardList({
 
   /* ================= FILTER ================= */
 
-  const filteredDashboards = dashboards.filter(
-    (dashboard) =>
-      dashboard.name
-        .toLowerCase()
-        .includes(search.toLowerCase())
+  const filteredDashboards = dashboards.filter((dashboard) =>
+    dashboard.name.toLowerCase().includes(search.toLowerCase()),
   );
 
   const getDashboardStatus = (dashboard) => {
-  const telemetry =
-    telemetryDevices[dashboard.device];
+    const telemetry = telemetryDevices[dashboard.device];
 
-  if (!telemetry) {
-    return "Inactive";
-  }
+    if (!telemetry) {
+      return "Inactive";
+    }
 
-  return telemetry.online
-    ? "Active"
-    : "Inactive";
-};
+    return telemetry.online ? "Active" : "Inactive";
+  };
 
   return (
-    <div className="w-full px-3 sm:px-5 lg:px-0">
+    <div
+      className="w-full border
+      border-black/20 p-4 rounded-xl"
+    >
       {/* ================= HEADER ================= */}
 
       <div
@@ -131,32 +114,17 @@ export default function DashboardList({
           xl:flex-row
           xl:items-center
           xl:justify-between
-          gap-5
+          gap-4
           mb-8
         "
       >
         {/* LEFT */}
 
         <div>
-          <h2
-            className="
-              text-2xl
-              sm:text-3xl
-              font-bold
-            "
-          >
-            Dashboards
-          </h2>
+          <h1 className="text-3xl font-bold text-[#010c29]">Dashboards</h1>
 
-          <p
-            className="
-              text-sm
-              sm:text-base
-              text-gray-500
-              mt-2
-            "
-          >
-            Manage your dashboards
+          <p className="mt-1 text-gray-500">
+            Create, customize, and monitor your IoT dashboards.
           </p>
         </div>
 
@@ -184,23 +152,18 @@ export default function DashboardList({
               border-black/10
               rounded-2xl
               px-4
-              py-3
+              py-2
               w-full
               sm:min-w-75
             "
           >
-            <Search
-              size={20}
-              className="text-gray-400 shrink-0"
-            />
+            <Search size={20} className="text-gray-400 shrink-0" />
 
             <input
               type="text"
               placeholder="Search dashboard..."
               value={search}
-              onChange={(e) =>
-                setSearch(e.target.value)
-              }
+              onChange={(e) => setSearch(e.target.value)}
               className="
                 bg-transparent
                 outline-none
@@ -222,7 +185,7 @@ export default function DashboardList({
               gap-2
               px-5
               sm:px-6
-              py-3
+              py-2
               rounded-2xl
               bg-[#ff5700]
               text-white
@@ -241,20 +204,60 @@ export default function DashboardList({
       </div>
 
       {/* ================= TABLE / MOBILE CARDS ================= */}
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="w-10 h-10 border-4 border-gray-200 border-t-[#ff5700] rounded-full animate-spin" />
+          <p className="mt-4 text-gray-500">Loading dashboards...</p>
+        </div>
+      ) : dashboards.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <LayoutDashboard size={48} className="text-gray-300 mb-4" />
 
-      <div
-        className="
+          <h3 className="text-xl font-semibold text-[#010c29]">
+            No dashboards yet
+          </h3>
+
+          <p className="mt-2 text-gray-500 max-w-md">
+            Create your first dashboard to start monitoring your IoT devices.
+          </p>
+
+          <button
+            onClick={() => setModalOpen(true)}
+            className="
+        mt-6
+        flex
+        items-center
+        justify-center
+        gap-2
+        px-6
+        py-3
+        rounded-2xl
+        bg-[#ff5700]
+        text-white
+        font-medium
+        hover:opacity-90
+        transition-all
+        cursor-pointer
+      "
+          >
+            <Plus size={20} />
+            Create Dashboard
+          </button>
+        </div>
+      ) : (
+        <div
+          className="
           bg-white
           rounded-2xl
           border
           border-black/10
           overflow-hidden
         "
-      >
-        {/* ================= DESKTOP HEADER ================= */}
+        >
+          {/* ================= DESKTOP HEADER ================= */}
 
-        <div
-          className="
+          <div
+            className="
             hidden
             lg:grid
             grid-cols-12
@@ -267,33 +270,21 @@ export default function DashboardList({
             text-gray-500
             text-center
           "
-        >
-          <div className="col-span-3">
-            Created At
+          >
+            <div className="col-span-3">Created At</div>
+
+            <div className="col-span-3">Dashboard</div>
+
+            <div className="col-span-2">Widgets</div>
+
+            <div className="col-span-2">Status</div>
+
+            <div className="col-span-2">Actions</div>
           </div>
 
-          <div className="col-span-3">
-            Dashboard
-          </div>
+          {/* ================= ROWS ================= */}
 
-          <div className="col-span-2">
-            Widgets
-          </div>
-
-          <div className="col-span-2">
-            Status
-          </div>
-
-          <div className="col-span-2">
-            Actions
-          </div>
-        </div>
-
-        {/* ================= ROWS ================= */}
-
-        {[...filteredDashboards]
-          .reverse()
-          .map((dashboard) => (
+          {[...filteredDashboards].reverse().map((dashboard) => (
             <div
               key={dashboard.dashboardId}
               className="
@@ -324,11 +315,7 @@ export default function DashboardList({
               >
                 <div>
                   <button
-                    onClick={() =>
-                      onOpenDashboard(
-                        dashboard
-                      )
-                    }
+                    onClick={() => onOpenDashboard(dashboard)}
                     className="
                       text-left
                       font-bold
@@ -375,9 +362,7 @@ export default function DashboardList({
                   justify-center
                 "
               >
-                <p className="text-sm">
-                  {dashboard.createdAt}
-                </p>
+                <p className="text-sm">{dashboard.createdAt}</p>
               </div>
 
               {/* DESKTOP NAME */}
@@ -392,8 +377,7 @@ export default function DashboardList({
                   font-bold
                 "
               >
-                
-                  {dashboard.name}
+                {dashboard.name}
               </div>
 
               {/* WIDGETS */}
@@ -407,14 +391,9 @@ export default function DashboardList({
                   lg:col-span-2
                 "
               >
-                <p className="lg:hidden font-medium">
-                  Widgets
-                </p>
+                <p className="lg:hidden font-medium">Widgets</p>
 
-                <p>
-                  {dashboard.widgets?.length ||
-                    0}
-                </p>
+                <p>{dashboard.widgets?.length || 0}</p>
               </div>
 
               {/* STATUS */}
@@ -429,7 +408,7 @@ export default function DashboardList({
                 "
               >
                 <span
-  className={`
+                  className={`
     px-3
     py-1
     rounded-full
@@ -441,9 +420,9 @@ export default function DashboardList({
         : "bg-gray-200 text-gray-600"
     }
   `}
->
-  {getDashboardStatus(dashboard)}
-</span>
+                >
+                  {getDashboardStatus(dashboard)}
+                </span>
               </div>
 
               {/* ACTIONS */}
@@ -462,11 +441,7 @@ export default function DashboardList({
                 {/* OPEN */}
 
                 <button
-                  onClick={() =>
-                    onOpenDashboard(
-                      dashboard
-                    )
-                  }
+                  onClick={() => onOpenDashboard(dashboard)}
                   className="
                     group
                     relative
@@ -484,9 +459,7 @@ export default function DashboardList({
                     cursor-pointer
                   "
                 >
-                  <LayoutDashboard
-                    size={18}
-                  />
+                  <LayoutDashboard size={18} />
 
                   <span
                     className="
@@ -522,9 +495,7 @@ export default function DashboardList({
 
                 <button
                   onClick={() => {
-                    setSelectedDashboard(
-                      dashboard
-                    );
+                    setSelectedDashboard(dashboard);
 
                     setEditModalOpen(true);
                   }}
@@ -580,11 +551,7 @@ export default function DashboardList({
                 {/* DELETE */}
 
                 <button
-                  onClick={() =>
-                    handleDeleteDashboard(
-                      dashboard.dashboardId
-                    )
-                  }
+                  onClick={() => handleDeleteDashboard(dashboard.dashboardId)}
                   className="
                     group
                     relative
@@ -636,15 +603,14 @@ export default function DashboardList({
               </div>
             </div>
           ))}
-      </div>
+        </div>
+      )}
 
       {/* ================= CREATE MODAL ================= */}
 
       <CreateDashboardModal
         open={modalOpen}
-        onClose={() =>
-          setModalOpen(false)
-        }
+        onClose={() => setModalOpen(false)}
         onCreate={handleCreateDashboard}
         devices={devices}
       />
@@ -653,9 +619,7 @@ export default function DashboardList({
 
       <EditDashboardModal
         open={editModalOpen}
-        onClose={() =>
-          setEditModalOpen(false)
-        }
+        onClose={() => setEditModalOpen(false)}
         dashboard={selectedDashboard}
         dashboards={dashboards}
         saveDashboards={saveDashboards}

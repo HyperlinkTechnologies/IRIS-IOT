@@ -60,31 +60,18 @@ if (loading) {
 }
 
   return (
-    <div className="w-full">
+    <div className="w-full border
+      border-black/20 p-4 rounded-xl">
       {/* ================= HEADER ================= */}
 
       <div className="mb-8">
-        <h2
-          className="
-            text-2xl
-            sm:text-3xl
-            font-bold
-            text-[#010c29]
-          "
-        >
-          Billing Overview
-        </h2>
+        <h1 className="text-3xl font-bold text-[#010c29]">
+  Billing Overview
+</h1>
 
-        <p
-          className="
-            text-gray-400
-            mt-2
-            text-sm
-            sm:text-base
-          "
-        >
-          Manage subscription and payments
-        </p>
+<p className="mt-1 text-gray-500">
+  Manage your subscription, billing, and payment information.
+</p>
       </div>
 
       {/* ================= CURRENT SUBSCRIPTION ================= */}

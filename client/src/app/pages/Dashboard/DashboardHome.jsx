@@ -24,6 +24,7 @@ export default function DashboardHome() {
 
   /* ================= STATES ================= */
   const [dashboards, setDashboards] = useState([]);
+  const [loadingDashboards, setLoadingDashboards] = useState(true);
 
   const [selectedDashboard, setSelectedDashboard] = useState(null);
 
@@ -40,8 +41,17 @@ const { openPlansModal } = useBilling();
 }, []);
 
 async function loadDashboards() {
-  const data = await getDashboards();
-  setDashboards(data);
+  try {
+    setLoadingDashboards(true);
+
+    const data = await getDashboards();
+
+    setDashboards(data);
+  } catch (error) {
+    console.error("Failed to load dashboards:", error);
+  } finally {
+    setLoadingDashboards(false);
+  }
 }
 
 
@@ -106,18 +116,11 @@ async function loadDashboards() {
       {!selectedDashboard && (
 
         <DashboardList
-
-          dashboards={dashboards}
-
-          saveDashboards={
-            saveDashboards
-          }
-
-          onOpenDashboard={
-            setSelectedDashboard
-          }
-
-        />
+  dashboards={dashboards}
+  saveDashboards={saveDashboards}
+  onOpenDashboard={setSelectedDashboard}
+  loading={loadingDashboards}
+/>
 
       )}
 

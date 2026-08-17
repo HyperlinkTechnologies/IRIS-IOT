@@ -6,103 +6,192 @@ export const documentationContent = {
     {
       heading: "Platform Overview",
       paragraphs: [
-        "IRIS is a cloud-based Industrial Internet of Things (IIoT) platform that enables organizations to securely connect, monitor, and manage IoT devices from a centralized web application. The platform combines real-time telemetry, device management, analytics, dashboards, alerts, and cloud connectivity into a unified solution.",
-        "Designed for scalability and reliability, IRIS supports industrial monitoring applications where continuous device communication, historical data analysis, and rapid operational insights are essential."
+        "IRIS is a cloud-based Industrial Internet of Things (IIoT) platform for connecting, monitoring, and managing IoT devices from a centralized web application.",
+        "The IRIS MVP provides user authentication, device management, live telemetry, dashboards, widgets, analytics, alerts, billing, settings, documentation, and firmware/SDK support."
       ],
       points: [
         "Secure user authentication",
-        "Real-time telemetry monitoring",
-        "Interactive dashboards",
-        "Historical analytics",
-        "Alert management",
-        "Cloud-based device management",
-        "Industrial-grade architecture"
+        "Device registration and management",
+        "Real-time telemetry",
+        "Interactive dashboards and widgets",
+        "Historical analytics and CSV export",
+        "Threshold-based alerts",
+        "Billing and subscription management",
+        "IRIS SDK for NodeMCU ESP8266"
       ],
       note:
-        "Before using the platform, ensure your organization account has been created and verified successfully.",
+        "Follow the onboarding sequence below to connect your first device and start monitoring live data.",
       code: ""
     },
 
     {
-      heading: "Create Your Account",
+      heading: "Step 1 — Create and Verify Your Account",
       paragraphs: [
-        "New users can create an account using their organization email address. After registration, an email verification process activates the account and grants access to the platform.",
-        "Account authentication is securely managed through Amazon Cognito to ensure enterprise-grade identity management."
+        "Create an IRIS account using the Sign In page. Complete email verification before using the authenticated platform modules.",
+        "User authentication is securely managed through Amazon Cognito."
       ],
       points: [
-        "Open the IRIS Sign In page",
-        "Select Create Account",
-        "Complete the registration form",
+        "Path: Sign In → Create Account",
+        "Enter your account details",
         "Verify your email address",
-        "Sign in to the dashboard"
+        "Return to Sign In",
+        "Sign in to IRIS"
       ],
       note:
-        "Use a valid organization email address to simplify user management and future subscription administration.",
+        "Use the account that will be used to manage your devices and dashboards.",
       code: ""
     },
 
     {
-      heading: "Accessing the Dashboard",
+      heading: "Step 2 — Register Your First Device",
       paragraphs: [
-        "After signing in, the Dashboard becomes the central workspace for monitoring devices, managing telemetry, configuring alerts, viewing analytics, and administering the platform.",
-        "Navigation is organized into dedicated modules, allowing quick access to every major feature without leaving the application."
+        "A physical IoT device must first be registered in IRIS. Device registration creates the device record that the platform uses to associate telemetry and commands with the correct device.",
+        "Complete device registration before uploading your firmware."
       ],
       points: [
-        "Dashboard",
-        "Devices",
-        "Analytics",
-        "Alerts",
-        "Documentation",
-        "Billing",
-        "Settings"
-      ],
-      note: "",
-      code: ""
-    },
-
-    {
-      heading: "Register Your First Device",
-      paragraphs: [
-        "Every IoT device must be registered before it can communicate with the IRIS platform. Device registration creates a unique identity that enables secure telemetry ingestion, monitoring, and management.",
-        "Once the device is registered, configure the firmware using the appropriate MQTT endpoint and credentials before publishing telemetry."
-      ],
-      points: [
-        "Navigate to Devices",
+        "Path: Dashboard → Devices",
         "Select Add Device",
-        "Provide device information",
+        "Enter the device name and required information",
         "Save the device",
-        "Configure firmware",
-        "Connect the device",
-        "Verify live telemetry"
+        "Note the generated Device ID"
       ],
       note:
-        "A device will appear online only after it successfully establishes a secure MQTT connection and begins publishing telemetry.",
-      code: `{
-  "deviceId": "IRIS-000001",
-  "temperature": 28.5,
-  "humidity": 65,
-  "battery": 92,
-  "timestamp": "2026-07-31T10:30:00Z"
-}`
+        "The Device ID used by the firmware must correspond to the device registered in IRIS.",
+      code: ""
     },
 
     {
-      heading: "Next Steps",
+      heading: "Step 3 — Prepare the ESP8266 Firmware",
       paragraphs: [
-        "After successfully connecting your first device, you can begin building dashboards, creating alert rules, monitoring historical analytics, and managing your deployment from a single interface.",
-        "As your deployment grows, additional devices can be onboarded using the same workflow without requiring changes to your existing dashboards or analytics configuration."
+        "The current IRIS SDK supports NodeMCU ESP8266 devices through the Arduino IDE. Install the IRIS Arduino SDK and use one of the provided examples as the starting point for your firmware.",
+        "For a first test, start with a simple sensor such as an LDR before moving to device commands or actuator control."
       ],
       points: [
-        "Create dashboards",
-        "Add widgets",
-        "Monitor live telemetry",
-        "Configure alerts",
-        "Analyze historical data",
-        "Download reports",
-        "Explore developer documentation"
+        "Path: Documentation → IRIS SDK",
+        "Download the IRIS SDK",
+        "Install the SDK in Arduino IDE",
+        "Open the required firmware example",
+        "Configure Wi-Fi and device information",
+        "Select NodeMCU ESP8266",
+        "Select the correct COM port",
+        "Upload the firmware"
       ],
       note:
-        "Following the recommended onboarding sequence ensures that dashboards, analytics, and alerts receive valid telemetry immediately after deployment.",
+        "Never expose Wi-Fi passwords, certificates, private keys, or other credentials in public repositories.",
+      code: ""
+    },
+
+    {
+      heading: "Step 4 — Verify the Device",
+      paragraphs: [
+        "After the firmware starts, use the Arduino Serial Monitor to confirm that the device connects and begins sending telemetry.",
+        "Then return to IRIS and verify that the registered device is Online and that its latest telemetry is visible."
+      ],
+      points: [
+        "Path: Dashboard → Devices",
+        "Open the registered device",
+        "Check Online status",
+        "Check Last Seen",
+        "Check latest telemetry",
+        "Change a sensor input and verify the value changes"
+      ],
+      note:
+        "If the device remains Offline, troubleshoot the firmware and network connection before configuring dashboards.",
+      code: ""
+    },
+
+    {
+      heading: "Step 5 — Create Your First Dashboard",
+      paragraphs: [
+        "Create a dashboard to visualize telemetry received from your connected device. A dashboard can contain multiple widgets mapped to different telemetry fields."
+      ],
+      points: [
+        "Path: Dashboard → Create Dashboard",
+        "Enter a dashboard name",
+        "Save the dashboard",
+        "Open the dashboard",
+        "Enter dashboard edit mode"
+      ],
+      note:
+        "Use descriptive dashboard names such as Production Line 1, Machine Monitoring, or Test Device.",
+      code: ""
+    },
+
+    {
+      heading: "Step 6 — Add Your First Widget",
+      paragraphs: [
+        "Add a widget and map it to the device and telemetry field published by your firmware. For example, an LDR value can be displayed using a Numeric, Gauge, or Chart widget."
+      ],
+      points: [
+        "Path: Dashboard → Edit Dashboard → Add Widget",
+        "Choose a widget type",
+        "Select the registered device",
+        "Select the telemetry field",
+        "Configure the widget",
+        "Save the widget",
+        "Return to the dashboard",
+        "Verify the live value"
+      ],
+      note:
+        "The telemetry field must be published by the device before it can be used meaningfully in a widget.",
+      code: ""
+    },
+
+    {
+      heading: "Step 7 — Configure Alerts or Device Controls",
+      paragraphs: [
+        "After live telemetry is working, you can configure threshold-based alerts or use supported control widgets to operate connected devices."
+      ],
+      points: [
+        "Alerts path: Dashboard → Alerts → Create Alert",
+        "Device path: Dashboard → Devices → Device Details",
+        "Select the device",
+        "Select the required telemetry or control",
+        "Configure the condition or command",
+        "Save and test"
+      ],
+      note:
+        "Test actuator commands with a safe device setup before connecting them to production equipment.",
+      code: ""
+    },
+
+    {
+      heading: "Step 8 — Analyze Historical Data",
+      paragraphs: [
+        "After telemetry has been stored, use Analytics to review historical device behavior, select time ranges, and export matching telemetry data."
+      ],
+      points: [
+        "Path: Dashboard → Analytics",
+        "Select the device",
+        "Select the telemetry field",
+        "Choose the time range",
+        "Load the historical data",
+        "Review the chart",
+        "Use CSV export when required"
+      ],
+      note:
+        "Historical analysis requires telemetry to have been received and stored by the platform.",
+      code: ""
+    },
+
+    {
+      heading: "Recommended First-Time Workflow",
+      paragraphs: [
+        "For a first deployment, follow this order: account → device → firmware → telemetry → dashboard → widget → alerts/commands → analytics."
+      ],
+      points: [
+        "Create and verify your account",
+        "Register the device",
+        "Install and configure the SDK",
+        "Upload a simple sensor example",
+        "Verify live telemetry",
+        "Create a dashboard",
+        "Add and map a widget",
+        "Test alerts or commands",
+        "Review historical analytics"
+      ],
+      note:
+        "Following this sequence isolates problems at each stage and makes troubleshooting easier.",
       code: ""
     }
   ]
@@ -112,120 +201,129 @@ export const documentationContent = {
   title: "Device Setup",
   sections: [
     {
-      heading: "Supported Devices",
+      heading: "Supported Hardware",
       paragraphs: [
-        "The IRIS IoT Platform supports secure onboarding of compatible IoT devices for real-time monitoring and management. Each supported device communicates with the platform through MQTT over TLS, ensuring reliable and encrypted data transmission.",
-        "The current release supports NodeMCU ESP8266 devices. Support for additional hardware platforms will be introduced in future releases without affecting existing deployments."
+        "The current IRIS SDK release supports NodeMCU ESP8266 devices using the Arduino IDE. The device communicates with the IRIS cloud through secure MQTT/AWS IoT connectivity."
       ],
       points: [
         "NodeMCU ESP8266",
-        "Wi-Fi Connectivity",
-        "MQTT Communication",
-        "AWS IoT Core Integration",
-        "Secure TLS Communication"
+        "Wi-Fi connectivity",
+        "IRIS Arduino SDK",
+        "AWS IoT Core",
+        "MQTT over secure TLS"
       ],
       note:
-        "Always install the latest supported firmware before connecting a device to the platform.",
+        "Use the hardware and SDK combination documented for your IRIS deployment.",
       code: ""
     },
 
     {
-      heading: "Device Registration",
+      heading: "Register the Device in IRIS",
       paragraphs: [
-        "Before a device can communicate with IRIS, it must be registered through the Devices module. Registration creates a unique device identity that enables secure communication, telemetry processing, analytics, and alert management.",
-        "Each registered device can later be assigned to dashboards, widgets, analytics reports, and automation workflows."
+        "Register the physical device before uploading firmware so the platform has a device identity to associate with incoming telemetry and commands."
       ],
       points: [
-        "Navigate to Devices",
-        "Click Add Device",
-        "Enter a unique device name",
-        "Provide device information",
-        "Save the device"
+        "Path: Dashboard → Devices → Add Device",
+        "Enter the device name",
+        "Enter the required device information",
+        "Save the device",
+        "Copy or note the Device ID"
       ],
       note:
-        "Choose descriptive device names that clearly identify the installation location or equipment.",
+        "Use a descriptive name that identifies the machine, location, or installation.",
       code: ""
     },
 
     {
-      heading: "Firmware Configuration",
+      heading: "Install the IRIS SDK",
       paragraphs: [
-        "After registering the device, configure the firmware using the MQTT endpoint, security credentials, Wi-Fi configuration, and publish topics provided for your deployment.",
-        "Correct firmware configuration ensures secure authentication with AWS IoT Core and uninterrupted telemetry transmission."
+        "Install the IRIS Arduino SDK before compiling the firmware examples. The SDK provides the IRIS connection, telemetry, publishing, and command-handling APIs used by the examples."
       ],
       points: [
-        "Configure Wi-Fi Credentials",
-        "Configure MQTT Endpoint",
-        "Configure Device Certificates",
-        "Configure Private Key",
-        "Restart the Device"
+        "Path: Documentation → IRIS SDK",
+        "Download the IRIS SDK for ESP8266",
+        "Install or import the SDK into Arduino IDE",
+        "Open an IRIS example",
+        "Select the NodeMCU ESP8266 board",
+        "Select the correct COM port",
+        "Compile and upload"
       ],
       note:
-        "Incorrect MQTT credentials or certificates will prevent the device from establishing a secure connection.",
-      code: `const mqttTopic =
-"iris/IRIS-000001/telemetry";`
-    },
-
-    {
-      heading: "Verifying Device Connectivity",
-      paragraphs: [
-        "After the firmware starts successfully, the device automatically establishes a secure MQTT connection with AWS IoT Core and begins publishing telemetry.",
-        "The Devices page displays the current connection status, last communication time, and recent telemetry updates for every registered device."
-      ],
-      points: [
-        "Online Status",
-        "Last Seen Timestamp",
-        "Latest Telemetry",
-        "Connection Health",
-        "Device Information"
-      ],
-      note:
-        "If the device remains offline, verify the Wi-Fi connection, MQTT endpoint, certificates, and internet connectivity before troubleshooting the application.",
+        "Start with the simple LDR or LED example to verify the development environment.",
       code: ""
     },
 
     {
-      heading: "Publishing Telemetry",
+      heading: "Configure Device Connectivity",
       paragraphs: [
-        "Telemetry should be published periodically using JSON format. Every message should contain valid sensor values that can be processed by dashboards, analytics, and alert rules.",
-        "Consistent payload structures simplify widget configuration and long-term analytics."
+        "Configure the firmware with the Wi-Fi and device connection information required by your IRIS deployment. The exact security material must remain private."
       ],
       points: [
-        "Temperature",
-        "Humidity",
-        "Pressure",
-        "Light Intensity",
-        "Battery Level",
-        "Relay Status",
-        "Timestamp"
+        "Configure Wi-Fi SSID and password",
+        "Configure the registered Device ID",
+        "Configure the deployment's AWS IoT connection details",
+        "Keep certificates and private keys secure",
+        "Upload the firmware",
+        "Open Serial Monitor"
       ],
       note:
-        "Maintain consistent telemetry field names across all devices to simplify dashboard and analytics configuration.",
-      code: `{
-  "temperature": 28.5,
-  "humidity": 65,
-  "battery": 92,
-  "relay": true,
-  "timestamp": "2026-07-31T10:30:00Z"
-}`
+        "Do not copy production certificates or private keys into public documentation or repositories.",
+      code: ""
     },
 
     {
-      heading: "Best Practices",
+      heading: "Verify Device Connectivity",
       paragraphs: [
-        "Following recommended deployment practices improves device reliability, simplifies maintenance, and ensures consistent telemetry collection across large-scale installations.",
-        "Proper device naming, secure credential management, and stable network connectivity significantly reduce operational issues."
+        "After uploading the firmware, verify the device from both the Arduino Serial Monitor and the IRIS Devices module."
       ],
       points: [
-        "Use unique device IDs",
-        "Securely store certificates",
-        "Validate telemetry before publishing",
-        "Monitor connection status",
-        "Keep firmware updated",
-        "Avoid duplicate device registrations"
+        "Path: Dashboard → Devices",
+        "Open the registered device",
+        "Confirm Online status",
+        "Check Last Seen",
+        "Check latest telemetry",
+        "Change a sensor input and confirm the value changes"
       ],
       note:
-        "Do not expose MQTT credentials, certificates, or private keys in public repositories or client applications.",
+        "A device that stops publishing telemetry will eventually be shown as Offline.",
+      code: ""
+    },
+
+    {
+      heading: "Telemetry Fields",
+      paragraphs: [
+        "Telemetry field names are defined by the firmware. Use simple, consistent names because dashboard widgets, analytics, and alerts depend on the published fields."
+      ],
+      points: [
+        "ldr",
+        "temperature",
+        "humidity",
+        "relay",
+        "Other custom telemetry fields"
+      ],
+      note:
+        "The telemetry fields available in the dashboard are determined by what the device actually publishes.",
+      code: `iris.addTelemetry("ldr", ldrValue);
+iris.addTelemetry("temperature", temperature);
+iris.addTelemetry("humidity", humidity);`
+    },
+
+    {
+      heading: "Device Controls",
+      paragraphs: [
+        "Devices that implement command callbacks can receive control commands from the IRIS platform. Use these controls for safe actuator testing such as LED or relay ON/OFF."
+      ],
+      points: [
+        "Path: Dashboard → Devices → Device Details",
+        "Register the device",
+        "Upload firmware with command handling",
+        "Open the device controls",
+        "Send the required command",
+        "Verify the physical output",
+        "Verify returned telemetry when implemented"
+      ],
+      note:
+        "Only expose actuator commands that are safe for the connected equipment.",
       code: ""
     }
   ]
@@ -237,112 +335,124 @@ export const documentationContent = {
     {
       heading: "Dashboard Overview",
       paragraphs: [
-        "The Dashboard is the primary workspace of the IRIS IoT Platform, providing a centralized view of connected devices, live telemetry, operational metrics, and industrial processes. Dashboards enable operators to monitor multiple devices simultaneously from a single interface.",
-        "Multiple dashboards can be created to organize devices by project, production line, customer, facility, or geographical location, making the platform scalable for deployments of any size."
+        "Dashboards are the main workspace for viewing live telemetry and controlling connected devices. Each widget is mapped to a device and, where applicable, a telemetry field or control."
       ],
       points: [
-        "Real-time telemetry monitoring",
-        "Multiple dashboards",
-        "Interactive widgets",
-        "Responsive layout",
-        "Live device status",
-        "Custom dashboard organization"
+        "Live telemetry",
+        "Device status",
+        "Charts and gauges",
+        "Indicators",
+        "Device controls",
+        "Custom dashboard layouts"
       ],
       note:
-        "The number of dashboards available depends on your subscription plan.",
+        "Dashboard widgets display data received from connected devices.",
       code: ""
     },
 
     {
-      heading: "Creating a Dashboard",
+      heading: "Create a Dashboard",
       paragraphs: [
-        "A dashboard provides a dedicated workspace for visualizing telemetry from one or more devices. Each dashboard can be customized independently to suit operational requirements.",
-        "Choose descriptive dashboard names so operators can quickly identify the purpose of each workspace."
+        "Create a dashboard before adding widgets. Use separate dashboards to organize devices by site, machine, project, or operational purpose."
       ],
       points: [
-        "Navigate to Dashboard",
-        "Click Create Dashboard",
-        "Enter dashboard name",
+        "Path: Dashboard → Create Dashboard",
+        "Enter a dashboard name",
         "Save the dashboard",
-        "Open the dashboard"
+        "Open the new dashboard"
       ],
-      note:
-        "Create separate dashboards for different production areas or projects to improve organization.",
+      note: "",
       code: ""
     },
 
     {
-      heading: "Working with Widgets",
+      heading: "Add a Widget",
       paragraphs: [
-        "Widgets provide graphical representations of live telemetry received from connected IoT devices. Each widget can be configured to display a specific telemetry field from a selected device.",
-        "IRIS supports multiple widget types suitable for monitoring numerical values, charts, indicators, and device controls."
+        "Add a widget and configure it to display telemetry or control a connected device."
       ],
       points: [
-        "Gauge",
-        "Semi Gauge",
-        "Line Chart",
-        "LED Indicator",
-        "Toggle Switch",
-        "Push Button",
-        "Slider",
-        "Text Display",
-        "Numeric Display"
+        "Path: Dashboard → Edit Dashboard → Add Widget",
+        "Select the widget type",
+        "Select the device",
+        "Select the telemetry field or control",
+        "Configure the widget",
+        "Save"
       ],
       note:
-        "Widgets display data only after they are mapped to a device and telemetry field.",
+        "If a device or telemetry field is missing, verify the device registration and firmware telemetry first.",
       code: ""
     },
 
     {
-      heading: "Configuring Widgets",
+      heading: "LDR Telemetry Widget",
       paragraphs: [
-        "Each widget can be customized to display telemetry according to operational requirements. Configuration options include selecting devices, telemetry fields, value ranges, labels, and visual settings.",
-        "Proper widget configuration ensures accurate visualization of real-time device data."
+        "Publish an LDR value from the firmware and map the ldr telemetry field to a dashboard widget."
       ],
       points: [
-        "Select device",
-        "Choose telemetry field",
-        "Configure value range",
-        "Set labels",
-        "Save widget configuration"
+        "Path: Dashboard → Edit Dashboard → Add Widget",
+        "Choose Numeric, Gauge, or Chart",
+        "Select the LDR device",
+        "Select telemetry: ldr",
+        "Configure the widget",
+        "Save",
+        "Change the light level and verify the widget updates"
+      ],
+      note: "",
+      code: `iris.addTelemetry("ldr", analogRead(A0));
+iris.publish();`
+    },
+
+    {
+      heading: "LED or Relay Control",
+      paragraphs: [
+        "Use a control widget to send ON/OFF commands to firmware that implements command handling."
+      ],
+      points: [
+        "Path: Dashboard → Edit Dashboard → Add Widget",
+        "Choose Toggle or Push Button",
+        "Select the target device",
+        "Configure the command",
+        "Save",
+        "Send ON/OFF",
+        "Verify the physical output"
       ],
       note:
-        "Verify telemetry mappings before saving to avoid displaying incorrect values.",
+        "The firmware must implement the corresponding command callback.",
       code: ""
     },
 
     {
-      heading: "Managing Dashboard Layout",
+      heading: "Edit Dashboard Layout",
       paragraphs: [
-        "Widgets can be repositioned and resized to create dashboards optimized for different monitoring scenarios. Well-organized dashboards improve operator efficiency and simplify data interpretation.",
-        "Changes remain available after saving the dashboard configuration."
+        "Use dashboard edit mode to organize widgets and adjust their size."
       ],
       points: [
+        "Path: Dashboard → Edit Dashboard",
         "Move widgets",
         "Resize widgets",
-        "Arrange layout",
-        "Save dashboard"
+        "Arrange the layout",
+        "Save the dashboard"
       ],
       note:
-        "Always save the dashboard after making layout changes.",
+        "Save the dashboard after changing the layout.",
       code: ""
     },
 
     {
-      heading: "Best Practices",
+      heading: "Recommended Dashboard Workflow",
       paragraphs: [
-        "Design dashboards around operational workflows instead of displaying every available telemetry value. Group related devices together and prioritize critical information near the top of the dashboard.",
-        "Keeping dashboards clean and focused improves readability and reduces operator response time during abnormal conditions."
+        "Configure dashboards around the information operators need to monitor or control."
       ],
       points: [
-        "Group similar devices",
-        "Highlight critical telemetry",
-        "Avoid unnecessary widgets",
-        "Use meaningful widget titles",
-        "Review dashboards regularly"
+        "Create dashboard",
+        "Add device telemetry widgets",
+        "Add charts for trends",
+        "Add device status indicators",
+        "Add control widgets when required",
+        "Arrange and resize widgets",
+        "Save the dashboard"
       ],
-      note:
-        "Well-designed dashboards allow operators to identify issues quickly without searching through excessive information.",
+      note: "",
       code: ""
     }
   ]
@@ -354,104 +464,89 @@ export const documentationContent = {
     {
       heading: "Analytics Overview",
       paragraphs: [
-        "The Analytics module enables users to analyze historical telemetry collected from connected devices. Unlike the Dashboard, which displays live data, Analytics focuses on historical trends, allowing users to understand device behavior over time.",
-        "Telemetry is securely stored in AWS and can be retrieved for visualization, reporting, and operational analysis."
+        "The Analytics module allows you to review historical telemetry collected from connected devices. Use it to identify trends, compare operating periods, and investigate previous device behavior."
       ],
       points: [
         "Historical telemetry",
-        "Interactive charts",
         "Device-based analysis",
-        "Time range selection",
-        "Cloud-backed storage"
-      ],
-      note:
-        "Only telemetry that has been stored by the platform is available for historical analysis.",
-      code: ""
-    },
-
-    {
-      heading: "Viewing Historical Data",
-      paragraphs: [
-        "Historical telemetry can be viewed by selecting a registered device and choosing the required time range. The platform retrieves stored telemetry records and visualizes them using interactive charts.",
-        "This allows users to identify operational trends, detect abnormal behavior, and review previous device activity."
-      ],
-      points: [
-        "Select a device",
-        "Choose a time range",
-        "Load historical telemetry",
-        "Review interactive charts"
-      ],
-      note:
-        "Large time ranges may require additional loading time depending on the amount of stored telemetry.",
-      code: ""
-    },
-
-    {
-      heading: "Telemetry Visualization",
-      paragraphs: [
-        "Analytics displays telemetry using interactive line charts that make it easy to understand changes over time. Each chart represents a selected telemetry field for the chosen device.",
-        "Charts automatically update whenever a different telemetry parameter or time range is selected."
-      ],
-      points: [
-        "Temperature trends",
-        "Humidity trends",
-        "Light intensity",
-        "Battery level",
-        "Relay state history"
-      ],
-      note:
-        "Only telemetry fields that exist for the selected device will be available for visualization.",
-      code: ""
-    },
-
-    {
-      heading: "Filtering Analytics",
-      paragraphs: [
-        "The Analytics module provides filtering options to simplify the analysis of large telemetry datasets. Filters help isolate the information relevant to a specific investigation or reporting period.",
-        "Selecting the appropriate device and time range improves chart readability and reduces unnecessary data processing."
-      ],
-      points: [
-        "Device selection",
         "Telemetry selection",
-        "Custom time range",
-        "Historical records"
+        "Time range filtering",
+        "Interactive charts",
+        "CSV export"
       ],
-      note: "",
+      note:
+        "Analytics contains stored telemetry. Live values should be monitored from the Dashboard.",
       code: ""
     },
 
     {
-      heading: "Exporting Data",
+      heading: "View Historical Telemetry",
       paragraphs: [
-        "Historical telemetry can be exported for offline analysis and reporting. Exported data can be used in spreadsheet applications or integrated into external reporting workflows.",
-        "The exported dataset contains the telemetry values returned by the selected filters."
+        "Select a device and telemetry field, choose the required time range, and load the stored data."
       ],
       points: [
-        "CSV Export",
-        "Timestamp",
-        "Device ID",
-        "Telemetry values"
+        "Path: Dashboard → Analytics",
+        "Select the device",
+        "Select the telemetry field",
+        "Choose the time range",
+        "Load the data",
+        "Review the chart"
       ],
       note:
-        "Exported files contain only the telemetry matching the selected filters.",
+        "Only telemetry that has been received and stored by IRIS can be viewed historically.",
       code: ""
     },
 
     {
-      heading: "Best Practices",
+      heading: "Analyze Telemetry Trends",
       paragraphs: [
-        "Use shorter time ranges when investigating specific operational events. Long-term analysis is better suited for identifying performance trends and seasonal patterns.",
-        "Review analytics regularly to identify abnormal device behavior before it impacts system performance."
+        "Use the historical chart to understand how a telemetry value changed over the selected period."
       ],
       points: [
-        "Review trends regularly",
-        "Compare multiple time periods",
-        "Monitor abnormal values",
-        "Export reports when required",
-        "Use analytics alongside alerts"
+        "Path: Dashboard → Analytics",
+        "Select the required device",
+        "Select temperature, humidity, LDR, relay, or another available field",
+        "Select the required time range",
+        "Review the resulting trend"
       ],
       note:
-        "Analytics complements the Dashboard by explaining what happened over time rather than what is happening right now.",
+        "Available telemetry fields depend on what the selected device publishes.",
+      code: ""
+    },
+
+    {
+      heading: "Export Telemetry",
+      paragraphs: [
+        "Export the telemetry currently selected in Analytics when you need the data for offline analysis or reporting."
+      ],
+      points: [
+        "Path: Dashboard → Analytics",
+        "Select the device",
+        "Select the telemetry field",
+        "Select the required time range",
+        "Load the data",
+        "Use CSV Export"
+      ],
+      note:
+        "The exported data corresponds to the selected device, telemetry field, and time range.",
+      code: ""
+    },
+
+    {
+      heading: "Analytics Troubleshooting",
+      paragraphs: [
+        "If no historical data appears, first verify that the device is connected and actively publishing telemetry."
+      ],
+      points: [
+        "Path: Dashboard → Devices",
+        "Verify the device is Online",
+        "Open Device Details",
+        "Verify latest telemetry",
+        "Return to Dashboard → Analytics",
+        "Select the correct device and telemetry field"
+      ],
+      note:
+        "A device must publish telemetry before historical records can be available.",
       code: ""
     }
   ]
@@ -463,63 +558,57 @@ export const documentationContent = {
     {
       heading: "Alerts Overview",
       paragraphs: [
-        "The Alerts module continuously monitors incoming telemetry from connected devices and automatically generates alerts whenever configured conditions are met. This allows operators to identify abnormal device behavior in real time without manually monitoring dashboards.",
-        "Alerts are evaluated immediately after new telemetry is received, helping users respond quickly to operational issues."
+        "The Alerts module monitors incoming telemetry and generates alerts when configured threshold conditions are met."
       ],
       points: [
         "Real-time alert evaluation",
-        "Device-specific alert rules",
-        "Threshold monitoring",
-        "Severity classification",
+        "Device-specific rules",
+        "Telemetry thresholds",
+        "Severity levels",
         "Alert history"
       ],
       note:
-        "Alerts are generated only for telemetry fields that have active alert rules configured.",
+        "Alerts require the selected device to publish the telemetry field used by the rule.",
       code: ""
     },
 
     {
-      heading: "Creating an Alert Rule",
+      heading: "Create an Alert Rule",
       paragraphs: [
-        "Alert rules define the conditions that trigger notifications for a specific device and telemetry field. Each rule continuously evaluates incoming telemetry against the configured threshold.",
-        "Well-designed alert rules help reduce false alarms while ensuring important events are detected immediately."
+        "Create an alert rule by selecting a device, telemetry field, comparison condition, threshold, and severity."
       ],
       points: [
-        "Navigate to Alerts",
-        "Click Create Alert",
-        "Select a device",
-        "Choose a telemetry field",
-        "Select a comparison operator",
-        "Enter the threshold value",
-        "Choose the severity level",
+        "Path: Dashboard → Alerts → Create Alert",
+        "Select the device",
+        "Select the telemetry field",
+        "Select the comparison operator",
+        "Enter the threshold",
+        "Select the severity",
         "Save the rule"
       ],
       note:
-        "Create separate alert rules for different telemetry parameters to simplify monitoring and troubleshooting.",
+        "Configure thresholds according to the normal operating range of the device.",
       code: ""
     },
 
     {
       heading: "Supported Conditions",
       paragraphs: [
-        "IRIS currently supports threshold-based alert conditions that compare incoming telemetry values against user-defined limits.",
-        "Whenever a telemetry value satisfies the configured condition, an alert is immediately generated."
+        "IRIS supports threshold-based conditions for evaluating incoming telemetry."
       ],
       points: [
         "Greater Than (>)",
         "Less Than (<)",
         "Equal To (=)"
       ],
-      note:
-        "Threshold values should reflect the normal operating range of your devices.",
+      note: "",
       code: `Temperature > 50`
     },
 
     {
       heading: "Severity Levels",
       paragraphs: [
-        "Severity levels help operators prioritize alerts according to their operational impact. Higher severity alerts should receive immediate attention.",
-        "Using appropriate severity levels improves incident management and reduces unnecessary interruptions."
+        "Severity levels help operators prioritize triggered alerts."
       ],
       points: [
         "Low",
@@ -528,42 +617,43 @@ export const documentationContent = {
         "Critical"
       ],
       note:
-        "Reserve Critical severity for conditions that require immediate corrective action.",
+        "Use Critical only for conditions that require immediate attention.",
       code: ""
     },
 
     {
-      heading: "Managing Alerts",
+      heading: "View Triggered Alerts",
       paragraphs: [
-        "All generated alerts are stored within the platform, allowing users to review historical events and investigate recurring issues. Alert history provides valuable context when diagnosing device behavior.",
-        "Operators can review triggered alerts alongside Analytics to understand when and why a device entered an abnormal state."
+        "Triggered alerts can be reviewed from the Alerts module to identify abnormal device conditions and recurring events."
       ],
       points: [
-        "View active alerts",
-        "Review alert history",
-        "Identify recurring issues",
-        "Monitor device health"
+        "Path: Dashboard → Alerts",
+        "Open the alert list",
+        "Review the device",
+        "Review the telemetry condition",
+        "Review the severity",
+        "Investigate the device if required"
       ],
       note:
-        "Historical alerts remain useful even after a device returns to normal operating conditions.",
+        "Use Dashboard → Devices and Dashboard → Analytics to investigate the device after an alert is triggered.",
       code: ""
     },
 
     {
-      heading: "Best Practices",
+      heading: "Alert Troubleshooting",
       paragraphs: [
-        "Configure thresholds based on actual operating conditions instead of arbitrary values. Excessively sensitive alert rules may generate unnecessary notifications, while thresholds that are too broad can delay the detection of important events.",
-        "Review alert configurations periodically as device operating conditions change over time."
+        "If an alert is not triggered, verify that the device is online and that the selected telemetry field is being published."
       ],
       points: [
-        "Use realistic thresholds",
-        "Avoid duplicate rules",
-        "Review alerts regularly",
-        "Monitor recurring events",
-        "Use Analytics for investigation"
+        "Path: Dashboard → Devices",
+        "Verify the device is Online",
+        "Open Device Details",
+        "Verify the telemetry field",
+        "Return to Dashboard → Alerts",
+        "Check the alert rule configuration"
       ],
       note:
-        "Alert effectiveness depends on accurate telemetry and properly configured threshold values.",
+        "Incorrect telemetry mapping or threshold values can prevent the expected alert from being generated.",
       code: ""
     }
   ]
@@ -575,117 +665,252 @@ export const documentationContent = {
     {
       heading: "MQTT Overview",
       paragraphs: [
-        "The IRIS IoT Platform uses MQTT as the primary communication protocol between IoT devices and AWS IoT Core. Devices publish telemetry securely over MQTT, while the backend processes incoming data and distributes real-time updates to the dashboard using Socket.IO.",
-        "This architecture provides secure, reliable, and low-latency communication between connected devices and the IRIS web application."
+        "IRIS uses MQTT as the communication protocol between connected IoT devices and AWS IoT Core. The IRIS SDK handles the device-side MQTT communication, while the IRIS backend processes incoming telemetry and delivers live updates to the web application."
       ],
       points: [
-        "MQTT over TLS",
-        "AWS IoT Core integration",
+        "MQTT communication",
+        "AWS IoT Core",
+        "Secure TLS connection",
         "Real-time telemetry",
-        "Secure cloud communication",
-        "Socket.IO live updates"
+        "IRIS backend processing",
+        "Socket.IO live dashboard updates"
       ],
       note:
-        "Devices communicate only with AWS IoT Core. Dashboard clients receive telemetry through the IRIS backend and do not connect directly to MQTT.",
+        "Dashboard clients do not connect directly to MQTT. Device communication is handled through the cloud backend.",
       code: ""
     },
 
     {
-      heading: "Device Communication Flow",
+      heading: "IRIS Communication Flow",
       paragraphs: [
-        "Telemetry published by devices follows a secure cloud pipeline before appearing on dashboards and analytics. Every published message is validated, processed, and stored before being delivered to connected users.",
-        "Understanding this communication flow helps simplify troubleshooting and deployment."
+        "Telemetry travels from the physical device to AWS IoT Core, through the IRIS backend, and then to the dashboard. This allows the platform to process and distribute device data in real time."
       ],
       points: [
-        "Device publishes telemetry",
-        "AWS IoT Core receives the message",
+        "NodeMCU ESP8266 reads sensor data",
+        "IRIS SDK publishes telemetry",
+        "AWS IoT Core receives MQTT messages",
         "IRIS backend processes telemetry",
-        "Historical data is stored",
-        "Socket.IO broadcasts live updates",
-        "Dashboard widgets update automatically"
+        "Telemetry is stored for historical analysis",
+        "Socket.IO distributes live updates",
+        "Dashboard widgets display the data"
       ],
       note: "",
-      code: ""
+      code: `NodeMCU ESP8266
+      ↓
+IRIS Arduino SDK
+      ↓
+MQTT / AWS IoT Core
+      ↓
+IRIS Backend
+      ↓
+Socket.IO
+      ↓
+IRIS Dashboard`
     },
 
     {
-      heading: "MQTT Topic Structure",
+      heading: "Telemetry Publishing",
       paragraphs: [
-        "All telemetry should be published using the topic structure configured for your IRIS deployment. Maintaining a consistent topic hierarchy ensures reliable device identification and simplifies backend processing.",
-        "Each device publishes telemetry to its own dedicated topic."
+        "The IRIS SDK provides the telemetry API used by firmware to publish sensor values. Each telemetry field should use a consistent name so it can later be selected in dashboards, analytics, and alerts."
       ],
       points: [
-        "Organization",
-        "Project",
-        "Device Identifier",
-        "Telemetry Topic"
+        "Path: Arduino IDE → IRIS Firmware Example",
+        "Read the sensor value",
+        "Call iris.addTelemetry()",
+        "Call iris.publish()",
+        "Verify the value in Dashboard → Devices"
       ],
       note:
-        "Use the topic assigned during device configuration. Publishing to incorrect topics prevents telemetry from being processed.",
-      code: `iris/IRIS-000001/telemetry`
+        "The telemetry key used in firmware must match the field selected when configuring dashboard widgets or alert rules.",
+      code: `int ldrValue = analogRead(A0);
+
+iris.addTelemetry("ldr", ldrValue);
+iris.publish();`
     },
 
     {
-      heading: "Telemetry Payload",
+      heading: "Device-to-Dashboard Example",
       paragraphs: [
-        "Telemetry must be published as valid JSON. Each payload should contain only the sensor values required by the platform. Consistent payload structures simplify dashboard configuration, analytics, and alert processing.",
-        "Avoid changing field names after devices are deployed, as dashboards and alerts depend on consistent telemetry keys."
+        "An LDR value provides a simple example of the complete telemetry path. The device reads A0, publishes the value using the ldr telemetry key, and the dashboard displays the received value."
       ],
       points: [
-        "Device ID",
-        "Temperature",
-        "Humidity",
-        "Battery",
-        "Relay Status",
-        "Timestamp"
+        "Firmware: read A0",
+        "Firmware: publish telemetry as ldr",
+        "IRIS path: Dashboard → Devices → Device Details",
+        "IRIS path: Dashboard → Edit Dashboard → Add Widget",
+        "Select the same device",
+        "Select telemetry: ldr",
+        "Save and verify the live value"
       ],
-      note:
-        "Invalid JSON payloads or unexpected field names may prevent telemetry from being processed correctly.",
-      code: `{
-  "deviceId": "IRIS-000001",
-  "temperature": 28.5,
-  "humidity": 65,
-  "battery": 92,
-  "relay": true,
-  "timestamp": "2026-07-31T10:30:00Z"
-}`
+      note: "",
+      code: `int ldrValue = analogRead(A0);
+
+iris.addTelemetry("ldr", ldrValue);
+iris.publish();`
     },
 
     {
-      heading: "Connection Best Practices",
+      heading: "MQTT Connection Requirements",
       paragraphs: [
-        "Reliable MQTT communication depends on stable network connectivity, secure credentials, and consistent publishing intervals. Following recommended practices improves system reliability and reduces communication failures.",
-        "Proper device configuration also ensures accurate analytics and alert evaluation."
+        "The device requires network connectivity and the deployment-specific AWS IoT connection configuration to establish communication with the platform."
       ],
       points: [
-        "Use stable Wi-Fi connectivity",
-        "Publish valid JSON only",
-        "Maintain consistent telemetry intervals",
-        "Protect certificates and private keys",
-        "Validate payloads before publishing",
-        "Monitor device connection status"
+        "Stable Wi-Fi connection",
+        "Correct Device ID",
+        "Correct AWS IoT configuration",
+        "Valid certificates and private key",
+        "Correct firmware configuration",
+        "Internet connectivity"
       ],
       note:
-        "Never expose MQTT certificates, private keys, or AWS credentials in firmware repositories or public source code.",
+        "Never expose AWS IoT certificates, private keys, Wi-Fi passwords, or other credentials in public repositories.",
       code: ""
     },
 
     {
       heading: "Troubleshooting MQTT",
       paragraphs: [
-        "If telemetry does not appear on the dashboard, verify each stage of the communication pipeline. Most connectivity issues are caused by incorrect MQTT configuration, network failures, or invalid credentials.",
-        "Checking the communication flow step by step significantly reduces troubleshooting time."
+        "If telemetry does not appear in IRIS, check the communication path from the device to the dashboard in order."
       ],
       points: [
+        "Arduino IDE → Serial Monitor",
         "Verify Wi-Fi connection",
-        "Verify AWS IoT endpoint",
-        "Verify certificates",
-        "Verify publish topic",
-        "Check backend connection",
-        "Confirm dashboard receives live updates"
+        "Verify the Device ID",
+        "Verify AWS IoT/MQTT connection",
+        "Verify telemetry is being published",
+        "Dashboard → Devices → Device Details",
+        "Verify the latest telemetry",
+        "Dashboard → Edit Dashboard → Widget configuration"
       ],
       note:
-        "A device appearing offline usually indicates that telemetry has not been received within the expected interval.",
+        "If the device is Offline, resolve the device connection before troubleshooting dashboard widgets.",
+      code: ""
+    }
+  ]
+},
+
+  "sdk": {
+  title: "IRIS SDK",
+  sections: [
+    {
+      heading: "IRIS SDK for ESP8266",
+      paragraphs: [
+        "The IRIS SDK for ESP8266 provides the libraries and examples required to connect NodeMCU ESP8266 devices to the IRIS IoT Platform.",
+        "The SDK provides the APIs required for initialization, telemetry publishing, continuous processing, and command handling."
+      ],
+      points: [
+        "NodeMCU ESP8266 support",
+        "Arduino IDE support",
+        "AWS IoT/MQTT communication",
+        "Telemetry publishing",
+        "Command handling",
+        "Reference firmware examples"
+      ],
+      note:
+        "Path: Documentation → IRIS SDK. Current SDK version: 1.0.0.",
+      code: "",
+      downloads: [
+        {
+          title: "IRIS SDK for ESP8266",
+          version: "1.0.0",
+          description:
+            "SDK package including source files, Arduino examples, documentation and license.",
+          platform: "ESP8266 · Arduino IDE",
+          href: "/docs/sdk/IRIS_SDK_ESP8266_v1.0.0.zip"
+        }
+      ]
+    },
+
+    {
+      heading: "Install the SDK",
+      paragraphs: [
+        "Download the SDK package and install it in Arduino IDE before compiling IRIS firmware examples."
+      ],
+      points: [
+        "Path: Documentation → IRIS SDK → Download",
+        "Download the IRIS SDK package",
+        "Install/import the SDK",
+        "Open Arduino IDE",
+        "Select NodeMCU ESP8266",
+        "Select the correct COM port"
+      ],
+      note:
+        "Use the Arduino IDE environment appropriate for your NodeMCU ESP8266 board.",
+      code: ""
+    },
+
+    {
+      heading: "Open an SDK Example",
+      paragraphs: [
+        "The SDK contains reference examples that demonstrate telemetry publishing and device command handling."
+      ],
+      points: [
+        "Path: Arduino IDE → File → Examples → IRIS SDK",
+        "TelemetryTest",
+        "CommandTest",
+        "RelayControl",
+        "ServoControl"
+      ],
+      note:
+        "For your first hardware test, start with a simple LDR or LED example before using the larger reference examples.",
+      code: ""
+    },
+
+    {
+      heading: "Core SDK Pattern",
+      paragraphs: [
+        "The common firmware pattern is to initialize the IRIS SDK, continuously process the SDK loop, add telemetry values, and publish them."
+      ],
+      points: [
+        "Initialize IRIS in setup()",
+        "Call iris.loop() continuously",
+        "Call iris.addTelemetry() for each telemetry field",
+        "Call iris.publish() to publish telemetry",
+        "Register command callbacks when device control is required"
+      ],
+      note:
+        "Use the complete SDK examples for the required connection and initialization configuration.",
+      code: `iris.addTelemetry("ldr", ldrValue);
+iris.publish();`
+    },
+
+    {
+      heading: "Telemetry Example",
+      paragraphs: [
+        "Use the SDK telemetry API to publish a sensor value. The telemetry key can then be selected in dashboard widgets, analytics, and alerts."
+      ],
+      points: [
+        "Path: Arduino IDE → IRIS SDK firmware",
+        "Read the sensor",
+        "Add the telemetry value",
+        "Publish the telemetry",
+        "Path in IRIS: Dashboard → Devices → Device Details",
+        "Path in IRIS: Dashboard → Edit Dashboard → Add Widget"
+      ],
+      note:
+        "Keep telemetry field names consistent between firmware and the IRIS platform.",
+      code: `int ldrValue = analogRead(A0);
+
+iris.addTelemetry("ldr", ldrValue);
+iris.publish();`
+    },
+
+    {
+      heading: "Command Handling",
+      paragraphs: [
+        "The SDK supports command handling for devices that need to receive control instructions from IRIS."
+      ],
+      points: [
+        "Path: Arduino IDE → File → Examples → IRIS SDK → CommandTest",
+        "Register the command callback",
+        "Implement the required device action",
+        "Upload the firmware",
+        "Path in IRIS: Dashboard → Edit Dashboard → Add Widget",
+        "Configure a Toggle or Push Button",
+        "Send the command and verify the device"
+      ],
+      note:
+        "The firmware command handler must match the command sent by the IRIS control.",
       code: ""
     }
   ]
@@ -697,68 +922,104 @@ export const documentationContent = {
     {
       heading: "API Overview",
       paragraphs: [
-        "The IRIS IoT Platform provides REST APIs that enable communication between the web application, backend services, and external integrations. APIs are used throughout the platform for authentication, device management, analytics, alerts, email services, and future third-party integrations.",
-        "All API communication is performed over HTTPS using JSON request and response payloads."
+        "The IRIS backend provides internal REST APIs used by the web application and platform services for authentication, device management, telemetry, analytics, alerts, billing, email services, and system operations.",
+        "These APIs are consumed by the IRIS application and are not currently published as a public developer API."
       ],
       points: [
-        "RESTful architecture",
+        "REST architecture",
         "HTTPS communication",
-        "JSON request/response",
-        "Secure backend services",
-        "Future third-party integrations"
+        "JSON request and response",
+        "Authenticated backend services",
+        "Internal platform APIs"
       ],
       note:
-        "The public developer API is currently under development. The existing APIs are used internally by the IRIS platform.",
+        "The public developer API is not currently released. Do not build external integrations against undocumented internal endpoints.",
       code: ""
     },
 
     {
       heading: "Authentication",
       paragraphs: [
-        "User authentication is managed by Amazon Cognito. After successful authentication, the frontend securely communicates with backend services using authenticated requests.",
-        "Sensitive backend endpoints are protected and are accessible only to authenticated users or trusted internal services."
+        "IRIS user authentication is handled through Amazon Cognito. Authenticated application requests use the user's authenticated session when accessing protected platform services."
       ],
       points: [
-        "Amazon Cognito Authentication",
-        "JWT-based authorization",
+        "Amazon Cognito",
+        "Authenticated sessions",
         "Protected backend endpoints",
-        "Secure session management"
+        "Secure authentication flow"
       ],
       note:
-        "Never expose authentication tokens, API keys, or service credentials in client-side applications.",
+        "Never expose authentication tokens, API keys, AWS credentials, or service secrets in client-side code.",
       code: ""
     },
 
     {
-      heading: "Current Platform APIs",
+      heading: "Device APIs",
       paragraphs: [
-        "The IRIS backend currently exposes APIs that support the platform's core functionality. These APIs are consumed by the frontend and internal platform services.",
-        "As the platform evolves, additional public APIs will become available for external developers."
+        "The IRIS application uses backend services for device registration, device retrieval, device status, and device-related operations."
       ],
       points: [
-        "Authentication",
-        "Device Management",
-        "Analytics",
-        "Alerts",
-        "Email Services",
-        "System Health"
+        "Path in IRIS: Dashboard → Devices",
+        "Device registration",
+        "Device information",
+        "Device status",
+        "Device details",
+        "Device operations"
       ],
-      note: "",
+      note:
+        "Use the IRIS Devices interface for normal device management instead of calling internal endpoints directly.",
       code: ""
     },
 
     {
-      heading: "Request Format",
+      heading: "Telemetry and Analytics APIs",
       paragraphs: [
-        "All API requests and responses use JSON. Clients should always send the appropriate Content-Type header when communicating with backend services.",
-        "Proper request validation improves reliability and simplifies error handling."
+        "Backend services process incoming device telemetry and provide the data required by the Dashboard and Analytics modules."
       ],
       points: [
-        "Content-Type: application/json",
-        "UTF-8 encoding",
-        "Structured JSON payloads"
+        "Live telemetry processing",
+        "Historical telemetry",
+        "Device-based analytics",
+        "Time-range filtering",
+        "CSV export"
       ],
-      note: "",
+      note:
+        "Firmware devices should publish telemetry through the IRIS SDK and MQTT/AWS IoT workflow rather than directly calling the backend REST API.",
+      code: ""
+    },
+
+    {
+      heading: "Alerts and Billing Services",
+      paragraphs: [
+        "IRIS also uses backend APIs for alert configuration, alert processing, billing plans, payment processing, and subscription management."
+      ],
+      points: [
+        "Path: Dashboard → Alerts",
+        "Path: Dashboard → Billing",
+        "Alert rule management",
+        "Subscription plans",
+        "Payment processing",
+        "Subscription status"
+      ],
+      note:
+        "Payment credentials and Razorpay secrets are server-side configuration values and must never be exposed in frontend code.",
+      code: ""
+    },
+
+    {
+      heading: "Request and Response Format",
+      paragraphs: [
+        "Internal IRIS APIs use JSON request and response data. Applications should validate the response status and handle unsuccessful requests gracefully."
+      ],
+      points: [
+        "JSON request payloads",
+        "JSON response payloads",
+        "HTTP status codes",
+        "Authentication handling",
+        "Error handling"
+      ],
+      note:
+        "Internal endpoint paths and payloads may change as the platform evolves.",
       code: `{
   "deviceId": "IRIS-000001",
   "temperature": 28.5
@@ -766,40 +1027,21 @@ export const documentationContent = {
     },
 
     {
-      heading: "Response Handling",
+      heading: "Future Public API",
       paragraphs: [
-        "Successful API responses return structured JSON containing the requested resource or operation result. Error responses include appropriate HTTP status codes together with descriptive error messages.",
-        "Applications integrating with IRIS should always validate response status codes before processing returned data."
+        "A documented public API can be introduced in a future release for external applications and integrations."
       ],
       points: [
-        "200 - Success",
-        "201 - Resource Created",
-        "400 - Bad Request",
-        "401 - Unauthorized",
-        "404 - Resource Not Found",
-        "500 - Internal Server Error"
-      ],
-      note:
-        "Handle API failures gracefully and display meaningful error messages to users.",
-      code: ""
-    },
-
-    {
-      heading: "Future Public APIs",
-      paragraphs: [
-        "Future releases of the IRIS IoT Platform will include documented public APIs for developers who want to integrate external applications with the platform.",
-        "Comprehensive endpoint documentation, request examples, authentication guides, and SDKs will be published once the public API is officially released."
-      ],
-      points: [
+        "Public authentication documentation",
         "Device APIs",
         "Telemetry APIs",
         "Analytics APIs",
         "Alert APIs",
         "Billing APIs",
-        "Webhook Support"
+        "Webhook integrations"
       ],
       note:
-        "Features listed in this section are planned for future platform releases.",
+        "Only use officially documented public endpoints when the IRIS public API is released.",
       code: ""
     }
   ]
@@ -811,254 +1053,436 @@ export const documentationContent = {
     {
       heading: "Firmware Overview",
       paragraphs: [
-        "The IRIS firmware is responsible for connecting IoT devices to the cloud, collecting sensor data, and publishing telemetry to the IRIS platform through AWS IoT Core. Proper firmware implementation ensures reliable communication, secure data transmission, and accurate real-time monitoring.",
-        "The current IRIS release includes firmware support for NodeMCU ESP8266 using the Arduino IDE and the IRIS Arduino SDK."
+        "IRIS firmware examples are designed for NodeMCU ESP8266 devices using the Arduino IDE and the IRIS Arduino SDK. Start with a small hardware example, verify the device connection, and then combine sensors and controls for your application.",
+        "The examples below focus on individual IRIS features so they can be used as starting points for your own firmware."
       ],
       points: [
         "NodeMCU ESP8266",
         "Arduino IDE",
         "IRIS Arduino SDK",
-        "AWS IoT Core",
-        "Secure MQTT Communication"
+        "Telemetry publishing",
+        "Command handling",
+        "LED control",
+        "LDR sensor reading",
+        "Relay control"
       ],
       note:
-        "Always use the latest version of the IRIS Arduino SDK when developing new firmware.",
+        "Path: Documentation → Firmware Examples.",
       code: ""
     },
 
     {
-      heading: "Firmware Workflow",
+      heading: "Example 1 — Turn an LED ON/OFF",
       paragraphs: [
-        "Every device follows the same communication workflow after powering on. The firmware initializes the hardware, connects to the Wi-Fi network, authenticates with AWS IoT Core, and begins publishing telemetry at regular intervals.",
-        "Following a consistent workflow simplifies deployment and troubleshooting across multiple devices."
+        "Use this as a basic hardware test. Connect an LED to a digital output pin and verify that the ESP8266 can control the output."
       ],
       points: [
-        "Initialize hardware",
-        "Connect to Wi-Fi",
-        "Authenticate with AWS IoT Core",
-        "Connect to MQTT",
-        "Read sensors",
-        "Publish telemetry",
-        "Repeat continuously"
+        "Path: Arduino IDE → Open your IRIS firmware sketch",
+        "Connect the LED to the configured GPIO pin",
+        "Set the pin as OUTPUT",
+        "Upload the sketch",
+        "Verify the LED turns ON and OFF"
       ],
-      note: "",
+      note:
+        "Use the GPIO pin that matches your actual hardware wiring.",
+      code: `const int LED_PIN = D1;
+
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(LED_PIN, HIGH); // LED ON
+  delay(1000);
+
+  digitalWrite(LED_PIN, LOW);  // LED OFF
+  delay(1000);
+}`
+    },
+
+    {
+      heading: "Example 2 — Read an LDR Sensor",
+      paragraphs: [
+        "The NodeMCU ESP8266 provides the A0 analog input. Read the LDR value and publish it as IRIS telemetry."
+      ],
+      points: [
+        "Path: Arduino IDE → Open your IRIS firmware sketch",
+        "Connect the LDR output to A0",
+        "Read the analog value",
+        "Add the value as telemetry",
+        "Publish the telemetry",
+        "Path in IRIS: Dashboard → Devices → Device Details"
+      ],
+      note:
+        "The telemetry key used in this example is ldr.",
+      code: `int ldrValue = analogRead(A0);
+
+iris.addTelemetry("ldr", ldrValue);
+iris.publish();`
+    },
+
+    {
+      heading: "Example 3 — Temperature and Humidity",
+      paragraphs: [
+        "Use the same IRIS telemetry API to publish temperature and humidity values from a supported sensor."
+      ],
+      points: [
+        "Path: Arduino IDE → Open your IRIS firmware sketch",
+        "Read the temperature value",
+        "Read the humidity value",
+        "Add both values as telemetry",
+        "Publish the telemetry",
+        "Path in IRIS: Dashboard → Edit Dashboard → Add Widget"
+      ],
+      note:
+        "Replace the sensor-reading portion with the code required by the sensor used in your hardware.",
+      code: `iris.addTelemetry("temperature", temperature);
+iris.addTelemetry("humidity", humidity);
+iris.publish();`
+    },
+
+    {
+      heading: "Example 4 — Publish Multiple Telemetry Values",
+      paragraphs: [
+        "Once individual sensor tests are working, multiple values can be published during the same telemetry cycle."
+      ],
+      points: [
+        "Path: Arduino IDE → Open your IRIS firmware sketch",
+        "Read each sensor",
+        "Add each value with a unique telemetry key",
+        "Publish the telemetry",
+        "Repeat at the required interval"
+      ],
+      note:
+        "Keep telemetry field names consistent after dashboards and alerts have been configured.",
+      code: `iris.addTelemetry("ldr", analogRead(A0));
+iris.addTelemetry("temperature", temperature);
+iris.addTelemetry("humidity", humidity);
+iris.publish();`
+    },
+
+    {
+      heading: "Example 5 — LED or Relay Command Control",
+      paragraphs: [
+        "A device can receive commands from IRIS when the firmware implements command handling. This can be used for simple ON/OFF control of an LED or relay."
+      ],
+      points: [
+        "Path: Arduino IDE → File → Examples → IRIS SDK → CommandTest",
+        "Configure the output pin",
+        "Register the command callback",
+        "Upload the firmware",
+        "Path in IRIS: Dashboard → Edit Dashboard → Add Widget",
+        "Choose Toggle or Push Button",
+        "Send ON/OFF",
+        "Verify the physical output"
+      ],
+      note:
+        "The command handled by the firmware must match the command sent from IRIS.",
+      code: `const int RELAY_PIN = D1;
+
+void handleCommand(const String& command) {
+  if (command == "ON") {
+    digitalWrite(RELAY_PIN, HIGH);
+  } else if (command == "OFF") {
+    digitalWrite(RELAY_PIN, LOW);
+  }
+}`
+    },
+
+    {
+      heading: "Example 6 — IRIS SDK Telemetry Pattern",
+      paragraphs: [
+        "The IRIS SDK handles the device communication layer. The firmware adds telemetry values and publishes them using the SDK APIs."
+      ],
+      points: [
+        "Path: Arduino IDE → File → Examples → IRIS SDK → TelemetryTest",
+        "Initialize the IRIS SDK",
+        "Call iris.loop() continuously",
+        "Add telemetry values",
+        "Call iris.publish()"
+      ],
+      note:
+        "Use the complete TelemetryTest example shipped with the SDK for the full initialization and connection configuration.",
+      code: `void loop() {
+  iris.loop();
+
+  iris.addTelemetry("ldr", analogRead(A0));
+  iris.publish();
+
+  delay(5000);
+}`
+    },
+
+    {
+      heading: "Implemented SDK Examples",
+      paragraphs: [
+        "The IRIS SDK package contains complete reference examples for telemetry and device control."
+      ],
+      points: [
+        "Path: Arduino IDE → File → Examples → IRIS SDK",
+        "TelemetryTest — telemetry publishing",
+        "CommandTest — command reception",
+        "RelayControl — relay control",
+        "ServoControl — servo control"
+      ],
+      note:
+        "Use the smaller LED and LDR examples for initial testing, then use these SDK examples as complete reference implementations.",
       code: ""
     },
 
     {
-      heading: "Publishing Telemetry",
+      heading: "Firmware to Dashboard Workflow",
       paragraphs: [
-        "Firmware should publish telemetry as valid JSON using the configured MQTT topic. Every published message becomes available for live dashboards, analytics, and alert processing within the IRIS platform.",
-        "Keep the payload structure consistent across all devices to simplify dashboard configuration and long-term maintenance."
+        "Telemetry published by the firmware becomes available for dashboard widgets when the device is connected and the telemetry field is received by IRIS."
       ],
       points: [
-        "Read sensor values",
-        "Build JSON payload",
-        "Publish to MQTT topic",
-        "Repeat at configured interval"
+        "Firmware: iris.addTelemetry(\"ldr\", value)",
+        "Firmware: iris.publish()",
+        "IRIS path: Dashboard → Devices → Device Details",
+        "IRIS path: Dashboard → Edit Dashboard → Add Widget",
+        "Select the same device",
+        "Select telemetry: ldr",
+        "Save and verify the live value"
       ],
       note:
-        "Avoid changing telemetry field names after deployment, as existing dashboards and alerts depend on them.",
-      code: `StaticJsonDocument<256> doc;
-
-doc["temperature"] = temperature;
-doc["humidity"] = humidity;
-doc["battery"] = battery;
-
-serializeJson(doc, payload);
-
-client.publish(topic, payload);`
-    },
-
-    {
-      heading: "Connection Management",
-      paragraphs: [
-        "Firmware should continuously monitor network and MQTT connectivity. If either connection is lost, the firmware should automatically attempt to reconnect before publishing additional telemetry.",
-        "Automatic reconnection improves reliability during temporary network interruptions."
-      ],
-      points: [
-        "Monitor Wi-Fi status",
-        "Reconnect automatically",
-        "Reconnect MQTT session",
-        "Resume telemetry publishing"
-      ],
-      note:
-        "Never restart the device unnecessarily when a simple reconnection can restore communication.",
+        "If the telemetry field is unavailable, first verify that the device is Online and publishing that field.",
       code: ""
     },
 
     {
-      heading: "Firmware Best Practices",
+      heading: "Firmware Troubleshooting",
       paragraphs: [
-        "Production firmware should be reliable, secure, and easy to maintain. Following recommended development practices improves long-term stability and simplifies future updates.",
-        "Well-designed firmware also reduces cloud bandwidth usage and improves device responsiveness."
+        "Use the Arduino Serial Monitor and the IRIS Devices page together when troubleshooting firmware."
       ],
       points: [
-        "Publish telemetry at fixed intervals",
-        "Validate sensor readings",
-        "Handle communication failures",
-        "Keep credentials secure",
-        "Log important events during development",
-        "Test before deployment"
+        "Arduino IDE → Tools → Serial Monitor",
+        "Check Wi-Fi connection",
+        "Check Device ID",
+        "Check AWS IoT/MQTT connection",
+        "Check telemetry publishing",
+        "IRIS path: Dashboard → Devices",
+        "Open Device Details",
+        "Verify latest telemetry"
       ],
       note:
-        "Never hardcode AWS credentials, certificates, or private keys in publicly accessible repositories.",
-      code: ""
-    },
-
-    {
-      heading: "Troubleshooting Firmware",
-      paragraphs: [
-        "If telemetry does not appear in the IRIS platform, verify the firmware configuration before investigating backend services. Most communication issues originate from incorrect device configuration or network connectivity.",
-        "Checking each stage of the firmware workflow helps identify problems quickly."
-      ],
-      points: [
-        "Verify Wi-Fi connection",
-        "Verify AWS IoT endpoint",
-        "Verify MQTT topic",
-        "Verify certificates",
-        "Verify sensor readings",
-        "Confirm telemetry publishing"
-      ],
-      note:
-        "Use the Arduino Serial Monitor during development to observe connection status and published telemetry.",
+        "Never expose certificates, private keys, passwords, or other production credentials when sharing firmware logs or source code.",
       code: ""
     }
   ]
 },
 
   "faq": {
-  title: "Frequently Asked Questions",
+  title: "FAQ",
   sections: [
     {
-      heading: "General Questions",
+      heading: "How do I add a device?",
       paragraphs: [
-        "This section answers the most common questions about using the IRIS IoT Platform. The information below covers account management, devices, dashboards, analytics, alerts, and troubleshooting."
+        "Register the physical device in IRIS before connecting it to the platform."
       ],
       points: [
-        "Account Management",
-        "Device Registration",
-        "Dashboard Configuration",
-        "Analytics",
-        "Alerts",
-        "Troubleshooting"
-      ],
-      note: "",
-      code: ""
-    },
-
-    {
-      heading: "How do I register a new device?",
-      paragraphs: [
-        "Open the Devices module and select 'Add Device'. Enter the required device information and save the device. After registration, configure your firmware using the MQTT endpoint and credentials before connecting the device to AWS IoT Core."
-      ],
-      points: [
-        "Open Devices",
-        "Click Add Device",
-        "Enter device information",
+        "Path: Dashboard → Devices → Add Device",
+        "Enter the device information",
         "Save the device",
-        "Configure firmware",
-        "Verify telemetry"
+        "Copy the Device ID",
+        "Configure the firmware with the Device ID",
+        "Upload the firmware",
+        "Return to Dashboard → Devices",
+        "Open Device Details to verify the connection"
       ],
       note:
-        "A device will appear online only after it starts publishing telemetry successfully.",
+        "The Device ID in the firmware must match the device registered in IRIS.",
       code: ""
     },
 
     {
-      heading: "Why is my device shown as Offline?",
+      heading: "How do I install the firmware SDK?",
       paragraphs: [
-        "A device is marked as offline when the platform stops receiving telemetry within the expected interval. This usually indicates a connectivity or firmware issue."
+        "Download the IRIS SDK and install it in Arduino IDE before compiling the firmware."
       ],
       points: [
-        "Verify Wi-Fi connection",
-        "Check AWS IoT Core connectivity",
-        "Verify MQTT topic",
-        "Confirm firmware is running",
-        "Check device power supply"
+        "Path: Documentation → IRIS SDK",
+        "Download the SDK",
+        "Install/import the SDK in Arduino IDE",
+        "Select NodeMCU ESP8266",
+        "Open File → Examples → IRIS SDK",
+        "Open the required example",
+        "Compile and upload"
       ],
       note:
-        "Review the device's Last Seen time to determine when communication stopped.",
+        "Start with a simple LDR or LED example when setting up the environment for the first time.",
       code: ""
     },
 
     {
-      heading: "Why are my widgets not updating?",
+      heading: "Why is my device Offline?",
       paragraphs: [
-        "Widgets update only when valid telemetry is received from the selected device and telemetry field. Incorrect widget mappings or missing telemetry will prevent live updates."
+        "An Offline device normally indicates that IRIS is no longer receiving the expected device communication."
       ],
       points: [
-        "Verify device selection",
-        "Verify telemetry field mapping",
-        "Confirm telemetry is being published",
-        "Refresh the dashboard if required"
+        "Path: Dashboard → Devices → Device Details",
+        "Check Last Seen",
+        "Check the Arduino Serial Monitor",
+        "Verify Wi-Fi connectivity",
+        "Verify the Device ID",
+        "Verify AWS IoT/MQTT connectivity",
+        "Verify that the firmware is running",
+        "Verify that telemetry is being published"
       ],
       note:
-        "Dashboard widgets display live telemetry only. Historical values are available in the Analytics module.",
+        "Resolve the device connection before troubleshooting dashboard widgets.",
+      code: ""
+    },
+
+    {
+      heading: "Why is my telemetry not appearing?",
+      paragraphs: [
+        "First verify that the device is Online and that the firmware is publishing the expected telemetry field."
+      ],
+      points: [
+        "Path: Dashboard → Devices → Device Details",
+        "Verify the device is Online",
+        "Check the latest telemetry",
+        "Verify the telemetry key in firmware",
+        "Verify iris.addTelemetry() is being called",
+        "Verify iris.publish() is being called",
+        "Check the Arduino Serial Monitor"
+      ],
+      note:
+        "The telemetry key in the firmware must match the field selected in the dashboard widget.",
+      code: ""
+    },
+
+    {
+      heading: "How do I display sensor data on a dashboard?",
+      paragraphs: [
+        "Publish the sensor value from firmware and then map that telemetry field to a dashboard widget."
+      ],
+      points: [
+        "Firmware: iris.addTelemetry(\"ldr\", value)",
+        "Firmware: iris.publish()",
+        "Path: Dashboard → Edit Dashboard → Add Widget",
+        "Select the widget type",
+        "Select the device",
+        "Select telemetry: ldr",
+        "Configure the widget",
+        "Save"
+      ],
+      note:
+        "Replace ldr with the telemetry key published by your firmware.",
+      code: ""
+    },
+
+    {
+      heading: "How do I control an LED or relay?",
+      paragraphs: [
+        "The firmware must implement command handling before an IRIS control widget can operate an LED or relay."
+      ],
+      points: [
+        "Path: Arduino IDE → File → Examples → IRIS SDK → CommandTest or RelayControl",
+        "Configure the output pin",
+        "Implement the command callback",
+        "Upload the firmware",
+        "Path: Dashboard → Edit Dashboard → Add Widget",
+        "Choose Toggle or Push Button",
+        "Select the device",
+        "Configure the command",
+        "Save",
+        "Send ON/OFF"
+      ],
+      note:
+        "Verify the command with a safe hardware setup before connecting production equipment.",
+      code: ""
+    },
+
+    {
+      heading: "How do I create an alert?",
+      paragraphs: [
+        "Create an alert rule using a device telemetry field and a threshold condition."
+      ],
+      points: [
+        "Path: Dashboard → Alerts → Create Alert",
+        "Select the device",
+        "Select the telemetry field",
+        "Select the comparison condition",
+        "Enter the threshold",
+        "Select the severity",
+        "Save the rule"
+      ],
+      note:
+        "The selected telemetry field must be published by the device.",
       code: ""
     },
 
     {
       heading: "How do I view historical telemetry?",
       paragraphs: [
-        "Navigate to the Analytics module, select the required device, choose a time range, and load the historical data. Interactive charts display the stored telemetry collected by the platform."
+        "Use Analytics to review telemetry that has already been received and stored by IRIS."
       ],
       points: [
-        "Open Analytics",
-        "Select device",
-        "Choose time range",
-        "Load historical data"
+        "Path: Dashboard → Analytics",
+        "Select the device",
+        "Select the telemetry field",
+        "Choose the time range",
+        "Load the data",
+        "Review the chart",
+        "Use CSV Export when required"
+      ],
+      note:
+        "A device must publish telemetry before historical records can be available.",
+      code: ""
+    },
+
+    {
+      heading: "How do I create a dashboard?",
+      paragraphs: [
+        "Create a dashboard and then add widgets for the devices and telemetry you want to monitor."
+      ],
+      points: [
+        "Path: Dashboard → Create Dashboard",
+        "Enter a dashboard name",
+        "Save",
+        "Open the dashboard",
+        "Select Edit Dashboard",
+        "Select Add Widget",
+        "Configure the widget",
+        "Save"
       ],
       note: "",
       code: ""
     },
 
     {
-      heading: "How do alert rules work?",
+      heading: "Which hardware does the current SDK support?",
       paragraphs: [
-        "Alert rules continuously evaluate incoming telemetry against configured threshold conditions. Whenever a telemetry value satisfies a rule, the platform immediately generates an alert."
+        "The current IRIS SDK documentation targets NodeMCU ESP8266 devices using the Arduino IDE."
       ],
       points: [
-        "Select device",
-        "Choose telemetry field",
-        "Configure threshold",
-        "Assign severity",
-        "Save rule"
+        "NodeMCU ESP8266",
+        "Arduino IDE",
+        "IRIS Arduino SDK",
+        "Wi-Fi connectivity",
+        "AWS IoT/MQTT communication"
       ],
       note:
-        "Alert rules evaluate only live telemetry received from connected devices.",
+        "Use the hardware and SDK combination documented in Documentation → IRIS SDK.",
       code: ""
     },
 
     {
-      heading: "I forgot my password. What should I do?",
+      heading: "Where can I find the firmware examples?",
       paragraphs: [
-        "Select the 'Forgot Password' option on the Sign In page and follow the account recovery process provided by Amazon Cognito. After verification, you can create a new password and access your account."
+        "The documentation contains beginner-oriented examples and the SDK package contains the complete reference examples."
       ],
       points: [
-        "Click Forgot Password",
-        "Verify your email",
-        "Create a new password",
-        "Sign in again"
+        "Path: Documentation → Firmware Examples",
+        "Path: Documentation → IRIS SDK",
+        "Path: Arduino IDE → File → Examples → IRIS SDK",
+        "TelemetryTest",
+        "CommandTest",
+        "RelayControl",
+        "ServoControl"
       ],
-      note:
-        "Password recovery is securely managed through Amazon Cognito.",
-      code: ""
-    },
-
-    {
-      heading: "Where can I get additional help?",
-      paragraphs: [
-        "If you experience issues that cannot be resolved using this documentation, contact your system administrator or the IRIS support team. Include device information, screenshots, and relevant error messages to help diagnose the issue more quickly."
-      ],
-      points: [
-        "Review documentation",
-        "Collect error information",
-        "Contact support",
-        "Include device details"
-      ],
-      note:
-        "Providing complete troubleshooting information significantly reduces resolution time.",
+      note: "",
       code: ""
     }
   ]
@@ -1068,104 +1492,85 @@ client.publish(topic, payload);`
   title: "Release Notes",
   sections: [
     {
-      heading: "About Release Notes",
+      heading: "IRIS v1.0.0",
       paragraphs: [
-        "This section documents the evolution of the IRIS IoT Platform. Each release introduces new features, performance improvements, security enhancements, and bug fixes. Reviewing the release history helps administrators understand platform capabilities and deployment changes before upgrading."
+        "IRIS v1.0.0 is the first complete release of the IRIS IoT Platform, providing the core workflow for connecting IoT devices, receiving live telemetry, visualizing device data, configuring alerts, analyzing historical data, and controlling supported devices."
       ],
       points: [
-        "Feature additions",
-        "Performance improvements",
-        "Security updates",
-        "Bug fixes",
-        "Platform enhancements"
-      ],
-      note:
-        "Always review the release notes before upgrading to a newer platform version.",
-      code: ""
-    },
-
-    {
-      heading: "Version 0.1.0",
-      paragraphs: [
-        "The initial MVP established the foundation of the IRIS IoT Platform, including secure authentication and the first dashboard experience."
-      ],
-      points: [
-        "AWS Cognito authentication",
-        "Dashboard framework",
-        "Responsive dashboard layout",
-        "Initial platform architecture"
-      ],
-      note: "",
-      code: ""
-    },
-
-    {
-      heading: "Version 0.2.0",
-      paragraphs: [
-        "This release introduced complete device management and real-time telemetry capabilities, allowing devices to securely communicate with the platform through AWS IoT Core."
-      ],
-      points: [
+        "User Authentication",
         "Device Management",
-        "AWS IoT Core integration",
-        "Real-time telemetry",
-        "Socket.IO live updates",
-        "Dashboard widgets"
+        "AWS IoT and MQTT Communication",
+        "Real-Time Telemetry",
+        "Socket.IO Live Updates",
+        "Dashboard Management",
+        "Dashboard Widget System",
+        "Device Commands",
+        "Historical Analytics",
+        "CSV Export",
+        "Alerts",
+        "Billing and Subscription Management",
+        "Settings",
+        "Documentation Center",
+        "IRIS Arduino SDK",
+        "ESP8266 Firmware Examples"
+      ],
+      note:
+        "Version: 1.0.0",
+      code: ""
+    },
+
+    {
+      heading: "Firmware and SDK",
+      paragraphs: [
+        "IRIS v1.0.0 includes the IRIS Arduino SDK for NodeMCU ESP8266 devices and reference firmware examples for telemetry and device control."
+      ],
+      points: [
+        "NodeMCU ESP8266 support",
+        "Arduino IDE integration",
+        "Telemetry publishing",
+        "Command handling",
+        "TelemetryTest",
+        "CommandTest",
+        "RelayControl",
+        "ServoControl"
+      ],
+      note:
+        "Path: Documentation → IRIS SDK or Documentation → Firmware Examples.",
+      code: ""
+    },
+
+    {
+      heading: "Platform Communication",
+      paragraphs: [
+        "IRIS v1.0.0 uses AWS IoT and MQTT for device communication and Socket.IO for real-time delivery of telemetry to the web dashboard."
+      ],
+      points: [
+        "ESP8266 → IRIS SDK",
+        "IRIS SDK → MQTT / AWS IoT Core",
+        "AWS IoT Core → IRIS Backend",
+        "IRIS Backend → Socket.IO",
+        "Socket.IO → IRIS Dashboard"
       ],
       note: "",
       code: ""
     },
 
     {
-      heading: "Version 0.3.0",
+      heading: "Future Development",
       paragraphs: [
-        "Version 0.3.0 significantly expanded the platform by introducing historical analytics, persistent telemetry storage, Amazon SES email services, and a comprehensive documentation center."
+        "Future releases may extend IRIS with additional hardware support, integrations, public developer APIs, and additional platform capabilities."
       ],
       points: [
-        "Historical Analytics",
-        "Telemetry persistence",
-        "CSV export",
-        "Amazon SES integration",
-        "Contact Form emails",
-        "Login Alert emails",
-        "Documentation module"
-      ],
-      note:
-        "This release represents the first feature-complete operational version of the IRIS platform prior to Billing implementation.",
-      code: ""
-    },
-
-    {
-      heading: "Upcoming Features",
-      paragraphs: [
-        "The following capabilities are planned for future releases as the platform continues to evolve toward its production-ready version."
-      ],
-      points: [
-        "Billing & Subscription Management",
-        "Plan-based feature access",
-        "Welcome Email Automation",
-        "Public REST API",
-        "Developer SDK Documentation",
+        "Additional hardware platforms",
+        "Additional integrations",
+        "Public developer API",
+        "Additional SDK capabilities",
         "Additional firmware examples"
       ],
       note:
-        "Features listed above are under active development and may change before release.",
+        "Future functionality will be documented when it is officially released.",
       code: ""
-    },
-
-    {
-      heading: "Versioning Policy",
-      paragraphs: [
-        "IRIS follows semantic versioning for development milestones. Each release increases the version number to reflect new functionality, enhancements, or fixes while maintaining clear version history."
-      ],
-      points: [
-        "Major releases introduce significant platform capabilities.",
-        "Minor releases add new features and improvements.",
-        "Patch releases focus on bug fixes and stability improvements."
-      ],
-      note:
-        `The current documentation corresponds to IRIS IoT Platform Version ${__APP_VERSION__}.`,
-      code: ""
-    },
+    }
   ]
 },
 }

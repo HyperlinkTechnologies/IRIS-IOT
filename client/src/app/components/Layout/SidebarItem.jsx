@@ -2,37 +2,41 @@ export default function SidebarItem({
   icon,
   text,
   active,
-  onClick
+  onClick,
+  collapsed = false,
 }) {
-
   return (
-
     <button
       onClick={onClick}
+      title={collapsed ? text : undefined}
       className={`
         w-full
         flex
         items-center
-        gap-4
-        px-4
+        ${collapsed ? "justify-center" : "justify-start"}
+        gap-3
+        px-3
         py-3
         rounded-xl
+        cursor-pointer
         transition-all
-        duration-300
+        duration-200
         ${
           active
-            ? "bg-linear-to-r from-[#d84800] to-[#ff5700] text-white"
-            : "hover:bg-black/10 text-[#010c29] cursor-pointer"
+            ? "bg-[#ff5700] text-white"
+            : "text-[#010c29] hover:bg-black/5"
         }
       `}
     >
-
-      {icon}
-
-      <span className="font-medium ">
-        {text}
+      <span className="shrink-0">
+        {icon}
       </span>
 
+      {!collapsed && (
+        <span className="font-medium whitespace-nowrap">
+          {text}
+        </span>
+      )}
     </button>
   );
 }

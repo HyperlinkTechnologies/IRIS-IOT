@@ -86,11 +86,14 @@ const [showLimitDialog, setShowLimitDialog] = useState(false);
   });
 
   const [creatingDevice, setCreatingDevice] = useState(false);
+  const [loadingDevices, setLoadingDevices] = useState(true);
 
   /* ================= LOAD DEVICES ================= */
 
 const loadDevices = async () => {
   try {
+    setLoadingDevices(true);
+
     if (deviceRegistry.isLoaded()) return;
 
     const data = await getDevices();
@@ -98,6 +101,8 @@ const loadDevices = async () => {
     deviceRegistry.setAll(data);
   } catch (error) {
     console.error("Failed to load devices:", error);
+  } finally {
+    setLoadingDevices(false);
   }
 };
 useEffect(() => {
@@ -247,7 +252,17 @@ setCreatingDevice(true);
   const offlineCount = devices.length - onlineCount;
 
   return (
-    <div className="w-full">
+    <div className="w-full border
+      border-black/20 p-4 rounded-xl">
+      <div className="mb-8 md:mb-10">
+        <h1 className="text-3xl font-bold text-[#010c29]">
+          Device Management
+        </h1>
+
+        <p className="mt-1 text-gray-500">
+          Register, monitor, and manage your connected IoT devices.
+        </p>
+      </div>
       {/* ================= TOP CARDS ================= */}
 
       <div
@@ -362,17 +377,76 @@ setCreatingDevice(true);
 
       {/* ================= DEVICE LIST ================= */}
 
-      <div className="grid gap-5">
-        {filteredDevices.map((device) => (
-          <DeviceCard
-            key={device.deviceId}
-            device={device}
-            onDetails={() => setSelectedDevice(device)}
-            onEdit={() => setEditingDevice(device)}
-            onDelete={() => handleDeleteDevice(device.deviceId)}
-          />
-        ))}
-      </div>
+      {/* ================= DEVICE LIST ================= */}
+
+{loadingDevices ? (
+  <div className="flex flex-col items-center justify-center py-20">
+    <div className="w-10 h-10 border-4 border-gray-200 border-t-[#ff5700] rounded-full animate-spin" />
+    <p className="mt-4 text-gray-500">Loading devices...</p>
+  </div>
+) : devices.length === 0 ? (
+  <div className="flex flex-col items-center justify-center py-20 text-center">
+    <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+      <Plus size={32} className="text-gray-400" />
+    </div>
+
+    <h3 className="text-xl font-semibold text-[#010c29]">
+      No devices yet
+    </h3>
+
+    <p className="mt-2 text-gray-500 max-w-md">
+      Register your first IoT device to start monitoring live telemetry.
+    </p>
+
+    <button
+      onClick={() => setShowAddModal(true)}
+      className="
+        mt-6
+        flex
+        items-center
+        justify-center
+        gap-2
+        px-6
+        py-3
+        rounded-2xl
+        bg-linear-to-r
+        from-[#d84800]
+        to-[#ff5700]
+        text-white
+        shadow-lg
+        hover:opacity-90
+        cursor-pointer
+      "
+    >
+      <Plus size={20} />
+      Add Device
+    </button>
+  </div>
+) : filteredDevices.length === 0 ? (
+  <div className="flex flex-col items-center justify-center py-20 text-center">
+    <Search size={40} className="text-gray-300 mb-4" />
+
+    <h3 className="text-xl font-semibold text-[#010c29]">
+      No devices found
+    </h3>
+
+    <p className="mt-2 text-gray-500">
+      Try a different device name.
+    </p>
+  </div>
+) : (
+  <div className="grid gap-5">
+    {filteredDevices.map((device) => (
+      <DeviceCard
+        key={device.deviceId}
+        device={device}
+        onDetails={() => setSelectedDevice(device)}
+        onEdit={() => setEditingDevice(device)}
+        onDelete={() => handleDeleteDevice(device.deviceId)}
+      />
+    ))}
+  </div>
+)}
 
       {/* ================= ADD DEVICE MODAL ================= */}
 

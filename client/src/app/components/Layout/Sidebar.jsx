@@ -7,11 +7,10 @@ import {
   FileText,
   Rocket,
   LogOut,
-  X
+  X,
 } from "lucide-react";
 
 import SidebarItem from "./SidebarItem";
-
 import IrisLogo from "../../../assets/iris-logo.png";
 import IrisIcon from "../../../assets/IRIS icon.png";
 import { signOut } from "aws-amplify/auth";
@@ -22,25 +21,34 @@ export default function Sidebar({
   activeTab,
   setActiveTab,
   sidebarOpen,
-  setSidebarOpen
+  setSidebarOpen,
 }) {
-
   const { setUser } = useUser();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      const sessionId = sessionStorage.getItem("iris_session_id");
 
-    logout();
+      if (sessionId) {
+        await deleteSession(sessionId);
+        sessionStorage.removeItem("iris_session_id");
+      }
 
-    window.location.href = logoutUrl;
+      await signOut();
+
+      setUser(null);
+
+      window.location.href = "/";
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
-
     <>
       {/* ================= MOBILE OVERLAY ================= */}
 
       {sidebarOpen && (
-
         <div
           onClick={() => setSidebarOpen(false)}
           className="
@@ -52,111 +60,57 @@ export default function Sidebar({
             lg:hidden
           "
         />
-
       )}
 
       {/* ================= SIDEBAR ================= */}
 
       <aside
         className={`
-          fixed
-          lg:fixed
-          top-0
-          left-0
-          h-screen
-          z-50
-          bg-gray-300
-          border-r
-          border-white/10
-          flex
-          flex-col
-          transition-all
-          duration-300
-          ease-in-out
+  fixed
+  top-[88px]
+left-0
+h-[calc(100vh-104px)]
+  z-50
+m-2
+mt-2
+rounded-xl
+  bg-gray-300
+  border-r
+  border-white/10
 
-          w-72.5
+  flex
+  flex-col
 
-          ${
-            sidebarOpen
-              ? "translate-x-0"
-              : "-translate-x-full"
-          }
-        `}
+  transition-all
+  duration-300
+  ease-in-out
+
+  ${
+    sidebarOpen
+      ? "w-60 translate-x-0"
+      : "w-20 -translate-x-full lg:translate-x-0"
+  }
+`}
       >
-
-        {/* ================= HEADER ================= */}
-
-        <div className="
-          h-20
-          flex
-          items-center
-          justify-between
-          px-5
-          border-b
-          border-white/10
-        ">
-
-          <div className="flex gap-2 items-center justify-center">
-          <img 
-            src={IrisIcon} 
-            alt="IRIS Icon" 
-            className="w-8 md:w-12 sm:w-10 object-contain"
-            
-            
-            />
-
-          {/* Logo */}
-          <img
-            src={IrisLogo}
-            alt="IRIS Logo"
-            className="
-              w-32.5
-              sm:w-40
-              object-contain
-            "
-          />
-          </div>
-
-          
-
-          {/* Close Button Mobile */}
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="
-              lg:hidden
-              w-10
-              h-10
-              flex
-              items-center
-              justify-center
-              hover:bg-black/5
-              transition-all
-              cursor-pointer rounded-full
-            "
-          >
-
-            <X size={22}/>
-
-          </button>
-
-        </div>
-
         {/* ================= MENU ================= */}
 
-        <nav className="
+        <nav
+          className="
           flex-1
           p-4
           space-y-2
           overflow-y-auto
           custom-scrollbar
-        ">
-
+        "
+        >
           <SidebarItem
             icon={<Rocket />}
             text="Get Started"
             active={activeTab === "getstarted"}
+            collapsed={!sidebarOpen}
             onClick={() => {
               setActiveTab("getstarted");
+
               if (window.innerWidth < 1024) {
                 setSidebarOpen(false);
               }
@@ -167,8 +121,10 @@ export default function Sidebar({
             icon={<LayoutDashboard />}
             text="Dashboard"
             active={activeTab === "dashboard"}
+            collapsed={!sidebarOpen}
             onClick={() => {
               setActiveTab("dashboard");
+
               if (window.innerWidth < 1024) {
                 setSidebarOpen(false);
               }
@@ -179,8 +135,10 @@ export default function Sidebar({
             icon={<Cpu />}
             text="Devices"
             active={activeTab === "devices"}
+            collapsed={!sidebarOpen}
             onClick={() => {
               setActiveTab("devices");
+
               if (window.innerWidth < 1024) {
                 setSidebarOpen(false);
               }
@@ -191,8 +149,10 @@ export default function Sidebar({
             icon={<Bell />}
             text="Alerts"
             active={activeTab === "alerts"}
+            collapsed={!sidebarOpen}
             onClick={() => {
               setActiveTab("alerts");
+
               if (window.innerWidth < 1024) {
                 setSidebarOpen(false);
               }
@@ -203,8 +163,10 @@ export default function Sidebar({
             icon={<CreditCard />}
             text="Billing"
             active={activeTab === "billing"}
+            collapsed={!sidebarOpen}
             onClick={() => {
               setActiveTab("billing");
+
               if (window.innerWidth < 1024) {
                 setSidebarOpen(false);
               }
@@ -215,8 +177,10 @@ export default function Sidebar({
             icon={<Settings />}
             text="Settings"
             active={activeTab === "settings"}
+            collapsed={!sidebarOpen}
             onClick={() => {
               setActiveTab("settings");
+
               if (window.innerWidth < 1024) {
                 setSidebarOpen(false);
               }
@@ -227,73 +191,59 @@ export default function Sidebar({
             icon={<FileText />}
             text="Documentation"
             active={activeTab === "documentation"}
+            collapsed={!sidebarOpen}
             onClick={() => {
               setActiveTab("documentation");
+
               if (window.innerWidth < 1024) {
                 setSidebarOpen(false);
               }
             }}
           />
-
         </nav>
 
         {/* ================= LOGOUT ================= */}
 
-        <div className="
-          p-4
-          border-t
-          border-white/10
-        ">
-
+        <div
+          className={`
+    border-t
+    border-white/10
+    ${sidebarOpen ? "p-4" : "p-3"}
+  `}
+        >
           <button
-            onClick={async () => {
-  try {
-    const sessionId = sessionStorage.getItem("iris_session_id");
+            onClick={handleLogout}
+            title={!sidebarOpen ? "Logout" : undefined}
+            className={`
+    w-full
+    flex
+    items-center
+    justify-center
+    gap-3
+    py-3
+    rounded-xl
 
-    if (sessionId) {
-      await deleteSession(sessionId);
-      sessionStorage.removeItem("iris_session_id");
-    }
+    bg-linear-to-r
+    from-[#d84800]
+    to-[#ff5700]
 
-    await signOut();
+    hover:opacity-90
+    transition-all
+    duration-300
 
-    setUser(null);
+    cursor-pointer
+    text-white
+    font-medium
 
-    window.location.href = "/";
-  } catch (error) {
-    console.error(error);
-  }
-}}
-            className="
-              w-full
-              flex
-              items-center
-              justify-center
-              gap-3
-              py-3
-              rounded-xl
-              bg-linear-to-r
-              from-[#d84800]
-              to-[#ff5700]
-              hover:opacity-90
-              transition-all
-              duration-300
-              cursor-pointer
-              text-white
-              font-medium
-            "
+    ${!sidebarOpen ? "px-0" : ""}
+  `}
           >
-
             <LogOut size={20} />
 
-            Logout
-
+            {sidebarOpen && <span>Logout</span>}
           </button>
-
         </div>
-
       </aside>
-
     </>
   );
 }

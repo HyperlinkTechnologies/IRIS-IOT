@@ -9,6 +9,7 @@ import {
   BookOpen,
   CircleHelp,
   History,
+  Download,
 } from "lucide-react";
 
 export const documentationSections = [
@@ -59,6 +60,14 @@ export const documentationSections = [
     description:
       "Publish and subscribe using MQTT.",
     icon: Wifi,
+  },
+
+  {
+    id: "sdk",
+    title: "IRIS SDK",
+    description:
+      "Download SDKs and connect supported devices to IRIS.",
+    icon: Download,
   },
 
   {

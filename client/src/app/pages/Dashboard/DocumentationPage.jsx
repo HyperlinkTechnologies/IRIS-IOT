@@ -15,7 +15,17 @@ export default function DocumentationPage() {
 };
 
   return (
-    <div className="w-full">
+    <div className="w-full border
+      border-black/20 p-4 rounded-xl">
+      <div className="mb-8 md:mb-10">
+        <h1 className="text-3xl font-bold text-[#010c29]">
+  Documentation
+</h1>
+
+<p className="mt-1 text-gray-500">
+  Learn how to configure, use, and manage the IRIS IoT Platform.
+</p>
+      </div>
 
       {/* ================= MAIN DOCUMENTATION CARD ================= */}
 
@@ -46,28 +56,6 @@ export default function DocumentationPage() {
   </div>
 </div>
 
-<div className="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 lg:grid-cols-3">
-  <div className="rounded-xl border bg-white p-5">
-    <div className="text-2xl font-bold">10</div>
-    <div className="text-sm text-gray-500">
-      Documentation Guides
-    </div>
-  </div>
-
-  <div className="rounded-xl border bg-white p-5">
-    <div className="text-2xl font-bold">30+</div>
-    <div className="text-sm text-gray-500">
-      Topics Covered
-    </div>
-  </div>
-
-  <div className="rounded-xl border bg-white p-5">
-    <div className="text-2xl font-bold">{`v${__APP_VERSION__}`}</div>
-    <div className="text-sm text-gray-500">
-      Current Version
-    </div>
-  </div>
-</div>
 
       {/* ================= DOCUMENTATION LIBRARY ================= */}
 

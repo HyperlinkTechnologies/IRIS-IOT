@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, Download } from "lucide-react";
 
 import { documentationContent }
 from "../../core/documentation/documentationContent";
@@ -32,20 +32,21 @@ export default function DocumentationModal({
     >
 
       <div
-        className="
-          bg-white
-          rounded-3xl
-          w-full
-          max-w-4xl
-          max-h-[90vh]
-          overflow-y-auto
-          p-8
-          mx-4
-        "
-        onClick={(e)=>e.stopPropagation()}
-      >
+  className="
+    bg-white
+    rounded-3xl
+    w-full
+    max-w-4xl
+    max-h-[90vh]
+    overflow-hidden
+    flex
+    flex-col
+    mx-4
+  "
+  onClick={(e) => e.stopPropagation()}
+>
 
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center m-6">
 
           <h2 className="text-3xl font-bold">
 
@@ -60,6 +61,7 @@ export default function DocumentationModal({
           </button>
 
         </div>
+        <div className="px-8 py-2 overflow-y-auto flex-1">
 
         {doc.sections.map((section) => (
 
@@ -163,6 +165,66 @@ export default function DocumentationModal({
 
 )}
 
+    {section.downloads && (
+      <div className="mt-6 space-y-4">
+        {section.downloads.map((download) => (
+          <div
+            key={`${download.title}-${download.version}`}
+            className="
+              rounded-2xl
+              border
+              border-black/10
+              bg-gray-50
+              p-5
+              flex
+              flex-col
+              sm:flex-row
+              sm:items-center
+              sm:justify-between
+              gap-5
+            "
+          >
+            <div>
+              <h4 className="text-lg font-semibold text-[#010c29]">
+                {download.title}
+              </h4>
+
+              <p className="text-gray-600 mt-1">
+                {download.description}
+              </p>
+
+              <p className="text-sm text-gray-500 mt-2">
+                Version {download.version} · {download.platform}
+              </p>
+            </div>
+
+            <a
+              href={download.href}
+              download
+              className="
+                shrink-0
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                px-5
+                py-3
+                rounded-xl
+                bg-[#ff5700]
+                text-white
+                font-medium
+                hover:bg-[#e64e00]
+                transition
+              "
+            >
+              <Download size={18} />
+              Download SDK
+            </a>
+          </div>
+        ))}
+      </div>
+    )}
+
 {section.code && (
 
   <div className="mt-6">
@@ -209,6 +271,7 @@ export default function DocumentationModal({
   </div>
 
 ))}
+</div>
 
       </div>
 

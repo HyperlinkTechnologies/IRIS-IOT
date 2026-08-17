@@ -101,19 +101,18 @@ if (data.companyDescription !== undefined) {
   values[":companyDescription"] = data.companyDescription;
 }
 
-if (data.twoFactorEnabled !== undefined) {
-  updates.push("twoFactorEnabled = :twoFactorEnabled");
-  values[":twoFactorEnabled"] = data.twoFactorEnabled;
-}
-
 if (data.loginAlerts !== undefined) {
     updates.push("loginAlerts = :loginAlerts");
     values[":loginAlerts"] = data.loginAlerts;
 }
 
 if (data.sessionTimeout !== undefined) {
-    updates.push("sessionTimeout = :sessionTimeout");
-    values[":sessionTimeout"] = Number(data.sessionTimeout);
+  updates.push("sessionTimeout = :sessionTimeout");
+
+  values[":sessionTimeout"] =
+    data.sessionTimeout === "never"
+      ? "never"
+      : Number(data.sessionTimeout);
 }
 
   if (updates.length === 0) {

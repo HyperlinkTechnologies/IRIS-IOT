@@ -128,23 +128,13 @@ finally {
       {/* Header */}
 
       <div className="mb-8">
-        <h2
-          className="
-            text-3xl
-            font-bold
-          "
-        >
-          Analytics
-        </h2>
+        <h1 className="text-3xl font-bold text-[#010c29]">
+  Analytics
+</h1>
 
-        <p
-          className="
-            text-gray-500
-            mt-2
-          "
-        >
-          Monitor historical telemetry and device insights
-        </p>
+<p className="mt-1 text-gray-500">
+  Analyze telemetry data and monitor device performance.
+</p>
       </div>
 
       <div
