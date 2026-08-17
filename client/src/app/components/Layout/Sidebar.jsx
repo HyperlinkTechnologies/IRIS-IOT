@@ -67,7 +67,7 @@ export default function Sidebar({
       <aside
         className={`
   fixed
-  top-[88px]
+  top-22
 left-0
 h-[calc(100vh-104px)]
   z-50

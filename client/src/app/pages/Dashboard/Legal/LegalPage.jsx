@@ -7,7 +7,8 @@ export default function LegalPage({
 }) {
   return (
     
-    <div className="max-w-5xl mx-auto px-8 py-10">
+    <div className="w-full border
+      border-black/20 p-4 rounded-xl">
         <div
   onClick={() => setActiveTab("settings")}
   className="

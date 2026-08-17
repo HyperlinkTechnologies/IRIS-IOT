@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getCurrentUser } from "aws-amplify/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -17,27 +17,33 @@ import WhyChooseIrisSection from '../../components/Landing page/WhyChooseIris';
 
 export default function HomePage() {
   const navigate = useNavigate();
-  useEffect(() => {
+  const [loading, setLoading] = useState(true);
+    useEffect(() => {
+    const checkUser = async () => {
+      try {
+        await getCurrentUser();
+        navigate("/Dashboard");
+      } catch {
+        console.log("Guest user");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const checkUser = async () => {
+    checkUser();
+  }, [navigate]);
 
-    try {
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#010c29]">
+        <div className="w-12 h-12 border-4 border-white/20 border-t-[#ff5700] rounded-full animate-spin" />
 
-      // already logged in
-      await getCurrentUser();
-
-      navigate("/Dashboard");
-
-    } catch {
-
-      // not logged in
-      console.log("Guest user");
-    }
-  };
-
-  checkUser();
-
-}, []);
+        <p className="mt-4 text-white/70">
+          Loading IRIS...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-[#010c29] ">

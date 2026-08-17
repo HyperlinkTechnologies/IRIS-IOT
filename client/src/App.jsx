@@ -4,7 +4,7 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-
+import { useEffect, useState } from "react";
 import Footer from "./app/components/Landing page/Footer";
 import NavBar from "./app/components/Landing page/NavBar";
 
@@ -23,12 +23,32 @@ import { Toaster } from "react-hot-toast";
 
 function AppContent() {
   const location = useLocation();
+  const [pageLoading, setPageLoading] = useState(false);
 
   /* Hide Navbar & Footer in Dashboard */
   const isDashboard = location.pathname.startsWith("/Dashboard");
 
+    useEffect(() => {
+    setPageLoading(true);
+
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
   return (
     <div className="min-h-screen bg-[#010c29]">
+            {pageLoading && (
+        <div className="fixed inset-0 z-9999 flex flex-col items-center justify-center bg-[#010c29]">
+          <div className="w-12 h-12 border-4 border-white/20 border-t-[#ff5700] rounded-full animate-spin" />
+
+          <p className="mt-4 text-white/70">
+            Loading IRIS...
+          </p>
+        </div>
+      )}
       <Toaster position="top-right" richColors />
 
       {/* Navbar */}
