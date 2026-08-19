@@ -137,7 +137,7 @@ Install the following before running IRIS locally:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/SS-2302/IRIS-IOT.git
+git clone https://github.com/HyperlinkTechnologies/IRIS-IOT.git
 cd IRIS-IOT
 ```
 
