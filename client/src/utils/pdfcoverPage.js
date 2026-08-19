@@ -64,7 +64,7 @@ export function addCoverPage(doc) {
   doc.setTextColor(pdfTheme.colors.lightText);
 
   doc.text(
-    "© Hyperlink InfoSystem Technologies",
+    "© Hyperlink Technologies",
     width / 2,
     height - 20,
     {

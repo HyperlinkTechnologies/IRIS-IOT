@@ -122,7 +122,7 @@ export default function PricingCard({
       ? "1 Month Data Retention"
       : id === "industrial"
       ? "6 Month Data Retention"
-      : "6 Month to 1 Year Data Retention"}
+      : "6Mon-1Yr Data Retention"}
   </p>
 
   <p>
@@ -140,9 +140,9 @@ export default function PricingCard({
     if (current) return;
 
     if (id === "custom") {
-      // We'll implement Contact Sales later.
-      return;
-    }
+  window.location.href = "mailto:team@hyperlinktech.in";
+  return;
+}
 
     onUpgrade?.();
   }}

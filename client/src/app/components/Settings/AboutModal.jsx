@@ -27,24 +27,7 @@ export default function AboutModal({
       value={__APP_VERSION__}
     />
 
-    <InfoRow
-      label="Build Date"
-      value={__BUILD_DATE__}
-    />
-
-    <InfoRow
-      label="Application Mode"
-      value={
-        import.meta.env.MODE === "development"
-          ? "Development"
-          : "Production"
-      }
-    />
-
-    <InfoRow
-      label="Backend API"
-      value="v1"
-    />
+  
 
     <InfoRow
       label="Developed By"

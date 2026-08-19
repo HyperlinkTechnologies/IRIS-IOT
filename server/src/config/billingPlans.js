@@ -38,7 +38,7 @@ export const BILLING_PLANS = {
     name: "Prototype/POC",
 
     price: {
-      amount: 1,
+      amount: 2970,
       currency: "INR",
       interval: "monthly",
     },

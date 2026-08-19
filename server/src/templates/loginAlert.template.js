@@ -51,7 +51,7 @@ export default function loginAlertTemplate({
   const buttonUrl =
     securityUrl && securityUrl.trim() !== ""
       ? securityUrl
-      : "https://iris-iot-react.netlify.app";
+      : "https://iris-iot.netlify.app";
 
   return `
 <!DOCTYPE html>
@@ -157,10 +157,10 @@ www.hyperlinktech.in
 <p style="margin:6px 0 0 0;font-size:14px;line-height:28px;color:#666666;">
 Support:
 <a
-href="mailto:info@hyperlinktech.in"
+href="mailto:hyperlink.bwl@gmail.com"
 style="color:#ff5700;text-decoration:none;"
 >
-info@hyperlinktech.in
+hyperlink.bwl@gmail.com
 </a>
 </p>
 
